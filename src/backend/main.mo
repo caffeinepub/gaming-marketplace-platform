@@ -11,9 +11,8 @@ import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-
-// Migrate persistent state on upgrade
 import Migration "migration";
+
 (with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
@@ -138,7 +137,6 @@ actor {
   let customUsernameSubmissions = Map.empty<Principal, CustomUsernameSubmission>();
 
   let adminUsernameWhitelist = Map.empty<Text, Bool>();
-
   public shared ({ caller }) func addAdminUsername(username : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add admin usernames");

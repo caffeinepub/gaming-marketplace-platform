@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 21,
+  "projectStateVersion": 23,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -632,6 +632,14 @@
       "summary": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
       "reqIds": [
         "REQ-59"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Add the username 'turbohunter64' to the backend admin username whitelist alongside the existing 'venomgladiator25' username",
+      "reqIds": [
+        "REQ-60"
       ],
       "status": "pending"
     }

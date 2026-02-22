@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T19:26:46.997Z",
+  "generatedAt": "2026-02-22T21:58:19.906Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,8 +11,8 @@
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-59",
-        "summary": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
+        "id": "REQ-60",
+        "summary": "Add the username 'turbohunter64' to the backend admin username whitelist alongside the existing 'venomgladiator25' username",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []

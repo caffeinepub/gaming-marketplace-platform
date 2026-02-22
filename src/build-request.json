@@ -1,37 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Add venomgladiator25 to admin username whitelist",
+  "title": "Add username 'turbohunter64' to admin whitelist",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-59",
-      "text": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
+      "id": "REQ-60",
+      "text": "Add the username 'turbohunter64' to the backend admin username whitelist alongside the existing 'venomgladiator25' username",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-final"
         ],
         "quotes": [
-          "Add venomgladiator25 as admin"
+          "Add the user name Saint to the admin list",
+          "This is the username turbohunter64"
         ]
       },
       "acceptanceCriteria": [
-        "The username 'venomgladiator25' is added to the adminUsernameWhitelist map in the backend",
-        "When a user with username 'venomgladiator25' clicks the admin button on the storefront, the isAdminUsername query returns true",
-        "The user 'venomgladiator25' can successfully navigate to and access the admin panel"
+        "The backend admin whitelist contains both 'venomgladiator25' and 'turbohunter64'",
+        "When a user with username 'turbohunter64' clicks the admin button on the storefront, they receive admin panel access",
+        "The isAdminUsername backend endpoint returns true for 'turbohunter64'",
+        "The whitelist persists across canister upgrades through the migration.mo module"
       ]
     }
   ],
   "constraints": [
-    "Maintain the existing adminUsernameWhitelist data structure in backend/main.mo",
-    "Do not modify the existing isAdminUsername query endpoint logic",
-    "Preserve all existing admin whitelist entries if any"
+    "Do not remove the existing 'venomgladiator25' admin username",
+    "Maintain the existing username-based whitelist system (do not implement ID-based system)",
+    "Ensure the migration.mo module includes both admin usernames for upgrade persistence"
   ],
   "nonGoals": [
-    "Creating a UI for managing the admin whitelist",
-    "Adding multiple usernames at once",
-    "Implementing role-based permissions beyond the existing whitelist system",
-    "Modifying the admin panel functionality"
+    "Implementing the 4-digit ID system",
+    "Creating a user profile page",
+    "Replacing username-based whitelist with ID-based whitelist",
+    "Adding UI for admins to manage the whitelist"
   ],
   "imageRequirements": {
     "required": [],

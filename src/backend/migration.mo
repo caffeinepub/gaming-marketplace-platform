@@ -11,8 +11,14 @@ module {
   };
 
   public func run(old : OldActor) : NewActor {
-    let updatedWhitelist = old.adminUsernameWhitelist.clone();
-    updatedWhitelist.add("venomgladiator25", true);
-    { old with adminUsernameWhitelist = updatedWhitelist };
+    let newWhitelist = old.adminUsernameWhitelist.clone();
+
+    newWhitelist.add("venomgladiator25", true);
+    newWhitelist.add("turbohunter64", true);
+
+    {
+      adminUsernameWhitelist = newWhitelist;
+      // All other state stays the same
+    };
   };
 };

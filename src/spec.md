@@ -1,9 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Grant admin panel access to the user 'venomgladiator25'.
+**Goal:** Add 'turbohunter64' to the admin username whitelist.
 
 **Planned changes:**
-- Add 'venomgladiator25' to the admin username whitelist in the backend
+- Add 'turbohunter64' to the backend admin username whitelist alongside 'venomgladiator25'
+- Update migration.mo to persist both admin usernames across canister upgrades
 
-**User-visible outcome:** The user 'venomgladiator25' can click the admin button on the storefront and successfully access the admin panel.
+**User-visible outcome:** Users with username 'turbohunter64' can access the admin panel by clicking the admin button on the storefront.
