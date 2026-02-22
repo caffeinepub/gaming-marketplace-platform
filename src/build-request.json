@@ -1,171 +1,37 @@
 {
   "kind": "build_request",
-  "title": "Replace manual username creation with AI-generated GamerTags and terms acceptance",
-  "projectName": "Game Vault",
+  "title": "Add venomgladiator25 to admin username whitelist",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-37",
-      "text": "Create a terms acceptance modal component that displays after queue completion or queue skip payment, showing the text 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' with an Accept button that must be clicked to proceed",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "we at Game Vault have no partition with any hacking or scamming or 3rd party selling",
-          "make them click accept then proceed to the ai username generator"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Terms modal appears immediately after queue countdown reaches zero or after successful queue skip payment submission",
-        "Modal displays the exact text: 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling'",
-        "Modal includes an Accept button that user must click to proceed",
-        "Modal blocks all other interactions until Accept is clicked",
-        "After clicking Accept, user proceeds to AI username generation flow"
-      ]
-    },
-    {
-      "id": "REQ-38",
-      "text": "Implement AI-generated GamerTag-style username creation that automatically generates usernames (format examples: ShadowWarrior42, EpicSniper89) immediately after terms acceptance without user input",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Gamer tags",
-          "Yes when the users get thought the queue or have paid to skip the queue make them read this",
-          "then proceed to the ai username generator"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After terms acceptance, AI automatically generates a GamerTag-style username",
-        "Username follows pattern: adjective/noun + noun/action word + 2-digit number (e.g., ShadowWarrior42, EpicSniper89)",
-        "Generated username is validated against backend rules (unique, alphanumeric, profanity filter)",
-        "If validation fails, AI automatically generates a new username until one passes validation",
-        "User is not shown manual input field or asked to create their own username",
-        "Once valid username is generated, user proceeds to storefront access"
-      ]
-    },
-    {
-      "id": "REQ-39",
-      "text": "Add backend endpoint to generate AI-powered GamerTag-style usernames with validation against existing usernames, profanity filter, and uniqueness checks",
+      "id": "REQ-59",
+      "text": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-6"
         ],
         "quotes": [
-          "ai makes a automated user name",
-          "Gamer tags"
+          "Add venomgladiator25 as admin"
         ]
       },
       "acceptanceCriteria": [
-        "Backend provides endpoint that generates GamerTag-style usernames",
-        "Generated usernames follow pattern: word combination + 2-digit number suffix",
-        "Endpoint validates generated username against existing usernames for uniqueness",
-        "Endpoint applies profanity filter to reject offensive combinations",
-        "Endpoint ensures username meets alphanumeric and length requirements",
-        "If generated username fails validation, endpoint automatically generates new one until valid"
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "text": "Add username regeneration feature that allows users to request a new AI-generated GamerTag for £0.01 per change",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Yes but they pay £0.01 for a user name re chnage each time"
-        ]
-      },
-      "acceptanceCriteria": [
-        "User profile UI displays option to regenerate username with £0.01 price",
-        "Clicking regenerate opens payment flow identical to queue skip payment (PayPal, UK gift cards, crypto)",
-        "Payment submission includes proof (screenshot/transaction ID for PayPal and crypto, gift card code for gift cards)",
-        "Upon successful payment submission, new GamerTag is automatically generated and assigned",
-        "Backend stores username change payment submissions for admin review",
-        "User can regenerate username unlimited times, paying £0.01 each time"
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "text": "Add username regeneration price configuration field (£0.01) in admin payment settings panel alongside queue skip price",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Yes but they pay £0.01 for a user name re chnage each time"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Admin payment configuration panel includes 'Username Change Price' field",
-        "Default value is set to £0.01",
-        "Admin can modify the username change price",
-        "Updated price is displayed in username regeneration UI",
-        "Backend validates and persists the configured username change price"
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "text": "Create admin panel section to review username change payment submissions with details including user principal, submission timestamp, transaction details, and current status",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Yes but they pay £0.01 for a user name re chnage each time"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Admin panel displays list of all username change payment submissions",
-        "Each submission shows: user principal, timestamp, payment method, transaction ID, and status",
-        "For PayPal and crypto submissions, screenshot is displayed",
-        "For gift card submissions, gift card type and code are displayed",
-        "Admin can flag submissions as fraudulent",
-        "Flagged submissions prevent the user from future username regeneration"
-      ]
-    },
-    {
-      "id": "REQ-43",
-      "text": "Remove the existing manual username creation modal (UsernameSetup.tsx) and update App.tsx authentication flow to use terms acceptance followed by AI username generation",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Change the username from allowing users to make there own to ai makes a automated user name"
-        ]
-      },
-      "acceptanceCriteria": [
-        "UsernameSetup.tsx component is no longer rendered in authentication flow",
-        "App.tsx routes users from queue completion/skip directly to terms acceptance modal",
-        "After terms acceptance, AI username generation flow is triggered",
-        "No manual username input fields are shown to users",
-        "Username creation flow is fully automated after terms acceptance"
+        "The username 'venomgladiator25' is added to the adminUsernameWhitelist map in the backend",
+        "When a user with username 'venomgladiator25' clicks the admin button on the storefront, the isAdminUsername query returns true",
+        "The user 'venomgladiator25' can successfully navigate to and access the admin panel"
       ]
     }
   ],
   "constraints": [
-    "Preserve single-actor backend architecture with all logic in backend/main.mo",
-    "Do not modify Internet Identity authentication hooks (frontend/src/hooks/useInternetIdentity.ts, useActor.ts)",
-    "Maintain existing queue skip payment flow structure and payment methods (PayPal, UK gift cards, crypto)",
-    "Preserve existing profanity filter and username validation logic in backend",
-    "Keep hardcoded Bitcoin address bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722 for username change crypto payments"
+    "Maintain the existing adminUsernameWhitelist data structure in backend/main.mo",
+    "Do not modify the existing isAdminUsername query endpoint logic",
+    "Preserve all existing admin whitelist entries if any"
   ],
   "nonGoals": [
-    "Allowing users to manually input or edit their AI-generated usernames",
-    "Implementing real AI/LLM integration (use client-side generation with word lists)",
-    "Adding email notifications for username changes",
-    "Implementing username history or rollback features",
-    "Supporting other payment methods beyond the existing three (PayPal, UK gift cards, crypto)"
+    "Creating a UI for managing the admin whitelist",
+    "Adding multiple usernames at once",
+    "Implementing role-based permissions beyond the existing whitelist system",
+    "Modifying the admin panel functionality"
   ],
   "imageRequirements": {
     "required": [],

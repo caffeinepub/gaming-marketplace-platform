@@ -1,15 +1,27 @@
 import { useState, useMemo } from 'react';
-import { useGetAllProducts, useGetAllCategories, useGetInstagramUrl } from '../hooks/useQueries';
+import { useNavigate } from '@tanstack/react-router';
+import { useGetAllProducts, useGetAllCategories, useGetInstagramUrl, useGetUsername, useIsAdminUsername } from '../hooks/useQueries';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import ProductCard from '../components/storefront/ProductCard';
 import CategoryFilter from '../components/storefront/CategoryFilter';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Youtube, Instagram } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Youtube, Instagram, Shield, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function Storefront() {
+  const navigate = useNavigate();
+  const { identity } = useInternetIdentity();
+  const isAuthenticated = !!identity;
+  
   const { data: products = [], isLoading: productsLoading } = useGetAllProducts();
   const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategories();
   const { data: instagramUrl = '' } = useGetInstagramUrl();
+  const { data: username, isLoading: usernameLoading } = useGetUsername();
+  const checkAdminUsername = useIsAdminUsername();
+  
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [checkingAdmin, setCheckingAdmin] = useState(false);
 
   const filteredProducts = useMemo(() => {
     if (!selectedCategory) return products;
@@ -23,6 +35,31 @@ export default function Storefront() {
     });
     return counts;
   }, [products]);
+
+  const handleAdminAccess = async () => {
+    if (!username) {
+      toast.error('Username not found. Please complete your profile setup.');
+      return;
+    }
+
+    setCheckingAdmin(true);
+    try {
+      const isAdmin = await checkAdminUsername.mutateAsync(username);
+      
+      if (isAdmin) {
+        navigate({ to: '/admin' });
+      } else {
+        toast.error('Access Denied', {
+          description: 'Admin access is restricted to authorized users only.',
+        });
+      }
+    } catch (error) {
+      console.error('Error checking admin access:', error);
+      toast.error('Failed to verify admin access. Please try again.');
+    } finally {
+      setCheckingAdmin(false);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -42,6 +79,28 @@ export default function Storefront() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Your trusted marketplace for premium gaming accounts, in-game currency, and exclusive items
             </p>
+            {isAuthenticated && username && !usernameLoading && (
+              <div className="pt-4">
+                <Button
+                  onClick={handleAdminAccess}
+                  disabled={checkingAdmin}
+                  variant="outline"
+                  className="bg-background/80 backdrop-blur-sm hover:bg-background/90 border-primary/50 hover:border-primary"
+                >
+                  {checkingAdmin ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying Access...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

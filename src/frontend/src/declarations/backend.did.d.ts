@@ -12,6 +12,17 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export interface CartItem { 'productId' : string, 'quantity' : bigint }
 export interface Category { 'name' : string, 'description' : string }
+export type CustomUsernameStatus = { 'pendingReview' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
+export interface CustomUsernameSubmission {
+  'status' : CustomUsernameStatus,
+  'paymentMethod' : PaymentMethod,
+  'transactionDetails' : string,
+  'user' : Principal,
+  'requestedUsername' : string,
+  'timestamp' : Time,
+}
 export type ExternalBlob = Uint8Array;
 export type GiftCardType = { 'cryptocurrency' : null } |
   { 'tesco' : null } |
@@ -24,8 +35,12 @@ export interface PaymentConfig {
   'cryptoWalletAddress' : string,
   'ukGiftCardInstructions' : string,
   'usernameRegenerationPriceGBP' : number,
+  'customUsernamePriceGBP' : number,
   'paypalEmail' : string,
 }
+export type PaymentMethod = { 'crypto' : null } |
+  { 'giftCard' : null } |
+  { 'paypal' : null };
 export interface Product {
   'id' : string,
   'imageUrls' : Array<string>,
@@ -88,7 +103,9 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAdminUsername' : ActorMethod<[string], undefined>,
   'addToCart' : ActorMethod<[string, bigint], undefined>,
+  'approveCustomUsername' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'clearCart' : ActorMethod<[], undefined>,
   'createCategory' : ActorMethod<[string, Category], undefined>,
@@ -103,6 +120,10 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCategory' : ActorMethod<[string], Category>,
+  'getCustomUsernameSubmissions' : ActorMethod<
+    [],
+    Array<CustomUsernameSubmission>
+  >,
   'getInstagramUrl' : ActorMethod<[], string>,
   'getPaymentDetails' : ActorMethod<[], PaymentConfig>,
   'getProduct' : ActorMethod<[string], Product>,
@@ -111,8 +132,15 @@ export interface _SERVICE {
   'getUsername' : ActorMethod<[Principal], [] | [string]>,
   'hasQueueBypass' : ActorMethod<[], boolean>,
   'hasUsername' : ActorMethod<[], boolean>,
+  'isAdminUsername' : ActorMethod<[string], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'rejectCustomUsername' : ActorMethod<[Principal], undefined>,
+  'removeAdminUsername' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'submitCustomUsername' : ActorMethod<
+    [string, PaymentMethod, string],
+    undefined
+  >,
   'submitQueueSkipPayment' : ActorMethod<
     [string, GiftCardType, [] | [string]],
     undefined

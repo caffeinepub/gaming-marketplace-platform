@@ -54,12 +54,32 @@ export const CartItem = IDL.Record({
   'productId' : IDL.Text,
   'quantity' : IDL.Nat,
 });
+export const CustomUsernameStatus = IDL.Variant({
+  'pendingReview' : IDL.Null,
+  'approved' : IDL.Null,
+  'rejected' : IDL.Null,
+});
+export const PaymentMethod = IDL.Variant({
+  'crypto' : IDL.Null,
+  'giftCard' : IDL.Null,
+  'paypal' : IDL.Null,
+});
+export const Time = IDL.Int;
+export const CustomUsernameSubmission = IDL.Record({
+  'status' : CustomUsernameStatus,
+  'paymentMethod' : PaymentMethod,
+  'transactionDetails' : IDL.Text,
+  'user' : IDL.Principal,
+  'requestedUsername' : IDL.Text,
+  'timestamp' : Time,
+});
 export const PaymentConfig = IDL.Record({
   'queueSkipPriceGBP' : IDL.Float64,
   'instagramUrl' : IDL.Text,
   'cryptoWalletAddress' : IDL.Text,
   'ukGiftCardInstructions' : IDL.Text,
   'usernameRegenerationPriceGBP' : IDL.Float64,
+  'customUsernamePriceGBP' : IDL.Float64,
   'paypalEmail' : IDL.Text,
 });
 export const QueueSkipStatus = IDL.Variant({
@@ -74,7 +94,6 @@ export const GiftCardType = IDL.Variant({
   'starbucks' : IDL.Null,
   'amazon' : IDL.Null,
 });
-export const Time = IDL.Int;
 export const QueueSkipSubmission = IDL.Record({
   'status' : QueueSkipStatus,
   'user' : IDL.Principal,
@@ -112,7 +131,9 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAdminUsername' : IDL.Func([IDL.Text], [], []),
   'addToCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+  'approveCustomUsername' : IDL.Func([IDL.Principal], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'clearCart' : IDL.Func([], [], []),
   'createCategory' : IDL.Func([IDL.Text, Category], [], []),
@@ -127,6 +148,11 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
   'getCategory' : IDL.Func([IDL.Text], [Category], ['query']),
+  'getCustomUsernameSubmissions' : IDL.Func(
+      [],
+      [IDL.Vec(CustomUsernameSubmission)],
+      ['query'],
+    ),
   'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
   'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
   'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
@@ -143,8 +169,16 @@ export const idlService = IDL.Service({
   'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
   'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
   'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
+  'isAdminUsername' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'rejectCustomUsername' : IDL.Func([IDL.Principal], [], []),
+  'removeAdminUsername' : IDL.Func([IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'submitCustomUsername' : IDL.Func(
+      [IDL.Text, PaymentMethod, IDL.Text],
+      [],
+      [],
+    ),
   'submitQueueSkipPayment' : IDL.Func(
       [IDL.Text, GiftCardType, IDL.Opt(IDL.Text)],
       [],
@@ -200,12 +234,32 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
   });
   const CartItem = IDL.Record({ 'productId' : IDL.Text, 'quantity' : IDL.Nat });
+  const CustomUsernameStatus = IDL.Variant({
+    'pendingReview' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
+  const PaymentMethod = IDL.Variant({
+    'crypto' : IDL.Null,
+    'giftCard' : IDL.Null,
+    'paypal' : IDL.Null,
+  });
+  const Time = IDL.Int;
+  const CustomUsernameSubmission = IDL.Record({
+    'status' : CustomUsernameStatus,
+    'paymentMethod' : PaymentMethod,
+    'transactionDetails' : IDL.Text,
+    'user' : IDL.Principal,
+    'requestedUsername' : IDL.Text,
+    'timestamp' : Time,
+  });
   const PaymentConfig = IDL.Record({
     'queueSkipPriceGBP' : IDL.Float64,
     'instagramUrl' : IDL.Text,
     'cryptoWalletAddress' : IDL.Text,
     'ukGiftCardInstructions' : IDL.Text,
     'usernameRegenerationPriceGBP' : IDL.Float64,
+    'customUsernamePriceGBP' : IDL.Float64,
     'paypalEmail' : IDL.Text,
   });
   const QueueSkipStatus = IDL.Variant({
@@ -220,7 +274,6 @@ export const idlFactory = ({ IDL }) => {
     'starbucks' : IDL.Null,
     'amazon' : IDL.Null,
   });
-  const Time = IDL.Int;
   const QueueSkipSubmission = IDL.Record({
     'status' : QueueSkipStatus,
     'user' : IDL.Principal,
@@ -258,7 +311,9 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAdminUsername' : IDL.Func([IDL.Text], [], []),
     'addToCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    'approveCustomUsername' : IDL.Func([IDL.Principal], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'clearCart' : IDL.Func([], [], []),
     'createCategory' : IDL.Func([IDL.Text, Category], [], []),
@@ -273,6 +328,11 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
     'getCategory' : IDL.Func([IDL.Text], [Category], ['query']),
+    'getCustomUsernameSubmissions' : IDL.Func(
+        [],
+        [IDL.Vec(CustomUsernameSubmission)],
+        ['query'],
+      ),
     'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
     'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
     'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
@@ -289,8 +349,16 @@ export const idlFactory = ({ IDL }) => {
     'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
     'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
     'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
+    'isAdminUsername' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'rejectCustomUsername' : IDL.Func([IDL.Principal], [], []),
+    'removeAdminUsername' : IDL.Func([IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'submitCustomUsername' : IDL.Func(
+        [IDL.Text, PaymentMethod, IDL.Text],
+        [],
+        [],
+      ),
     'submitQueueSkipPayment' : IDL.Func(
         [IDL.Text, GiftCardType, IDL.Opt(IDL.Text)],
         [],

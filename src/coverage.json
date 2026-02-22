@@ -1,107 +1,21 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T18:35:06.310Z",
+  "generatedAt": "2026-02-22T19:26:46.997Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 7,
-    "implemented": 6,
+    "total": 1,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-37",
-        "summary": "Create a terms acceptance modal component that displays after queue completion or queue skip payment, showing the text 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' with an Accept button that must be clicked to proceed",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/auth/TermsAcceptanceModal.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/TermsAcceptanceModal.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-38",
-        "summary": "Implement AI-generated GamerTag-style username creation that automatically generates usernames (format examples: ShadowWarrior42, EpicSniper89) immediately after terms acceptance without user input",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/auth/AIUsernameGenerator.tsx",
-          "frontend/src/utils/gamerTagGenerator.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/AIUsernameGenerator.tsx",
-          "frontend/src/utils/gamerTagGenerator.ts",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-39",
-        "summary": "Add backend endpoint to generate AI-powered GamerTag-style usernames with validation against existing usernames, profanity filter, and uniqueness checks",
+        "id": "REQ-59",
+        "summary": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
-      },
-      {
-        "id": "REQ-40",
-        "summary": "Add username regeneration feature that allows users to request a new AI-generated GamerTag for £0.01 per change",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
-          "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
-          "frontend/src/components/layout/Layout.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
-          "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
-          "frontend/src/components/layout/Layout.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-41",
-        "summary": "Add username regeneration price configuration field (£0.01) in admin payment settings panel alongside queue skip price",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/admin/PaymentConfigForm.tsx",
-          "frontend/src/components/profile/UsernameRegenerationDialog.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/admin/PaymentConfigForm.tsx",
-          "frontend/src/components/profile/UsernameRegenerationDialog.tsx"
-        ]
-      },
-      {
-        "id": "REQ-42",
-        "summary": "Create admin panel section to review username change payment submissions with details including user principal, submission timestamp, transaction details, and current status",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-43",
-        "summary": "Remove the existing manual username creation modal (UsernameSetup.tsx) and update App.tsx authentication flow to use terms acceptance followed by AI username generation",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/auth/UsernameSetup.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/UsernameSetup.tsx",
-          "frontend/src/App.tsx"
-        ]
       }
     ]
   },
@@ -110,24 +24,11 @@
     "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/admin/PaymentConfigForm.tsx",
-    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-    "frontend/src/components/auth/AIUsernameGenerator.tsx",
-    "frontend/src/components/auth/TermsAcceptanceModal.tsx",
-    "frontend/src/components/auth/UsernameSetup.tsx",
-    "frontend/src/components/layout/Layout.tsx",
-    "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
-    "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/AdminPanel.tsx",
-    "frontend/src/utils/gamerTagGenerator.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

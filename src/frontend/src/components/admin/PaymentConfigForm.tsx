@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useGetPaymentDetails, useUpdatePaymentDetails } from '../../hooks/useQueries';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Loader2, Save } from 'lucide-react';
 
 export default function PaymentConfigForm() {
-  const { data: paymentDetails } = useGetPaymentDetails();
+  const { data: paymentDetails, isLoading } = useGetPaymentDetails();
   const updatePaymentDetails = useUpdatePaymentDetails();
 
   const [paypalEmail, setPaypalEmail] = useState('');
@@ -18,169 +18,194 @@ export default function PaymentConfigForm() {
   const [instagramUrl, setInstagramUrl] = useState('');
   const [queueSkipPriceGBP, setQueueSkipPriceGBP] = useState('0.05');
   const [usernameRegenerationPriceGBP, setUsernameRegenerationPriceGBP] = useState('0.01');
-  const [instagramUrlError, setInstagramUrlError] = useState('');
+  const [customUsernamePriceGBP, setCustomUsernamePriceGBP] = useState('0.10');
 
   useEffect(() => {
     if (paymentDetails) {
-      setPaypalEmail(paymentDetails.paypalEmail);
-      setUkGiftCardInstructions(paymentDetails.ukGiftCardInstructions);
-      setCryptoWalletAddress(paymentDetails.cryptoWalletAddress);
-      setInstagramUrl(paymentDetails.instagramUrl);
-      setQueueSkipPriceGBP(paymentDetails.queueSkipPriceGBP.toString());
-      setUsernameRegenerationPriceGBP(paymentDetails.usernameRegenerationPriceGBP.toString());
+      setPaypalEmail(paymentDetails.paypalEmail || '');
+      setUkGiftCardInstructions(paymentDetails.ukGiftCardInstructions || '');
+      setCryptoWalletAddress(paymentDetails.cryptoWalletAddress || '');
+      setInstagramUrl(paymentDetails.instagramUrl || '');
+      setQueueSkipPriceGBP(paymentDetails.queueSkipPriceGBP.toFixed(2));
+      setUsernameRegenerationPriceGBP(paymentDetails.usernameRegenerationPriceGBP.toFixed(2));
+      setCustomUsernamePriceGBP(paymentDetails.customUsernamePriceGBP.toFixed(2));
     }
   }, [paymentDetails]);
-
-  const validateUrl = (url: string): boolean => {
-    if (!url) return true;
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const handleInstagramUrlChange = (value: string) => {
-    setInstagramUrl(value);
-    if (value && !validateUrl(value)) {
-      setInstagramUrlError('Please enter a valid URL');
-    } else {
-      setInstagramUrlError('');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (instagramUrl && !validateUrl(instagramUrl)) {
-      toast.error('Please enter a valid Instagram URL');
-      return;
-    }
-
     const queueSkipPrice = parseFloat(queueSkipPriceGBP);
-    if (isNaN(queueSkipPrice) || queueSkipPrice <= 0) {
-      toast.error('Queue skip price must be a positive number');
+    const usernameRegenerationPrice = parseFloat(usernameRegenerationPriceGBP);
+    const customUsernamePrice = parseFloat(customUsernamePriceGBP);
+
+    if (isNaN(queueSkipPrice) || queueSkipPrice < 0) {
+      toast.error('Queue skip price must be a valid positive number');
       return;
     }
 
-    const usernameChangePrice = parseFloat(usernameRegenerationPriceGBP);
-    if (isNaN(usernameChangePrice) || usernameChangePrice <= 0) {
-      toast.error('Username change price must be a positive number');
+    if (isNaN(usernameRegenerationPrice) || usernameRegenerationPrice < 0) {
+      toast.error('Username regeneration price must be a valid positive number');
+      return;
+    }
+
+    if (isNaN(customUsernamePrice) || customUsernamePrice < 0) {
+      toast.error('Custom username price must be a valid positive number');
       return;
     }
 
     try {
       await updatePaymentDetails.mutateAsync({
-        paypalEmail,
-        ukGiftCardInstructions,
-        cryptoWalletAddress,
-        instagramUrl,
+        paypalEmail: paypalEmail.trim(),
+        ukGiftCardInstructions: ukGiftCardInstructions.trim(),
+        cryptoWalletAddress: cryptoWalletAddress.trim(),
+        instagramUrl: instagramUrl.trim(),
         queueSkipPriceGBP: queueSkipPrice,
-        usernameRegenerationPriceGBP: usernameChangePrice,
+        usernameRegenerationPriceGBP: usernameRegenerationPrice,
+        customUsernamePriceGBP: customUsernamePrice,
       });
-      toast.success('Payment details updated successfully');
+      toast.success('Payment configuration updated successfully!');
     } catch (error: any) {
-      console.error('Update payment details error:', error);
-      toast.error(error.message || 'Failed to update payment details');
+      console.error('Failed to update payment config:', error);
+      toast.error(error.message || 'Failed to update payment configuration');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Payment Configuration</CardTitle>
-        <CardDescription>Configure payment methods and pricing for your marketplace</CardDescription>
+        <CardDescription>Configure payment methods and pricing for your storefront</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="paypalEmail">PayPal Email</Label>
-            <Input
-              id="paypalEmail"
-              type="email"
-              placeholder="your-email@example.com"
-              value={paypalEmail}
-              onChange={(e) => setPaypalEmail(e.target.value)}
-            />
+          {/* Pricing Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Pricing</h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="queueSkipPrice">Queue Skip Price (£)</Label>
+              <Input
+                id="queueSkipPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.05"
+                value={queueSkipPriceGBP}
+                onChange={(e) => setQueueSkipPriceGBP(e.target.value)}
+                required
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="usernameRegenerationPrice">Username Regeneration Price (£)</Label>
+              <Input
+                id="usernameRegenerationPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.01"
+                value={usernameRegenerationPriceGBP}
+                onChange={(e) => setUsernameRegenerationPriceGBP(e.target.value)}
+                required
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="customUsernamePrice">Custom Username Price (£)</Label>
+              <Input
+                id="customUsernamePrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.10"
+                value={customUsernamePriceGBP}
+                onChange={(e) => setCustomUsernamePriceGBP(e.target.value)}
+                required
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="ukGiftCardInstructions">UK Gift Card Instructions</Label>
-            <Textarea
-              id="ukGiftCardInstructions"
-              placeholder="Enter instructions for UK gift card redemption..."
-              value={ukGiftCardInstructions}
-              onChange={(e) => setUkGiftCardInstructions(e.target.value)}
-              rows={4}
-            />
+          {/* Payment Methods Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Payment Methods</h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="paypalEmail">PayPal Email</Label>
+              <Input
+                id="paypalEmail"
+                type="email"
+                placeholder="your-paypal@example.com"
+                value={paypalEmail}
+                onChange={(e) => setPaypalEmail(e.target.value)}
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ukGiftCardInstructions">UK Gift Card Instructions</Label>
+              <Textarea
+                id="ukGiftCardInstructions"
+                placeholder="Instructions for customers on how to use UK gift cards..."
+                value={ukGiftCardInstructions}
+                onChange={(e) => setUkGiftCardInstructions(e.target.value)}
+                rows={4}
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cryptoWalletAddress">Crypto Wallet Address</Label>
+              <Input
+                id="cryptoWalletAddress"
+                type="text"
+                placeholder="bc1q..."
+                value={cryptoWalletAddress}
+                onChange={(e) => setCryptoWalletAddress(e.target.value)}
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="cryptoWalletAddress">Cryptocurrency Wallet Address</Label>
-            <Input
-              id="cryptoWalletAddress"
-              type="text"
-              placeholder="0x..."
-              value={cryptoWalletAddress}
-              onChange={(e) => setCryptoWalletAddress(e.target.value)}
-            />
+          {/* Social Media Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Social Media</h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="instagramUrl">Instagram URL</Label>
+              <Input
+                id="instagramUrl"
+                type="url"
+                placeholder="https://instagram.com/yourusername"
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                disabled={updatePaymentDetails.isPending}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="instagramUrl">Instagram URL</Label>
-            <Input
-              id="instagramUrl"
-              type="url"
-              placeholder="https://instagram.com/yourprofile"
-              value={instagramUrl}
-              onChange={(e) => handleInstagramUrlChange(e.target.value)}
-            />
-            {instagramUrlError && (
-              <p className="text-sm text-destructive">{instagramUrlError}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="queueSkipPriceGBP">Queue Skip Price (£)</Label>
-            <Input
-              id="queueSkipPriceGBP"
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="0.05"
-              value={queueSkipPriceGBP}
-              onChange={(e) => setQueueSkipPriceGBP(e.target.value)}
-            />
-            <p className="text-sm text-muted-foreground">
-              Price users pay to skip the login queue
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="usernameRegenerationPriceGBP">Username Change Price (£)</Label>
-            <Input
-              id="usernameRegenerationPriceGBP"
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="0.01"
-              value={usernameRegenerationPriceGBP}
-              onChange={(e) => setUsernameRegenerationPriceGBP(e.target.value)}
-            />
-            <p className="text-sm text-muted-foreground">
-              Price users pay to regenerate their username
-            </p>
-          </div>
-
-          <Button type="submit" disabled={updatePaymentDetails.isPending || !!instagramUrlError}>
+          <Button type="submit" disabled={updatePaymentDetails.isPending} className="w-full">
             {updatePaymentDetails.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...
               </>
             ) : (
-              'Save Payment Details'
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Configuration
+              </>
             )}
           </Button>
         </form>

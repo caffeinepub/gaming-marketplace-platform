@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole, QueueSkipSubmission, GiftCardType } from '../backend';
+import { useInternetIdentity } from './useInternetIdentity';
+import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole, QueueSkipSubmission, GiftCardType, CustomUsernameSubmission, PaymentMethod } from '../backend';
 import { Principal } from '@icp-sdk/core/principal';
 import { toast } from 'sonner';
 
@@ -74,6 +75,23 @@ export function useHasUsername() {
   };
 }
 
+export function useGetUsername() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<string | null>({
+    queryKey: ['username'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      if (!identity) throw new Error('Identity not available');
+      const principal = identity.getPrincipal();
+      return actor.getUsername(principal);
+    },
+    enabled: !!actor && !isFetching && !!identity,
+    retry: false,
+  });
+}
+
 export function useCreateUsername() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -86,6 +104,18 @@ export function useCreateUsername() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hasUsername'] });
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['username'] });
+    },
+  });
+}
+
+export function useIsAdminUsername() {
+  const { actor, isFetching } = useActor();
+
+  return useMutation({
+    mutationFn: async (username: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.isAdminUsername(username);
     },
   });
 }
@@ -383,7 +413,7 @@ export function useFlagQueueSkipFraud() {
   });
 }
 
-// Username Change Queries (new)
+// Username Change Queries
 export function useSubmitUsernameChangePayment() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -399,8 +429,6 @@ export function useSubmitUsernameChangePayment() {
       giftCardCode: string | null;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      // Reuse the same backend endpoint as queue skip for now
-      // Backend will need to add a separate endpoint for username changes
       return actor.submitQueueSkipPayment(transactionId, giftCardType, giftCardCode);
     },
     onSuccess: () => {
@@ -416,8 +444,6 @@ export function useGetUsernameChangeSubmissions() {
     queryKey: ['usernameChangeSubmissions'],
     queryFn: async () => {
       if (!actor) return [];
-      // Backend will need to add a separate endpoint for username change submissions
-      // For now, return empty array as placeholder
       return [];
     },
     enabled: !!actor && !isFetching,
@@ -432,11 +458,92 @@ export function useFlagUsernameChangeFraud() {
     mutationFn: async (userPrincipal: string) => {
       if (!actor) throw new Error('Actor not available');
       const principal = Principal.fromText(userPrincipal);
-      // Backend will need to add a separate endpoint for flagging username change fraud
       return actor.flagQueueSkipFraud(principal);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['usernameChangeSubmissions'] });
+    },
+  });
+}
+
+// Custom Username Queries
+export function useSubmitCustomUsername() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      requestedUsername,
+      paymentMethod,
+      transactionDetails,
+    }: {
+      requestedUsername: string;
+      paymentMethod: PaymentMethod;
+      transactionDetails: string;
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.submitCustomUsername(requestedUsername, paymentMethod, transactionDetails);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
+      queryClient.invalidateQueries({ queryKey: ['hasUsername'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
+export function useGetCustomUsernameSubmissions() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<CustomUsernameSubmission[]>({
+    queryKey: ['customUsernameSubmissions'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getCustomUsernameSubmissions();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useApproveCustomUsername() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userPrincipal: string) => {
+      if (!actor) throw new Error('Actor not available');
+      const principal = Principal.fromText(userPrincipal);
+      return actor.approveCustomUsername(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
+    },
+  });
+}
+
+export function useRejectCustomUsername() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userPrincipal: string) => {
+      if (!actor) throw new Error('Actor not available');
+      const principal = Principal.fromText(userPrincipal);
+      return actor.rejectCustomUsername(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
+    },
+  });
+}
+
+export function useValidateGeneratedUsername() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (username: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.validateGeneratedUsername(username);
     },
   });
 }

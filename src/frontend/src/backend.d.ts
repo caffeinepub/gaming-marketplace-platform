@@ -14,16 +14,16 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
-export interface Category {
-    name: string;
-    description: string;
-}
 export interface UserProfile {
     username?: string;
     name: string;
     email: string;
 }
 export type Time = bigint;
+export interface Category {
+    name: string;
+    description: string;
+}
 export interface QueueSkipSubmission {
     status: QueueSkipStatus;
     user: Principal;
@@ -31,6 +31,14 @@ export interface QueueSkipSubmission {
     giftCardType: GiftCardType;
     timestamp: Time;
     transactionId: string;
+}
+export interface CustomUsernameSubmission {
+    status: CustomUsernameStatus;
+    paymentMethod: PaymentMethod;
+    transactionDetails: string;
+    user: Principal;
+    requestedUsername: string;
+    timestamp: Time;
 }
 export interface CartItem {
     productId: string;
@@ -53,7 +61,13 @@ export interface PaymentConfig {
     cryptoWalletAddress: string;
     ukGiftCardInstructions: string;
     usernameRegenerationPriceGBP: number;
+    customUsernamePriceGBP: number;
     paypalEmail: string;
+}
+export enum CustomUsernameStatus {
+    pendingReview = "pendingReview",
+    approved = "approved",
+    rejected = "rejected"
 }
 export enum GiftCardType {
     cryptocurrency = "cryptocurrency",
@@ -61,6 +75,11 @@ export enum GiftCardType {
     other = "other",
     starbucks = "starbucks",
     amazon = "amazon"
+}
+export enum PaymentMethod {
+    crypto = "crypto",
+    giftCard = "giftCard",
+    paypal = "paypal"
 }
 export enum ProductType {
     clothes = "clothes",
@@ -78,7 +97,9 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addAdminUsername(username: string): Promise<void>;
     addToCart(productId: string, quantity: bigint): Promise<void>;
+    approveCustomUsername(user: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearCart(): Promise<void>;
     createCategory(name: string, category: Category): Promise<void>;
@@ -93,6 +114,7 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCategory(name: string): Promise<Category>;
+    getCustomUsernameSubmissions(): Promise<Array<CustomUsernameSubmission>>;
     getInstagramUrl(): Promise<string>;
     getPaymentDetails(): Promise<PaymentConfig>;
     getProduct(id: string): Promise<Product>;
@@ -101,8 +123,12 @@ export interface backendInterface {
     getUsername(_user: Principal): Promise<string | null>;
     hasQueueBypass(): Promise<boolean>;
     hasUsername(): Promise<boolean>;
+    isAdminUsername(username: string): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
+    rejectCustomUsername(user: Principal): Promise<void>;
+    removeAdminUsername(username: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    submitCustomUsername(requestedUsername: string, paymentMethod: PaymentMethod, transactionDetails: string): Promise<void>;
     submitQueueSkipPayment(transactionId: string, giftCardType: GiftCardType, giftCardCode: string | null): Promise<void>;
     updateCartItemQuantity(productId: string, quantity: bigint): Promise<void>;
     updateCategory(name: string, updatedCategory: Category): Promise<void>;

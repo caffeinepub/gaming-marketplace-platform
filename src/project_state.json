@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 21,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -288,6 +288,94 @@
         "REQ-43"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-aiusernamegenerator-component-to-handle-duplicate-usernames-seamlessly-in-the-background-by-automatically-retrying-generation-without-displaying-retry-indicators-or-loading-states-to-the-user",
+      "title": "Update AIUsernameGenerator component to handle duplicate usernames seamlessly in the background by automatically retrying generation without displaying retry indicators or loading states to the user",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-make-your-own-button-priced-at-0-10-to-the-aiusernamegenerator-component-initial-username-generation-screen-after-terms-acceptance-that-opens-a-custom-username-input-form",
+      "title": "Add 'Make Your Own' button priced at £0.10 to the AIUsernameGenerator component (initial username generation screen after terms acceptance) that opens a custom username input form",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-make-your-own-button-priced-at-0-10-to-the-usernameregenerationdialog-component-username-regeneration-screen-alongside-the-existing-0-01-regenerate-option-that-opens-a-custom-username-input-form",
+      "title": "Add 'Make Your Own' button priced at £0.10 to the UsernameRegenerationDialog component (username regeneration screen) alongside the existing £0.01 regenerate option that opens a custom username input form",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-custom-username-input-form-that-allows-users-who-paid-0-10-to-enter-their-own-username-with-validation-alphanumeric-characters-only-minimum-5-characters-profanity-filter-and-uniqueness-check",
+      "title": "Create custom username input form that allows users who paid £0.10 to enter their own username with validation: alphanumeric characters only, minimum 5 characters, profanity filter, and uniqueness check",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-custom-username-payment-flow-supporting-all-three-existing-payment-methods-paypal-uk-gift-cards-with-type-selection-and-code-entry-and-crypto-with-hardcoded-bitcoin-address-bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722-for-the-0-10-custom-username-feature",
+      "title": "Integrate custom username payment flow supporting all three existing payment methods (PayPal, UK gift cards with type selection and code entry, and crypto with hardcoded Bitcoin address bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722) for the £0.10 custom username feature",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-custom-username-price-configuration-field-default-0-10-to-the-admin-payment-configuration-panel-alongside-existing-queue-skip-and-username-regeneration-price-fields",
+      "title": "Add 'Custom Username Price' configuration field (default £0.10) to the admin payment configuration panel alongside existing queue skip and username regeneration price fields",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-admin-panel-section-to-review-custom-username-payment-submissions-with-details-including-user-principal-submission-timestamp-requested-custom-username-payment-details-and-actions-to-approve-or-flag-fraudulent-submissions",
+      "title": "Add admin panel section to review custom username payment submissions with details including user principal, submission timestamp, requested custom username, payment details, and actions to approve or flag fraudulent submissions",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-admin-button-to-storefront-page-that-is-visible-to-all-authenticated-users",
+      "title": "Add admin button to storefront page that is visible to all authenticated users",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-frontend-username-whitelist-check-that-queries-backend-when-admin-button-is-clicked",
+      "title": "Implement frontend username whitelist check that queries backend when admin button is clicked",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-navigate-to-existing-admin-panel-if-username-is-whitelisted-otherwise-display-access-denied-message",
+      "title": "Navigate to existing admin panel if username is whitelisted, otherwise display access denied message",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-for-checking-admin-whitelist-status-using-the-backend-endpoint",
+      "title": "Create React Query hook for checking admin whitelist status using the backend endpoint",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -480,6 +568,70 @@
       "summary": "Add backend endpoint to generate AI-powered GamerTag-style usernames with validation against existing usernames, profanity filter, and uniqueness checks",
       "reqIds": [
         "REQ-39"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Optimize AI username generation backend to achieve sub-second response time (fixing 10-minute delay)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Add 'Make Your Own' custom username button (£0.10) on both initial username generation screen and username regeneration screen with text input and same validation rules",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Optimize the backend AI username generation endpoint to achieve sub-second response time, replacing the current implementation that causes 10-minute delays when generating GamerTag-style usernames",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Create backend submission tracking system for custom username payment proofs with fields for user principal, submission timestamp, custom username requested, payment method, transaction details (screenshot/transaction ID or gift card type/code), and status",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Add admin button on storefront page with username-based whitelist access control",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Add backend storage for admin username whitelist that can be updated programmatically",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Create backend endpoint to check if a given username exists in the admin whitelist",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-55",
+      "summary": "Add 'venomgladiator25' to admin username whitelist",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-56",
+      "summary": "Add the username 'venomgladiator25' to the admin username whitelist in the backend, enabling full admin panel access for this user when they click the admin button on the storefront",
+      "reqIds": [
+        "REQ-59"
       ],
       "status": "pending"
     }

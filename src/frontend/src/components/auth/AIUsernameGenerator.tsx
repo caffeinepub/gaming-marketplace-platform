@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useCreateUsername } from '../../hooks/useQueries';
 import { useActor } from '../../hooks/useActor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Loader2, Sparkles, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Sparkles } from 'lucide-react';
 import { generateGamerTag } from '../../utils/gamerTagGenerator';
+import { Button } from '@/components/ui/button';
+import CustomUsernameDialog from './CustomUsernameDialog';
 
 interface AIUsernameGeneratorProps {
   onComplete: () => void;
@@ -13,7 +14,7 @@ interface AIUsernameGeneratorProps {
 export default function AIUsernameGenerator({ onComplete }: AIUsernameGeneratorProps) {
   const [currentUsername, setCurrentUsername] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const [validationAttempts, setValidationAttempts] = useState(0);
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
   const createUsername = useCreateUsername();
   const { actor } = useActor();
 
@@ -21,7 +22,6 @@ export default function AIUsernameGenerator({ onComplete }: AIUsernameGeneratorP
     if (!actor) return;
 
     setIsValidating(true);
-    setValidationAttempts((prev) => prev + 1);
 
     try {
       // Generate a new username
@@ -37,13 +37,17 @@ export default function AIUsernameGenerator({ onComplete }: AIUsernameGeneratorP
       // Success - proceed to storefront
       onComplete();
     } catch (error: any) {
-      // If validation fails, try again with a new username
-      console.log('Username validation failed, generating new one...', error.message);
-      
-      // Add a small delay before retrying to avoid overwhelming the backend
-      setTimeout(() => {
+      // If validation fails (duplicate), try again immediately
+      if (error.message?.includes('already taken') || error.message?.includes('bombsawayYYYYYY')) {
+        // Retry immediately without delay
         generateAndValidateUsername();
-      }, 500);
+      } else {
+        console.error('Username validation error:', error);
+        // For other errors, retry after a short delay
+        setTimeout(() => {
+          generateAndValidateUsername();
+        }, 100);
+      }
     } finally {
       setIsValidating(false);
     }
@@ -51,8 +55,14 @@ export default function AIUsernameGenerator({ onComplete }: AIUsernameGeneratorP
 
   // Start generation on mount
   useEffect(() => {
-    generateAndValidateUsername();
-  }, []);
+    if (actor && !showCustomDialog) {
+      generateAndValidateUsername();
+    }
+  }, [actor, showCustomDialog]);
+
+  if (showCustomDialog) {
+    return <CustomUsernameDialog open={true} onOpenChange={setShowCustomDialog} onSuccess={onComplete} />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
@@ -89,24 +99,28 @@ export default function AIUsernameGenerator({ onComplete }: AIUsernameGeneratorP
                 )}
               </div>
 
-              {/* Status Message */}
-              <Alert className="border-primary/20 bg-primary/5">
-                <RefreshCw className={`h-4 w-4 ${isValidating ? 'animate-spin' : ''}`} />
-                <AlertDescription>
-                  {isValidating ? (
-                    <>Validating username uniqueness...</>
-                  ) : (
-                    <>Creating your account...</>
-                  )}
-                </AlertDescription>
-              </Alert>
-
-              {/* Attempt Counter (for debugging, can be removed) */}
-              {validationAttempts > 3 && (
-                <p className="text-xs text-center text-muted-foreground">
-                  Finding the perfect username... (Attempt {validationAttempts})
-                </p>
-              )}
+              {/* Make Your Own Button */}
+              <div className="space-y-3">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or
+                    </span>
+                  </div>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setShowCustomDialog(true)}
+                  disabled={isValidating}
+                >
+                  Make Your Own (£0.10)
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
