@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole, QueueSkipSubmission, GiftCardType, CustomUsernameSubmission, PaymentMethod } from '../backend';
+import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole, QueueSkipSubmission, GiftCardType, CustomUsernameSubmission, PaymentMethod, ExtendedQueueSkipSubmission } from '../backend';
 import { Principal } from '@icp-sdk/core/principal';
 import { toast } from 'sonner';
 
@@ -37,6 +37,7 @@ export function useSaveCallerUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
     },
   });
 }
@@ -51,6 +52,17 @@ export function useGetCallerUserRole() {
       return actor.getCallerUserRole();
     },
     enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetUserProfile() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (user: Principal) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getUserProfile(user);
+    },
   });
 }
 
@@ -105,30 +117,37 @@ export function useCreateUsername() {
       queryClient.invalidateQueries({ queryKey: ['hasUsername'] });
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       queryClient.invalidateQueries({ queryKey: ['username'] });
+      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
     },
   });
 }
 
 export function useIsAdminUsername() {
-  const { actor } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { data: userProfile, isLoading: profileLoading, isFetched: profileFetched } = useGetCallerUserProfile();
 
-  return useQuery<boolean>({
-    queryKey: ['isAdminUsername'],
+  const query = useQuery<boolean>({
+    queryKey: ['isAdminUsername', userProfile?.username],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       
       // Get the user's profile to extract their username
-      const profile = await actor.getCallerUserProfile();
-      if (!profile || !profile.username) {
+      if (!userProfile || !userProfile.username) {
         return false;
       }
       
       // Check if the username is in the admin whitelist
-      return actor.isAdminUsername(profile.username);
+      return actor.isAdminUsername(userProfile.username);
     },
-    enabled: !!actor,
+    enabled: !!actor && !actorFetching && profileFetched && !!userProfile?.username,
     retry: false,
   });
+
+  return {
+    ...query,
+    isLoading: actorFetching || profileLoading || query.isLoading,
+    isFetched: !!actor && profileFetched && query.isFetched,
+  };
 }
 
 // Product Queries
@@ -401,8 +420,21 @@ export function useGetQueueSkipSubmissions() {
   return useQuery<QueueSkipSubmission[]>({
     queryKey: ['queueSkipSubmissions'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) return [];
       return actor.getQueueSkipSubmissions();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetQueueSkipSubmissionsWithUsernames() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<ExtendedQueueSkipSubmission[]>({
+    queryKey: ['queueSkipSubmissionsWithUsernames'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getQueueSkipSubmissionsWithUsernames();
     },
     enabled: !!actor && !isFetching,
   });
@@ -419,6 +451,7 @@ export function useFlagQueueSkipFraud() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queueSkipSubmissions'] });
+      queryClient.invalidateQueries({ queryKey: ['queueSkipSubmissionsWithUsernames'] });
     },
   });
 }
@@ -443,7 +476,6 @@ export function useSubmitCustomUsername() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
     },
   });
 }
@@ -454,7 +486,7 @@ export function useGetCustomUsernameSubmissions() {
   return useQuery<CustomUsernameSubmission[]>({
     queryKey: ['customUsernameSubmissions'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) return [];
       return actor.getCustomUsernameSubmissions();
     },
     enabled: !!actor && !isFetching,
@@ -473,7 +505,6 @@ export function useApproveCustomUsername() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
     },
   });
 }

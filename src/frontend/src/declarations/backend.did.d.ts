@@ -23,6 +23,10 @@ export interface CustomUsernameSubmission {
   'requestedUsername' : string,
   'timestamp' : Time,
 }
+export interface ExtendedQueueSkipSubmission {
+  'username' : [] | [string],
+  'submission' : QueueSkipSubmission,
+}
 export type ExternalBlob = Uint8Array;
 export type GiftCardType = { 'cryptocurrency' : null } |
   { 'tesco' : null } |
@@ -128,6 +132,10 @@ export interface _SERVICE {
   'getPaymentDetails' : ActorMethod<[], PaymentConfig>,
   'getProduct' : ActorMethod<[string], Product>,
   'getQueueSkipSubmissions' : ActorMethod<[], Array<QueueSkipSubmission>>,
+  'getQueueSkipSubmissionsWithUsernames' : ActorMethod<
+    [],
+    Array<ExtendedQueueSkipSubmission>
+  >,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getUsername' : ActorMethod<[Principal], [] | [string]>,
   'hasQueueBypass' : ActorMethod<[], boolean>,

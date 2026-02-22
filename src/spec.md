@@ -1,12 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Fix custom username display so users who paid for custom usernames see their chosen name instead of AI-generated names in the profile area and storefront.
+**Goal:** Fix admin panel authorization for whitelisted admins and display usernames instead of principal IDs in all admin submission lists.
 
 **Planned changes:**
-- Update backend getUserProfile endpoint to return custom username field when present
-- Update Layout component profile area to display custom username when available, falling back to AI-generated username only if no custom username exists
-- Update useProfile query hook to fetch and cache custom username field
-- Update Storefront component to show custom username instead of AI-generated username for users who paid for custom usernames
+- Fix admin authorization logic to properly recognize 'venomgladiator25' and 'turbohunter64' as whitelisted admins
+- Update QueueSkipSubmissionsList to display usernames instead of principal IDs
+- Update UsernameChangeSubmissionsList to display usernames instead of principal IDs
+- Update CustomUsernameSubmissionsList to display usernames instead of principal IDs
+- Create or update backend endpoints to include username data in submission responses
+- Verify useProfile hook correctly fetches and prioritizes custom usernames over AI-generated usernames
 
-**User-visible outcome:** Users who paid £0.10 for custom usernames will see their chosen custom username displayed in the profile area and storefront page instead of the AI-generated name.
+**User-visible outcome:** Whitelisted admins can successfully access the admin panel without errors, and all submission lists display user-friendly usernames instead of principal IDs.

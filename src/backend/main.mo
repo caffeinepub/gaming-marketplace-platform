@@ -3,7 +3,6 @@ import Map "mo:core/Map";
 import Array "mo:core/Array";
 import Time "mo:core/Time";
 import Char "mo:core/Char";
-import Nat "mo:core/Nat";
 import Text "mo:core/Text";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
@@ -593,6 +592,43 @@ actor {
         queueSkipSubmissions.add(user, updatedSubmission);
         queueBypassUsers.remove(user);
         fraudulentUsers.add(user, true);
+      };
+    };
+  };
+
+  // New types for username, queue skip and custom username submissions
+  type ExtendedQueueSkipSubmission = {
+    submission : QueueSkipSubmission;
+    username : ?Text;
+  };
+
+  // New Query Functions That Include Username
+  public query ({ caller }) func getQueueSkipSubmissionsWithUsernames() : async [ExtendedQueueSkipSubmission] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view queue skip submissions");
+    };
+
+    let mappedValues = queueSkipSubmissions.values().map<QueueSkipSubmission, ExtendedQueueSkipSubmission>(
+      func(sub : QueueSkipSubmission) {
+        let username = getUsernameForUser(sub.user);
+        {
+          submission = sub;
+          username;
+        };
+      }
+    );
+    mappedValues.toArray();
+  };
+
+  // Helper to fetch username with custom name fallback
+  func getUsernameForUser(user : Principal) : ?Text {
+    switch (customUsernames.get(user)) {
+      case (?custom) { ?custom };
+      case (null) {
+        switch (userProfiles.get(user)) {
+          case (?profile) { profile.username };
+          case (null) { null };
+        };
       };
     };
   };

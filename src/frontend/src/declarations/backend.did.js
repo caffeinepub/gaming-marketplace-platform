@@ -102,6 +102,10 @@ export const QueueSkipSubmission = IDL.Record({
   'timestamp' : Time,
   'transactionId' : IDL.Text,
 });
+export const ExtendedQueueSkipSubmission = IDL.Record({
+  'username' : IDL.Opt(IDL.Text),
+  'submission' : QueueSkipSubmission,
+});
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -159,6 +163,11 @@ export const idlService = IDL.Service({
   'getQueueSkipSubmissions' : IDL.Func(
       [],
       [IDL.Vec(QueueSkipSubmission)],
+      ['query'],
+    ),
+  'getQueueSkipSubmissionsWithUsernames' : IDL.Func(
+      [],
+      [IDL.Vec(ExtendedQueueSkipSubmission)],
       ['query'],
     ),
   'getUserProfile' : IDL.Func(
@@ -282,6 +291,10 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : Time,
     'transactionId' : IDL.Text,
   });
+  const ExtendedQueueSkipSubmission = IDL.Record({
+    'username' : IDL.Opt(IDL.Text),
+    'submission' : QueueSkipSubmission,
+  });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -339,6 +352,11 @@ export const idlFactory = ({ IDL }) => {
     'getQueueSkipSubmissions' : IDL.Func(
         [],
         [IDL.Vec(QueueSkipSubmission)],
+        ['query'],
+      ),
+    'getQueueSkipSubmissionsWithUsernames' : IDL.Func(
+        [],
+        [IDL.Vec(ExtendedQueueSkipSubmission)],
         ['query'],
       ),
     'getUserProfile' : IDL.Func(

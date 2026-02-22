@@ -1,4 +1,5 @@
-import { useGetQueueSkipSubmissions, useFlagQueueSkipFraud } from '../../hooks/useQueries';
+import { useEffect, useState } from 'react';
+import { useGetQueueSkipSubmissions, useFlagQueueSkipFraud, useGetUserProfile } from '../../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,41 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AlertCircle, Flag, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { QueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
+import { QueueSkipSubmission, QueueSkipStatus, GiftCardType, UserProfile } from '../../backend';
 import { Principal } from '@icp-sdk/core/principal';
 
 export default function UsernameChangeSubmissionsList() {
   const { data: submissions = [], isLoading } = useGetQueueSkipSubmissions();
   const flagFraud = useFlagQueueSkipFraud();
+  const getUserProfile = useGetUserProfile();
+  const [usernames, setUsernames] = useState<Record<string, string>>({});
+  const [loadingUsernames, setLoadingUsernames] = useState(false);
+
+  // Fetch usernames for all submissions
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      if (submissions.length === 0) return;
+      
+      setLoadingUsernames(true);
+      const usernameMap: Record<string, string> = {};
+      
+      for (const submission of submissions) {
+        try {
+          const profile = await getUserProfile.mutateAsync(submission.user);
+          if (profile?.username) {
+            usernameMap[submission.user.toString()] = profile.username;
+          }
+        } catch (error) {
+          console.error('Failed to fetch username for user:', submission.user.toString(), error);
+        }
+      }
+      
+      setUsernames(usernameMap);
+      setLoadingUsernames(false);
+    };
+
+    fetchUsernames();
+  }, [submissions]);
 
   const handleFlagFraud = async (userPrincipal: string) => {
     try {
@@ -87,7 +117,8 @@ export default function UsernameChangeSubmissionsList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
+                <TableHead>Username</TableHead>
+                <TableHead>User Principal</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Payment Method</TableHead>
                 <TableHead>Transaction ID</TableHead>
@@ -99,6 +130,13 @@ export default function UsernameChangeSubmissionsList() {
             <TableBody>
               {submissions.map((submission: QueueSkipSubmission) => (
                 <TableRow key={submission.user.toString()}>
+                  <TableCell className="font-medium">
+                    {loadingUsernames ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      usernames[submission.user.toString()] || <span className="text-muted-foreground italic">No username</span>
+                    )}
+                  </TableCell>
                   <TableCell className="font-mono text-xs">
                     {truncatePrincipal(submission.user.toString())}
                   </TableCell>

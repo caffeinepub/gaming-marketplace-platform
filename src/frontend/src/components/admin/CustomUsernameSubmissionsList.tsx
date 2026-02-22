@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useGetCustomUsernameSubmissions, useApproveCustomUsername, useRejectCustomUsername } from '../../hooks/useQueries';
+import { useState, useEffect } from 'react';
+import { useGetCustomUsernameSubmissions, useApproveCustomUsername, useRejectCustomUsername, useGetUserProfile } from '../../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,14 +7,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, Check, X, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import { CustomUsernameSubmission, CustomUsernameStatus } from '../../backend';
+import { CustomUsernameSubmission, CustomUsernameStatus, UserProfile } from '../../backend';
 import { Principal } from '@icp-sdk/core/principal';
 
 export default function CustomUsernameSubmissionsList() {
   const { data: submissions, isLoading } = useGetCustomUsernameSubmissions();
   const approveCustomUsername = useApproveCustomUsername();
   const rejectCustomUsername = useRejectCustomUsername();
+  const getUserProfile = useGetUserProfile();
   const [viewingScreenshot, setViewingScreenshot] = useState<string | null>(null);
+  const [usernames, setUsernames] = useState<Record<string, string>>({});
+  const [loadingUsernames, setLoadingUsernames] = useState(false);
+
+  // Fetch usernames for all submissions
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      if (!submissions || submissions.length === 0) return;
+      
+      setLoadingUsernames(true);
+      const usernameMap: Record<string, string> = {};
+      
+      for (const submission of submissions) {
+        try {
+          const profile = await getUserProfile.mutateAsync(submission.user);
+          if (profile?.username) {
+            usernameMap[submission.user.toString()] = profile.username;
+          }
+        } catch (error) {
+          console.error('Failed to fetch username for user:', submission.user.toString(), error);
+        }
+      }
+      
+      setUsernames(usernameMap);
+      setLoadingUsernames(false);
+    };
+
+    fetchUsernames();
+  }, [submissions]);
 
   const handleApprove = async (userPrincipal: string) => {
     try {
@@ -92,16 +121,17 @@ export default function CustomUsernameSubmissionsList() {
       <Card>
         <CardHeader>
           <CardTitle>Custom Username Submissions</CardTitle>
-          <CardDescription>Review and approve custom username payment submissions</CardDescription>
+          <CardDescription>Review and approve custom username requests</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Current Username</TableHead>
                   <TableHead>Requested Username</TableHead>
+                  <TableHead>User Principal</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead>Payment Method</TableHead>
                   <TableHead>Transaction Details</TableHead>
                   <TableHead>Status</TableHead>
@@ -110,74 +140,78 @@ export default function CustomUsernameSubmissionsList() {
               </TableHeader>
               <TableBody>
                 {submissions.map((submission) => {
-                  const userPrincipal = submission.user.toString();
-                  const truncatedPrincipal = `${userPrincipal.slice(0, 8)}...${userPrincipal.slice(-6)}`;
-                  const timestamp = new Date(Number(submission.timestamp) / 1000000).toLocaleString();
                   const screenshotUrl = extractScreenshotUrl(submission.transactionDetails);
-
                   return (
-                    <TableRow key={userPrincipal}>
-                      <TableCell className="font-mono text-xs" title={userPrincipal}>
-                        {truncatedPrincipal}
+                    <TableRow key={submission.user.toString()}>
+                      <TableCell className="font-medium">
+                        {loadingUsernames ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          usernames[submission.user.toString()] || <span className="text-muted-foreground italic">No username</span>
+                        )}
                       </TableCell>
-                      <TableCell className="text-sm">{timestamp}</TableCell>
-                      <TableCell className="font-semibold">{submission.requestedUsername}</TableCell>
+                      <TableCell className="font-semibold text-primary">
+                        {submission.requestedUsername}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs max-w-[120px] truncate">
+                        {submission.user.toString()}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {new Date(Number(submission.timestamp) / 1000000).toLocaleString()}
+                      </TableCell>
                       <TableCell>{getPaymentMethodBadge(submission)}</TableCell>
-                      <TableCell className="max-w-xs">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground truncate">
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono max-w-[150px] truncate">
                             {submission.transactionDetails}
-                          </p>
+                          </span>
                           {screenshotUrl && (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => setViewingScreenshot(screenshotUrl)}
                             >
-                              <Eye className="h-3 w-3 mr-1" />
-                              View Screenshot
+                              <Eye className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(submission.status)}</TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
-                          {submission.status === CustomUsernameStatus.pendingReview && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={() => handleApprove(userPrincipal)}
-                                disabled={approveCustomUsername.isPending || rejectCustomUsername.isPending}
-                              >
-                                {approveCustomUsername.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <Check className="h-4 w-4 mr-1" />
-                                    Approve
-                                  </>
-                                )}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleReject(userPrincipal)}
-                                disabled={approveCustomUsername.isPending || rejectCustomUsername.isPending}
-                              >
-                                {rejectCustomUsername.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <X className="h-4 w-4 mr-1" />
-                                    Reject
-                                  </>
-                                )}
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        {submission.status === CustomUsernameStatus.pendingReview && (
+                          <div className="flex gap-2">
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleApprove(submission.user.toString())}
+                              disabled={approveCustomUsername.isPending}
+                            >
+                              {approveCustomUsername.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Approve
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleReject(submission.user.toString())}
+                              disabled={rejectCustomUsername.isPending}
+                            >
+                              {rejectCustomUsername.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <X className="h-4 w-4 mr-1" />
+                                  Reject
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
@@ -195,11 +229,11 @@ export default function CustomUsernameSubmissionsList() {
             <DialogTitle>Payment Screenshot</DialogTitle>
           </DialogHeader>
           {viewingScreenshot && (
-            <div className="flex items-center justify-center">
+            <div className="mt-4">
               <img
                 src={viewingScreenshot}
                 alt="Payment screenshot"
-                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                className="w-full h-auto rounded-lg border"
               />
             </div>
           )}

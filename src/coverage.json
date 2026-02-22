@@ -1,52 +1,78 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T22:45:00.426Z",
+  "generatedAt": "2026-02-22T23:01:47.532Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 2,
+    "total": 6,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-63",
-        "summary": "Update the backend getUserProfile endpoint to return the custom username field when a user has paid for and created a custom username",
+        "id": "REQ-67",
+        "summary": "Fix the admin authorization logic in the Storefront component so that when a user logged in as 'venomgladiator25' or 'turbohunter64' clicks the Admin button, they are immediately navigated to the admin panel without encountering an 'access denied' error or black screen",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/pages/Storefront.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-68",
+        "summary": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-69",
+        "summary": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-70",
+        "summary": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
+        ]
+      },
+      {
+        "id": "REQ-71",
+        "summary": "Create or update backend endpoints for queue skip, username change, and custom username submissions to include the submitting user's username (prioritizing custom username over AI-generated username) in the response data for each submission record",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-64",
-        "summary": "Update the Layout component username display in the profile area to show the custom username when available, falling back to the AI-generated username only if no custom username exists",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/components/layout/Layout.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-65",
-        "summary": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
+        "id": "REQ-72",
+        "summary": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/useQueries.ts",
-          "frontend/src/backend.d.ts"
+          "frontend/src/components/layout/Layout.tsx"
         ],
         "matchedFiles": [
           "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-66",
-        "summary": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Storefront.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Storefront.tsx"
         ]
       }
     ]
@@ -57,8 +83,14 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
+    "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Storefront.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

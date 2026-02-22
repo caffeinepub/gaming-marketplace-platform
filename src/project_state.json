@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
+  "projectStateVersion": 29,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -14,7 +14,11 @@
     "Social media links: YouTube and Instagram icons at bottom of queue and store pages",
     "AI-generated GamerTag-style usernames replace manual username creation"
   ],
-  "known_issues": [],
+  "known_issues": [
+    "Admin panel access denied error when whitelisted users click Admin button on storefront",
+    "Admin panel submission sections not displaying user information (usernames)",
+    "Admin panel data loading issues causing empty submission lists"
+  ],
   "isFixRequest": true,
   "existing_features": [
     {
@@ -400,6 +404,38 @@
         "REQ-66"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-queueskipsubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-queue-skip-payment-submission-instead-of-only-showing-the-principal-id",
+      "title": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usernamechangesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-username-change-payment-submission-instead-of-only-showing-the-principal-id",
+      "title": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-customusernamesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-custom-username-payment-submission-instead-of-only-showing-the-principal-id",
+      "title": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-useprofile-query-hook-correctly-fetches-and-caches-both-the-ai-generated-username-and-custom-username-fields-ensuring-the-custom-username-takes-precedence-when-displaying-user-identity-throughout-the-application",
+      "title": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -688,6 +724,40 @@
       "summary": "Update the Layout component username display in the profile area to show the custom username when available, falling back to the AI-generated username only if no custom username exists",
       "reqIds": [
         "REQ-64"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-62",
+      "summary": "Fix admin panel authorization to properly grant access when logged in as whitelisted usernames (venomgladiator25, turbohunter64) instead of showing access denied error when clicking Admin button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Enable username display in all admin panel submission sections (Queue Skip, Username Change, Custom Username) showing the submitting user's username (AI-generated or custom) for each record",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Fix data loading in admin panel sections to properly populate submission records with usernames and prevent empty lists",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Fix the admin authorization logic in the Storefront component so that when a user logged in as 'venomgladiator25' or 'turbohunter64' clicks the Admin button, they are immediately navigated to the admin panel without encountering an 'access denied' error or black screen",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "Create or update backend endpoints for queue skip, username change, and custom username submissions to include the submitting user's username (prioritizing custom username over AI-generated username) in the response data for each submission record",
+      "reqIds": [
+        "REQ-71"
       ],
       "status": "pending"
     }

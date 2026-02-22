@@ -2,8 +2,70 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-useprofile-query-hook-to-properly-fetch-and-cache-the-custom-username-field-from-the-backend",
-      "featureTitle": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
+      "featureId": "feature-update-the-queueskipsubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-queue-skip-payment-submission-instead-of-only-showing-the-principal-id",
+      "featureTitle": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
+      "files": [
+        "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-68"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-usernamechangesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-username-change-payment-submission-instead-of-only-showing-the-principal-id",
+      "featureTitle": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
+      "files": [
+        "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-69"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-customusernamesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-custom-username-payment-submission-instead-of-only-showing-the-principal-id",
+      "featureTitle": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
+      "files": [
+        "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-70"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-verify-that-the-useprofile-query-hook-correctly-fetches-and-caches-both-the-ai-generated-username-and-custom-username-fields-ensuring-the-custom-username-takes-precedence-when-displaying-user-identity-throughout-the-application",
+      "featureTitle": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
       "files": [
         "frontend/src/hooks/useQueries.ts"
       ],
@@ -17,27 +79,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-65"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-storefront-component-username-display-to-show-custom-username-when-available-instead-of-ai-generated-username",
-      "featureTitle": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
-      "files": [
-        "frontend/src/pages/Storefront.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-66"
+        "REQ-72"
       ],
       "confidence": "high"
     }

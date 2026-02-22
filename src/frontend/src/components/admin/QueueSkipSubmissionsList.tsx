@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetQueueSkipSubmissions, useFlagQueueSkipFraud } from '../../hooks/useQueries';
+import { useGetQueueSkipSubmissionsWithUsernames, useFlagQueueSkipFraud } from '../../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,19 +8,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Eye, Flag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { QueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
+import { ExtendedQueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
 import { Principal } from '@icp-sdk/core/principal';
 
 export default function QueueSkipSubmissionsList() {
-  const { data: submissions = [], isLoading } = useGetQueueSkipSubmissions();
+  const { data: submissions = [], isLoading } = useGetQueueSkipSubmissionsWithUsernames();
   const flagFraud = useFlagQueueSkipFraud();
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(null);
   const [flagDialogOpen, setFlagDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-  const handleViewScreenshot = (submission: QueueSkipSubmission) => {
+  const handleViewScreenshot = (submission: ExtendedQueueSkipSubmission) => {
     // Only show screenshot viewer if it's not a gift card submission
-    if (submission.giftCardCode) {
+    if (submission.submission.giftCardCode) {
       toast.info('Gift card submissions do not have screenshots');
       return;
     }
@@ -79,11 +79,11 @@ export default function QueueSkipSubmissionsList() {
     }
   };
 
-  const getPaymentMethodLabel = (submission: QueueSkipSubmission) => {
-    if (submission.giftCardCode) {
+  const getPaymentMethodLabel = (submission: ExtendedQueueSkipSubmission) => {
+    if (submission.submission.giftCardCode) {
       return 'Gift Card';
     }
-    if (submission.giftCardType === GiftCardType.cryptocurrency) {
+    if (submission.submission.giftCardType === GiftCardType.cryptocurrency) {
       return 'Cryptocurrency';
     }
     return 'PayPal';
@@ -96,7 +96,7 @@ export default function QueueSkipSubmissionsList() {
 
   // Sort submissions by timestamp descending (most recent first)
   const sortedSubmissions = [...submissions].sort((a, b) => {
-    return Number(b.timestamp - a.timestamp);
+    return Number(b.submission.timestamp - a.submission.timestamp);
   });
 
   if (isLoading) {
@@ -137,6 +137,7 @@ export default function QueueSkipSubmissionsList() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Username</TableHead>
                   <TableHead>User Principal</TableHead>
                   <TableHead>Timestamp</TableHead>
                   <TableHead>Payment Method</TableHead>
@@ -148,30 +149,33 @@ export default function QueueSkipSubmissionsList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedSubmissions.map((submission) => (
-                  <TableRow key={submission.user.toString()}>
+                {sortedSubmissions.map((extSubmission) => (
+                  <TableRow key={extSubmission.submission.user.toString()}>
+                    <TableCell className="font-medium">
+                      {extSubmission.username || <span className="text-muted-foreground italic">No username</span>}
+                    </TableCell>
                     <TableCell className="font-mono text-xs max-w-[150px] truncate">
-                      {submission.user.toString()}
+                      {extSubmission.submission.user.toString()}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{formatTimestamp(submission.timestamp)}</TableCell>
+                    <TableCell className="whitespace-nowrap">{formatTimestamp(extSubmission.submission.timestamp)}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{getPaymentMethodLabel(submission)}</Badge>
+                      <Badge variant="secondary">{getPaymentMethodLabel(extSubmission)}</Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">{submission.transactionId}</TableCell>
+                    <TableCell className="font-mono text-sm">{extSubmission.submission.transactionId}</TableCell>
                     <TableCell>
-                      {submission.giftCardCode ? getGiftCardTypeLabel(submission.giftCardType) : '-'}
+                      {extSubmission.submission.giftCardCode ? getGiftCardTypeLabel(extSubmission.submission.giftCardType) : '-'}
                     </TableCell>
                     <TableCell className="font-mono text-sm max-w-[150px] truncate">
-                      {submission.giftCardCode || '-'}
+                      {extSubmission.submission.giftCardCode || '-'}
                     </TableCell>
-                    <TableCell>{getStatusBadge(submission.status)}</TableCell>
+                    <TableCell>{getStatusBadge(extSubmission.submission.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => handleFlagFraud(submission.user.toString())}
-                          disabled={submission.status === 'flaggedFraudulent' || flagFraud.isPending}
+                          onClick={() => handleFlagFraud(extSubmission.submission.user.toString())}
+                          disabled={extSubmission.submission.status === 'flaggedFraudulent' || flagFraud.isPending}
                         >
                           {flagFraud.isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

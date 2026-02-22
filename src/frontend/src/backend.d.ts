@@ -24,6 +24,10 @@ export interface Category {
     name: string;
     description: string;
 }
+export interface ExtendedQueueSkipSubmission {
+    username?: string;
+    submission: QueueSkipSubmission;
+}
 export interface QueueSkipSubmission {
     status: QueueSkipStatus;
     user: Principal;
@@ -119,6 +123,7 @@ export interface backendInterface {
     getPaymentDetails(): Promise<PaymentConfig>;
     getProduct(id: string): Promise<Product>;
     getQueueSkipSubmissions(): Promise<Array<QueueSkipSubmission>>;
+    getQueueSkipSubmissionsWithUsernames(): Promise<Array<ExtendedQueueSkipSubmission>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getUsername(_user: Principal): Promise<string | null>;
     hasQueueBypass(): Promise<boolean>;
