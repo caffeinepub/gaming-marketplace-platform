@@ -1,290 +1,80 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "GameVault Marketplace - Frontend Implementation",
+  "title": "Add animated gaming background to queue and social media links",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Implement Internet Identity authentication flow for buyer accounts",
+      "id": "REQ-21",
+      "summary": "Add animated gaming video background to the login queue screen",
       "acceptanceCriteria": [
-        "Users can authenticate using Internet Identity",
-        "Authentication is required before accessing checkout",
-        "User sessions persist across page reloads"
+        "Video background displays animated gaming-style visuals behind the queue countdown",
+        "Animation loops seamlessly without disrupting the queue UI elements",
+        "Video is optimized for web performance"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "create",
-          "description": "Create login/logout button component using the authorization component's useInternetIdentity hook. Handle login, logout, and loading states. Clear query cache on logout to remove cached application data."
-        },
-        {
-          "path": "frontend/src/components/auth/UserProfileSetup.tsx",
-          "operation": "create",
-          "description": "Create modal component for first-time user profile setup. Use the authorization component to call getCallerUserProfile to check if profile exists, and saveCallerUserProfile to save name and email. Prevent modal flash by checking isFetched before showing."
-        },
-        {
-          "path": "frontend/src/hooks/useGetCallerUserProfile.ts",
-          "operation": "create",
-          "description": "Create custom hook wrapping useQuery for getCallerUserProfile. Return isLoading that accounts for actor fetching state, and isFetched to prevent profile setup modal flash. Use the authorization component's pattern for proper state management."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/auth/LoginQueue.tsx",
           "operation": "modify",
-          "description": "Wire LoginButton into main navigation. Add UserProfileSetup modal that displays when user is authenticated but has no profile. Ensure profile setup completes before allowing access to protected routes."
+          "description": "Add video background element using the generated gaming-background.mp4 file from frontend/public/assets/generated/gaming-background.dim_1920x1080.mp4. Position the video as a full-screen background layer behind the queue UI elements with autoplay, loop, and muted attributes. Ensure the queue countdown and progress UI remain visible and interactive above the video layer with appropriate z-index and overlay styling."
         }
       ]
     },
     {
-      "id": "REQ-3",
-      "summary": "Build admin panel interface for product management",
+      "id": "REQ-22",
+      "summary": "Add YouTube and Instagram social media icons to the bottom of the LoginQueue component",
       "acceptanceCriteria": [
-        "Admin panel has forms for all product fields",
-        "Only authenticated admin users can access the admin panel",
-        "Product images can be uploaded or linked",
-        "Admin can view all existing products and edit or delete them"
+        "YouTube and Instagram icons appear at the bottom of the queue screen",
+        "YouTube icon links to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo",
+        "Instagram icon links to a URL that can be configured",
+        "Icons are styled consistently with the gaming theme",
+        "Links open in a new tab"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AdminPanel.tsx",
-          "operation": "create",
-          "description": "Create admin panel page with access control. Use the authorization component to verify admin role before rendering content. Display AccessDeniedScreen for non-admin users. Include navigation to product management, category management, and payment configuration sections."
-        },
-        {
-          "path": "frontend/src/components/admin/ProductForm.tsx",
-          "operation": "create",
-          "description": "Create product form component with fields for game name, product type (account/currency/clothes enum), price in GBP, image upload/URL input, quantity available, and game category dropdown. Use the blob-storage component's ExternalBlob class for image handling with upload progress tracking. Verify the blob-storage component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/admin/ProductList.tsx",
-          "operation": "create",
-          "description": "Create admin product list component displaying all products with edit and delete actions. Call getAllProducts backend function. Handle product deletion with confirmation dialog. Pass selected product to ProductForm for editing."
-        },
-        {
-          "path": "frontend/src/hooks/useProducts.ts",
-          "operation": "create",
-          "description": "Create hooks for product operations: useGetAllProducts (query), useCreateProduct (mutation), useUpdateProduct (mutation), useDeleteProduct (mutation). Invalidate products query cache after mutations. Handle authorization errors gracefully with user-friendly messages."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/auth/LoginQueue.tsx",
           "operation": "modify",
-          "description": "Add route for /admin that renders AdminPanel component. Ensure route is accessible only after authentication. Add admin link to navigation for admin users only."
+          "description": "Add a social media links section at the bottom of the queue component with YouTube and Instagram icons. YouTube icon links to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo. Instagram icon uses the useGetInstagramUrl hook to fetch the configurable URL from the backend. Use lucide-react icons (Youtube, Instagram) styled with gaming theme colors. Links open in new tabs with target='_blank' and rel='noopener noreferrer'. Position the icons with flexbox layout and appropriate spacing."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useGetInstagramUrl query hook that calls actor.getInstagramUrl() to fetch the Instagram URL from the backend. Follow the existing pattern of other query hooks in the file with proper error handling and enabled condition checking for actor availability."
         }
       ]
     },
     {
-      "id": "REQ-5",
-      "summary": "Create public storefront interface with category filtering and product display",
+      "id": "REQ-23",
+      "summary": "Add YouTube and Instagram social media icons to the bottom of the storefront page",
       "acceptanceCriteria": [
-        "Products are grouped and filterable by game category",
-        "Each product card displays all required fields",
-        "Prices are formatted with GBP currency symbol",
-        "Out of stock products are visually distinguished"
+        "YouTube and Instagram icons appear at the bottom of the store page",
+        "YouTube icon links to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo",
+        "Instagram icon links to a URL that can be configured",
+        "Icons are styled consistently with the gaming theme",
+        "Links open in a new tab"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/Storefront.tsx",
-          "operation": "create",
-          "description": "Create main storefront page displaying hero banner from frontend/public/assets/generated/hero-banner.dim_1200x400.png. Include category filter navigation and product grid. Call getAllProducts and getAllCategories backend functions. No authentication required for browsing."
-        },
-        {
-          "path": "frontend/src/components/storefront/ProductCard.tsx",
-          "operation": "create",
-          "description": "Create product card component displaying game name, product type badge, price formatted with £ symbol, product image using ExternalBlob.getDirectURL(), and quantity available. Visually distinguish out-of-stock products (quantity 0) with opacity and disabled state. Include 'Add to Cart' button for authenticated users."
-        },
-        {
-          "path": "frontend/src/components/storefront/CategoryFilter.tsx",
-          "operation": "create",
-          "description": "Create category filter component displaying category icons from frontend/public/assets/generated/ (account-icon.dim_128x128.png, currency-icon.dim_128x128.png, clothes-icon.dim_128x128.png) alongside category names. Allow filtering products by selected category. Handle empty categories gracefully."
-        },
-        {
-          "path": "frontend/src/hooks/useCategories.ts",
-          "operation": "create",
-          "description": "Create hooks for category operations: useGetAllCategories (query). Cache category data for filtering."
-        },
-        {
-          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add route for / (root) that renders Storefront component as the homepage. Ensure storefront is publicly accessible without authentication."
+          "description": "Add a social media links section at the bottom of the storefront page (after the product grid) with YouTube and Instagram icons. YouTube icon links to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo. Instagram icon uses the useGetInstagramUrl hook to fetch the configurable URL. Use lucide-react icons (Youtube, Instagram) styled consistently with the gaming theme and matching the implementation in LoginQueue. Links open in new tabs with target='_blank' and rel='noopener noreferrer'. Style with appropriate spacing and alignment at the page bottom."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Implement shopping cart functionality with quantity management",
+      "id": "REQ-24",
+      "summary": "Add Instagram URL field to the payment configuration form in the admin panel",
       "acceptanceCriteria": [
-        "Cart persists items for authenticated users",
-        "Cart displays total price in GBP",
-        "Users can remove items or change quantities",
-        "Cart validates against available product quantities"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/cart/CartDrawer.tsx",
-          "operation": "create",
-          "description": "Create cart drawer component displaying cart items, quantities, and total price in GBP. Include quantity adjustment controls and remove item buttons. Show cart icon in navigation with item count badge. Only accessible to authenticated users."
-        },
-        {
-          "path": "frontend/src/components/cart/CartItem.tsx",
-          "operation": "create",
-          "description": "Create cart item component displaying product name, image, individual price, quantity selector, and subtotal. Call updateCartItemQuantity backend function on quantity change. Include remove button calling updateCartItemQuantity with quantity 0."
-        },
-        {
-          "path": "frontend/src/hooks/useCart.ts",
-          "operation": "create",
-          "description": "Create hooks for cart operations: useGetCart (query), useAddToCart (mutation), useUpdateCartItemQuantity (mutation), useClearCart (mutation). Validate quantities against product availability. Invalidate cart query after mutations. Require authentication for all cart operations."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire CartDrawer into main layout. Make cart accessible from navigation for authenticated users. Ensure cart state persists by fetching from backend on page load for authenticated users."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Build checkout flow displaying manual payment instructions",
-      "acceptanceCriteria": [
-        "Checkout page shows all three payment options",
-        "Each payment method displays admin-configured payment information",
-        "Order is created in backend upon checkout completion",
-        "Product quantities are reserved or decremented on order creation"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Checkout.tsx",
-          "operation": "create",
-          "description": "Create checkout page requiring authentication. Display cart summary with total in GBP. Show three payment method options (PayPal, UK gift cards, crypto) with admin-configured payment details from getPaymentDetails backend function. Include checkout completion button that creates order in backend and decrements product quantities."
-        },
-        {
-          "path": "frontend/src/components/checkout/PaymentMethodCard.tsx",
-          "operation": "create",
-          "description": "Create payment method card component displaying payment type icon, instructions text from admin configuration (paypalEmail, ukGiftCardInstructions, cryptoWalletAddress), and copy-to-clipboard functionality for payment details."
-        },
-        {
-          "path": "frontend/src/hooks/usePaymentDetails.ts",
-          "operation": "create",
-          "description": "Create hook useGetPaymentDetails wrapping getPaymentDetails backend function. Return PaymentConfig with paypalEmail, ukGiftCardInstructions, and cryptoWalletAddress."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route for /checkout that renders Checkout component. Protect route with authentication check, redirecting to login if not authenticated. Add 'Proceed to Checkout' button in CartDrawer that navigates to /checkout."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Create payment configuration section in admin panel",
-      "acceptanceCriteria": [
-        "Admin panel has editable fields for each payment method's information",
-        "Payment details are stored securely in backend",
-        "Updated payment information immediately reflects in buyer checkout flow"
+        "Instagram URL field appears in the PaymentConfigForm alongside other payment settings",
+        "Admins can input and update the Instagram URL",
+        "Instagram URL is stored in the backend",
+        "Instagram icon on queue and store pages uses the configured URL",
+        "Form validates that the Instagram URL is a valid URL format"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/admin/PaymentConfigForm.tsx",
-          "operation": "create",
-          "description": "Create payment configuration form for admins to input PayPal email, UK gift card instructions, and crypto wallet address. Call updatePaymentDetails backend function on save. Invalidate payment details query cache after update. Use the authorization component to verify admin access."
-        },
-        {
-          "path": "frontend/src/hooks/usePaymentDetails.ts",
           "operation": "modify",
-          "description": "Add useUpdatePaymentDetails mutation hook calling updatePaymentDetails backend function. Invalidate getPaymentDetails query cache on success to ensure checkout flow reflects updates immediately."
-        },
-        {
-          "path": "frontend/src/pages/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Add payment configuration section rendering PaymentConfigForm component. Include navigation tab or section header for payment settings."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Implement game category management system",
-      "acceptanceCriteria": [
-        "Categories can be managed through admin panel",
-        "Products can be assigned to one or more categories",
-        "Storefront can filter products by category",
-        "Empty categories are handled gracefully in the UI"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/admin/CategoryForm.tsx",
-          "operation": "create",
-          "description": "Create category form component with fields for name and description. Call createCategory backend function for new categories and updateCategory for edits. Use the authorization component to verify admin access."
-        },
-        {
-          "path": "frontend/src/components/admin/CategoryList.tsx",
-          "operation": "create",
-          "description": "Create admin category list component displaying all categories with edit and delete actions. Call getAllCategories backend function. Handle category deletion with confirmation dialog. Handle empty state gracefully."
-        },
-        {
-          "path": "frontend/src/hooks/useCategories.ts",
-          "operation": "modify",
-          "description": "Add mutation hooks: useCreateCategory, useUpdateCategory, useDeleteCategory. Invalidate categories query cache after mutations. Handle authorization errors with user-friendly messages."
-        },
-        {
-          "path": "frontend/src/pages/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Add category management section rendering CategoryList and CategoryForm components. Include navigation tab or section header for category settings."
-        },
-        {
-          "path": "frontend/src/components/admin/ProductForm.tsx",
-          "operation": "modify",
-          "description": "Add category dropdown in product form populated with available categories from getAllCategories. Allow assigning product to game category when creating or editing products."
-        }
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "summary": "Apply bold gaming-inspired visual theme throughout the application",
-      "acceptanceCriteria": [
-        "Visual theme is consistently applied across all pages",
-        "Design emphasizes gaming aesthetic while maintaining professional marketplace credibility",
-        "Color scheme uses energetic colors other than blue and purple",
-        "Typography and spacing support easy product browsing"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define global gaming-inspired theme with vibrant accent colors (exclude blue and purple - use energetic colors like red, orange, green, yellow). Configure CSS custom properties for primary, secondary, accent colors. Set modern gaming-suitable typography using system font stack or web fonts. Apply consistent spacing scale."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Extend Tailwind configuration with custom gaming theme colors (energetic palette excluding blue and purple). Configure typography plugin with modern headings and readable body text. Add custom spacing and border radius values for bold marketplace aesthetic."
-        },
-        {
-          "path": "frontend/src/components/layout/Layout.tsx",
-          "operation": "create",
-          "description": "Create main layout component applying consistent navigation, header, and footer structure across all pages. Use themed colors and spacing. Include LoginButton in header navigation. Apply gaming-inspired styling while maintaining professional marketplace credibility."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wrap all routes with Layout component to ensure consistent theming and structure across storefront, admin panel, and checkout pages."
-        }
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "summary": "Render generated images as static assets in the frontend",
-      "acceptanceCriteria": [
-        "Generated images are placed in frontend/public/assets/generated directory",
-        "Hero banner displays on storefront homepage",
-        "Category icons display alongside category names in navigation and product filters"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Storefront.tsx",
-          "operation": "modify",
-          "description": "Add hero banner section at the top of the storefront using the generated image at frontend/public/assets/generated/hero-banner.dim_1200x400.png. Use img tag with appropriate alt text and responsive sizing."
-        },
-        {
-          "path": "frontend/src/components/storefront/CategoryFilter.tsx",
-          "operation": "modify",
-          "description": "Display category icons from frontend/public/assets/generated/ alongside category names: account-icon.dim_128x128.png for account category, currency-icon.dim_128x128.png for currency category, clothes-icon.dim_128x128.png for clothes category. Match icon to product type enum using conditional logic."
+          "description": "Add an Instagram URL input field to the payment configuration form using the existing form structure and shadcn/ui components. The field displays and updates the instagramUrl property from the PaymentConfig interface (already present in backend.d.ts). Add URL validation using the form's validation schema to ensure proper URL format. Position the field logically within the existing payment settings layout. The form already handles the complete PaymentConfig object including instagramUrl, so only UI changes are needed."
         }
       ]
     }

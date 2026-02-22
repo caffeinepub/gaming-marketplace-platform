@@ -3,25 +3,40 @@ import Map "mo:core/Map";
 import Array "mo:core/Array";
 import Text "mo:core/Text";
 import Nat32 "mo:core/Nat32";
+import Char "mo:core/Char";
 import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
   include MixinStorage();
 
+  // Profanity list for validation
+  let forbiddenWords = [
+    "swearword1",
+    "swearword2",
+    "swearword3",
+    "badword",
+    "offensive",
+    "rude",
+  ];
+
   // User Profile
   public type UserProfile = {
     name : Text;
     email : Text;
+    username : ?Text; // Now optional for old data
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
+  let usernameMap = Map.empty<Text, Principal>();
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -42,6 +57,75 @@ actor {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
     userProfiles.add(caller, profile);
+  };
+
+  public shared ({ caller }) func createUsername(requestedUsername : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can create usernames");
+    };
+
+    // Validate length
+    if (requestedUsername.size() < 5) {
+      Runtime.trap("Username must be at least 5 characters long");
+    };
+
+    // Validate alphanumeric
+    let isValidAlphanumeric = requestedUsername.toArray().all(
+      func(char) {
+        char.isDigit() or char >= 'a' and char <= 'z';
+      }
+    );
+    if (not isValidAlphanumeric) {
+      Runtime.trap("Username must only contain lowercase letters and numbers");
+    };
+
+    // Profanity check
+    let lowerUsername = requestedUsername.toLower();
+    if (forbiddenWords.any(func(word) { lowerUsername.contains(#text word) })) {
+      Runtime.trap("Username contains forbidden words");
+    };
+
+    // Check uniqueness
+    if (usernameMap.containsKey(requestedUsername)) {
+      Runtime.trap("Username already taken - bombsawayYYYYYY️️️");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("Profile must exist in order to update it - bombsawayYYYYYY️️️") };
+      case (?profile) {
+        let updatedProfile : UserProfile = {
+          profile with
+          username = ?requestedUsername;
+        };
+        userProfiles.add(caller, updatedProfile);
+        usernameMap.add(requestedUsername, caller);
+      };
+    };
+  };
+
+  public query ({ caller }) func hasUsername() : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check username status");
+    };
+    switch (userProfiles.get(caller)) {
+      case (null) { false };
+      case (?profile) {
+        switch (profile.username) {
+          case (null) { false };
+          case (?_) { true };
+        };
+      };
+    };
+  };
+
+  public query ({ caller }) func getUsername(_user : Principal) : async ?Text {
+    if (caller != _user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own username");
+    };
+    switch (userProfiles.get(_user)) {
+      case (null) { Runtime.trap("User does not exist - bombsawayYYYYYY️️️"); };
+      case (?profile) { profile.username };
+    };
   };
 
   // Product Models & Categories
@@ -72,12 +156,14 @@ actor {
     paypalEmail : Text;
     ukGiftCardInstructions : Text;
     cryptoWalletAddress : Text;
+    instagramUrl : Text; // New field for Instagram URL
   };
 
   var paymentConfig : PaymentConfig = {
     paypalEmail = "";
     ukGiftCardInstructions = "";
     cryptoWalletAddress = "";
+    instagramUrl = "";
   };
 
   // Shopping Cart
@@ -270,7 +356,7 @@ actor {
     carts.add(caller, []);
   };
 
-  // Payment Integration (Admin Only for updates, public for viewing)
+  // Payment Integration (Admin Only for updates, authenticated users for viewing)
   public shared ({ caller }) func updatePaymentDetails(config : PaymentConfig) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update payment details");
@@ -279,6 +365,14 @@ actor {
   };
 
   public query ({ caller }) func getPaymentDetails() : async PaymentConfig {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view payment details");
+    };
     paymentConfig;
+  };
+
+  // New method to get Instagram URL only (public)
+  public query ({ caller }) func getInstagramUrl() : async Text {
+    paymentConfig.instagramUrl;
   };
 };

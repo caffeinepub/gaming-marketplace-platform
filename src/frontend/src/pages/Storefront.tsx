@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
-import { useGetAllProducts, useGetAllCategories } from '../hooks/useQueries';
+import { useGetAllProducts, useGetAllCategories, useGetInstagramUrl } from '../hooks/useQueries';
 import ProductCard from '../components/storefront/ProductCard';
 import CategoryFilter from '../components/storefront/CategoryFilter';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Youtube, Instagram } from 'lucide-react';
 
 export default function Storefront() {
   const { data: products = [], isLoading: productsLoading } = useGetAllProducts();
   const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategories();
+  const { data: instagramUrl = '' } = useGetInstagramUrl();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredProducts = useMemo(() => {
@@ -88,6 +90,30 @@ export default function Storefront() {
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
+          )}
+        </div>
+
+        {/* Social Media Links */}
+        <div className="flex items-center justify-center gap-6 pt-8 pb-4 border-t border-border">
+          <a
+            href="https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors border border-border hover:border-primary group"
+          >
+            <Youtube className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium">YouTube</span>
+          </a>
+          {instagramUrl && (
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors border border-border hover:border-accent group"
+            >
+              <Instagram className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">Instagram</span>
+            </a>
           )}
         </div>
       </div>

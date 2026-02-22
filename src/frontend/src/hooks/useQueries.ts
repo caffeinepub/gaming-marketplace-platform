@@ -51,6 +51,43 @@ export function useGetCallerUserRole() {
   });
 }
 
+// Username Queries
+export function useHasUsername() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<boolean>({
+    queryKey: ['hasUsername'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.hasUsername();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
+export function useCreateUsername() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (username: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.createUsername(username);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hasUsername'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
 // Product Queries
 export function useGetAllProducts() {
   const { actor, isFetching } = useActor();
@@ -257,6 +294,25 @@ export function useUpdatePaymentDetails() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentDetails'] });
+      queryClient.invalidateQueries({ queryKey: ['instagramUrl'] });
     },
+  });
+}
+
+// Instagram URL Query (public)
+export function useGetInstagramUrl() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<string>({
+    queryKey: ['instagramUrl'],
+    queryFn: async () => {
+      if (!actor) return '';
+      try {
+        return await actor.getInstagramUrl();
+      } catch (error) {
+        return '';
+      }
+    },
+    enabled: !!actor && !isFetching,
   });
 }

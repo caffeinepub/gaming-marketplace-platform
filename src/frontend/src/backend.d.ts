@@ -15,6 +15,7 @@ export class ExternalBlob {
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
 export interface PaymentConfig {
+    instagramUrl: string;
     cryptoWalletAddress: string;
     ukGiftCardInstructions: string;
     paypalEmail: string;
@@ -28,6 +29,7 @@ export interface CartItem {
     quantity: bigint;
 }
 export interface UserProfile {
+    username?: string;
     name: string;
     email: string;
 }
@@ -58,6 +60,7 @@ export interface backendInterface {
     clearCart(): Promise<void>;
     createCategory(name: string, category: Category): Promise<void>;
     createProduct(id: string, product: Product): Promise<void>;
+    createUsername(requestedUsername: string): Promise<void>;
     deleteCategory(name: string): Promise<void>;
     deleteProduct(id: string): Promise<void>;
     getAllCategories(): Promise<Array<Category>>;
@@ -66,9 +69,12 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCategory(name: string): Promise<Category>;
+    getInstagramUrl(): Promise<string>;
     getPaymentDetails(): Promise<PaymentConfig>;
     getProduct(id: string): Promise<Product>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getUsername(_user: Principal): Promise<string | null>;
+    hasUsername(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateCartItemQuantity(productId: string, quantity: bigint): Promise<void>;

@@ -46,6 +46,7 @@ export const Product = IDL.Record({
   'gameCategory' : IDL.Text,
 });
 export const UserProfile = IDL.Record({
+  'username' : IDL.Opt(IDL.Text),
   'name' : IDL.Text,
   'email' : IDL.Text,
 });
@@ -54,6 +55,7 @@ export const CartItem = IDL.Record({
   'quantity' : IDL.Nat,
 });
 export const PaymentConfig = IDL.Record({
+  'instagramUrl' : IDL.Text,
   'cryptoWalletAddress' : IDL.Text,
   'ukGiftCardInstructions' : IDL.Text,
   'paypalEmail' : IDL.Text,
@@ -92,6 +94,7 @@ export const idlService = IDL.Service({
   'clearCart' : IDL.Func([], [], []),
   'createCategory' : IDL.Func([IDL.Text, Category], [], []),
   'createProduct' : IDL.Func([IDL.Text, Product], [], []),
+  'createUsername' : IDL.Func([IDL.Text], [], []),
   'deleteCategory' : IDL.Func([IDL.Text], [], []),
   'deleteProduct' : IDL.Func([IDL.Text], [], []),
   'getAllCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
@@ -100,6 +103,7 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
   'getCategory' : IDL.Func([IDL.Text], [Category], ['query']),
+  'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
   'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
   'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
   'getUserProfile' : IDL.Func(
@@ -107,6 +111,8 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+  'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateCartItemQuantity' : IDL.Func([IDL.Text, IDL.Nat], [], []),
@@ -152,9 +158,14 @@ export const idlFactory = ({ IDL }) => {
     'quantityAvailable' : IDL.Nat,
     'gameCategory' : IDL.Text,
   });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text, 'email' : IDL.Text });
+  const UserProfile = IDL.Record({
+    'username' : IDL.Opt(IDL.Text),
+    'name' : IDL.Text,
+    'email' : IDL.Text,
+  });
   const CartItem = IDL.Record({ 'productId' : IDL.Text, 'quantity' : IDL.Nat });
   const PaymentConfig = IDL.Record({
+    'instagramUrl' : IDL.Text,
     'cryptoWalletAddress' : IDL.Text,
     'ukGiftCardInstructions' : IDL.Text,
     'paypalEmail' : IDL.Text,
@@ -193,6 +204,7 @@ export const idlFactory = ({ IDL }) => {
     'clearCart' : IDL.Func([], [], []),
     'createCategory' : IDL.Func([IDL.Text, Category], [], []),
     'createProduct' : IDL.Func([IDL.Text, Product], [], []),
+    'createUsername' : IDL.Func([IDL.Text], [], []),
     'deleteCategory' : IDL.Func([IDL.Text], [], []),
     'deleteProduct' : IDL.Func([IDL.Text], [], []),
     'getAllCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
@@ -201,6 +213,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
     'getCategory' : IDL.Func([IDL.Text], [Category], ['query']),
+    'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
     'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
     'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
     'getUserProfile' : IDL.Func(
@@ -208,6 +221,8 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+    'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateCartItemQuantity' : IDL.Func([IDL.Text, IDL.Nat], [], []),

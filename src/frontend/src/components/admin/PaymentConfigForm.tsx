@@ -15,23 +15,52 @@ export default function PaymentConfigForm() {
   const [paypalEmail, setPaypalEmail] = useState('');
   const [ukGiftCardInstructions, setUkGiftCardInstructions] = useState('');
   const [cryptoWalletAddress, setCryptoWalletAddress] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [instagramUrlError, setInstagramUrlError] = useState('');
 
   useEffect(() => {
     if (paymentDetails) {
       setPaypalEmail(paymentDetails.paypalEmail);
       setUkGiftCardInstructions(paymentDetails.ukGiftCardInstructions);
       setCryptoWalletAddress(paymentDetails.cryptoWalletAddress);
+      setInstagramUrl(paymentDetails.instagramUrl);
     }
   }, [paymentDetails]);
 
+  const validateUrl = (url: string): boolean => {
+    if (!url) return true; // Empty is valid
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleInstagramUrlChange = (value: string) => {
+    setInstagramUrl(value);
+    if (value && !validateUrl(value)) {
+      setInstagramUrlError('Please enter a valid URL');
+    } else {
+      setInstagramUrlError('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate Instagram URL before submitting
+    if (instagramUrl && !validateUrl(instagramUrl)) {
+      toast.error('Please enter a valid Instagram URL');
+      return;
+    }
 
     try {
       await updatePaymentDetails.mutateAsync({
         paypalEmail,
         ukGiftCardInstructions,
         cryptoWalletAddress,
+        instagramUrl,
       });
       toast.success('Payment details updated successfully!');
     } catch (error: any) {
@@ -79,7 +108,22 @@ export default function PaymentConfigForm() {
             />
           </div>
 
-          <Button type="submit" disabled={updatePaymentDetails.isPending}>
+          <div className="space-y-2">
+            <Label htmlFor="instagram">Instagram URL</Label>
+            <Input
+              id="instagram"
+              type="url"
+              placeholder="https://instagram.com/yourusername"
+              value={instagramUrl}
+              onChange={(e) => handleInstagramUrlChange(e.target.value)}
+              className={instagramUrlError ? 'border-destructive' : ''}
+            />
+            {instagramUrlError && (
+              <p className="text-sm text-destructive">{instagramUrlError}</p>
+            )}
+          </div>
+
+          <Button type="submit" disabled={updatePaymentDetails.isPending || !!instagramUrlError}>
             {updatePaymentDetails.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

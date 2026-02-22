@@ -14,6 +14,7 @@ export interface CartItem { 'productId' : string, 'quantity' : bigint }
 export interface Category { 'name' : string, 'description' : string }
 export type ExternalBlob = Uint8Array;
 export interface PaymentConfig {
+  'instagramUrl' : string,
   'cryptoWalletAddress' : string,
   'ukGiftCardInstructions' : string,
   'paypalEmail' : string,
@@ -32,7 +33,11 @@ export interface Product {
 export type ProductType = { 'clothes' : null } |
   { 'currency' : null } |
   { 'account' : null };
-export interface UserProfile { 'name' : string, 'email' : string }
+export interface UserProfile {
+  'username' : [] | [string],
+  'name' : string,
+  'email' : string,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -69,6 +74,7 @@ export interface _SERVICE {
   'clearCart' : ActorMethod<[], undefined>,
   'createCategory' : ActorMethod<[string, Category], undefined>,
   'createProduct' : ActorMethod<[string, Product], undefined>,
+  'createUsername' : ActorMethod<[string], undefined>,
   'deleteCategory' : ActorMethod<[string], undefined>,
   'deleteProduct' : ActorMethod<[string], undefined>,
   'getAllCategories' : ActorMethod<[], Array<Category>>,
@@ -77,9 +83,12 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCategory' : ActorMethod<[string], Category>,
+  'getInstagramUrl' : ActorMethod<[], string>,
   'getPaymentDetails' : ActorMethod<[], PaymentConfig>,
   'getProduct' : ActorMethod<[string], Product>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUsername' : ActorMethod<[Principal], [] | [string]>,
+  'hasUsername' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateCartItemQuantity' : ActorMethod<[string, bigint], undefined>,

@@ -1,5 +1,5 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup, theme provider, and route definitions for storefront, admin panel, and checkout pages.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, theme provider, and authentication flow orchestration including login queue and username setup screens that gate access to main routes.",
   "frontend/src/components/layout/Layout.tsx": "Main layout component with header navigation, login button, cart drawer, footer with attribution, and user profile setup modal integration.",
   "frontend/src/components/auth/LoginButton.tsx": "Login/logout button component using Internet Identity with loading states and query cache clearing on logout.",
   "frontend/src/components/auth/UserProfileSetup.tsx": "Modal dialog for first-time user profile setup with name and email fields, preventing modal flash by checking isFetched state.",
@@ -11,12 +11,14 @@
   "frontend/src/components/admin/ProductList.tsx": "Admin product list table with edit and delete actions, confirmation dialogs, and empty state handling.",
   "frontend/src/components/admin/CategoryForm.tsx": "Category creation and editing form with name and description fields.",
   "frontend/src/components/admin/CategoryList.tsx": "Admin category list table with edit and delete actions and confirmation dialogs.",
-  "frontend/src/components/admin/PaymentConfigForm.tsx": "Payment configuration form for admins to set PayPal email, UK gift card instructions, and crypto wallet address.",
+  "frontend/src/components/admin/PaymentConfigForm.tsx": "Payment configuration form for admins to set PayPal email, UK gift card instructions, crypto wallet address, and Instagram URL with URL validation.",
   "frontend/src/components/checkout/PaymentMethodCard.tsx": "Payment method card displaying payment details with copy-to-clipboard functionality.",
-  "frontend/src/pages/Storefront.tsx": "Main storefront page with hero banner, category filtering, and product grid display.",
+  "frontend/src/pages/Storefront.tsx": "Main storefront page with hero banner, category filtering, product grid display, and social media links (YouTube and Instagram) at the bottom of the page.",
   "frontend/src/pages/AdminPanel.tsx": "Admin panel page with tabs for product management, category management, and payment settings, with access control verification.",
   "frontend/src/pages/Checkout.tsx": "Checkout page displaying order summary, payment method instructions, and order completion functionality.",
-  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including products, categories, cart, user profile, and payment details with proper cache invalidation.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including products, categories, cart, user profile, payment details, username operations, and new useGetInstagramUrl hook for fetching the Instagram URL.",
   "frontend/src/index.css": "Global styles with OKLCH color system using energetic orange and yellow tones for gaming aesthetic, avoiding blue and purple.",
-  "frontend/tailwind.config.js": "Tailwind configuration with custom gaming theme colors and typography settings."
+  "frontend/tailwind.config.js": "Tailwind configuration with custom gaming theme colors and typography settings.",
+  "frontend/src/components/auth/LoginQueue.tsx": "Full-screen queue component with animated video background (gaming-background.mp4), countdown timer with random delays, progress bar, and social media links (YouTube and Instagram) at the bottom.",
+  "frontend/src/components/auth/UsernameSetup.tsx": "Modal dialog for username creation with real-time validation (minimum 5 characters, alphanumeric only), profanity filtering, uniqueness checking, and error handling for backend validation failures."
 }

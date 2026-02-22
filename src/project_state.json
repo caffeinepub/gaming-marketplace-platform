@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 9,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -9,11 +9,14 @@
     "Admin-only product management (no seller registration)",
     "Manual payment processing with admin-configured payment instructions",
     "Product types: gaming accounts with ranks, in-game currency, premium clothes",
-    "Multi-category product organization by game"
+    "Multi-category product organization by game",
+    "Username system: unique usernames required post-authentication, 5+ chars, alphanumeric only, with profanity filtering",
+    "Login queue: random countdown 20-60 for all users, auto-proceeds to username creation (new) or store (returning)",
+    "Social media links: YouTube and Instagram icons at bottom of queue and store pages"
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Gaming-themed hero banner with marketplace concept, vibrant colors excluding blue and purple (hero-banner.dim_1200x400.png)\n- Placeholder icon for mobile game accounts category (account-icon.dim_128x128.png)\n- Placeholder icon for in-game currency category (currency-icon.dim_128x128.png)\n- Placeholder icon for premium clothes category (clothes-icon.dim_128x128.png)",
+  "imageRequirements": "## Required Images\n- Animated gaming background video showing dynamic gameplay footage with fast-paced action, vibrant colors, and looping seamlessly (gaming-background.mp4)",
   "existing_features": [
     {
       "id": "feature-implement-user-authentication-system-using-internet-identity-for-buyer-accounts",
@@ -86,6 +89,78 @@
         "REQ-11"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-create-username-creation-modal-component-that-appears-immediately-after-internet-identity-authentication-for-users-who-do-not-have-a-username-blocking-access-to-the-store-until-username-is-created",
+      "title": "Create username creation modal component that appears immediately after Internet Identity authentication for users who do not have a username, blocking access to the store until username is created",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-login-queue-system-that-applies-to-all-users-new-and-returning-during-sign-up-login-displaying-a-countdown-from-a-random-number-between-20-and-60-that-decrements-automatically-until-reaching-0",
+      "title": "Implement login queue system that applies to all users (new and returning) during sign-up/login, displaying a countdown from a random number between 20 and 60 that decrements automatically until reaching 0",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-configure-queue-system-to-automatically-proceed-users-to-username-creation-if-they-haven-t-created-a-username-or-directly-to-full-store-access-if-they-already-have-a-username-when-queue-countdown-reaches-0",
+      "title": "Configure queue system to automatically proceed users to username creation (if they haven't created a username) or directly to full store access (if they already have a username) when queue countdown reaches 0",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-loginqueue-component-to-generate-a-random-starting-countdown-between-20-seconds-and-5-minutes-instead-of-20-60-seconds",
+      "title": "Update the LoginQueue component to generate a random starting countdown between 20 seconds and 5 minutes (instead of 20-60 seconds)",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-the-loginqueue-component-so-each-countdown-decrement-occurs-at-a-random-interval-between-20-seconds-and-5-minutes-rather-than-decrementing-every-second",
+      "title": "Modify the LoginQueue component so each countdown decrement occurs at a random interval between 20 seconds and 5 minutes, rather than decrementing every second",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-a-custom-animated-video-background-that-resembles-dynamic-gameplay-footage-for-the-login-queue-screen",
+      "title": "Generate a custom animated video background that resembles dynamic gameplay footage for the login queue screen",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-youtube-and-instagram-social-media-icons-at-the-bottom-of-the-loginqueue-component-with-youtube-linking-to-https-youtube-com-fros7yyt-si-u4-j8lrtknuj7wuo-and-instagram-url-configurable-by-admin",
+      "title": "Add YouTube and Instagram social media icons at the bottom of the LoginQueue component, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-youtube-and-instagram-social-media-icons-at-the-bottom-of-the-storefront-page-with-youtube-linking-to-https-youtube-com-fros7yyt-si-u4-j8lrtknuj7wuo-and-instagram-url-configurable-by-admin",
+      "title": "Add YouTube and Instagram social media icons at the bottom of the storefront page, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-instagram-url-field-to-the-payment-configuration-section-in-the-admin-panel-so-admins-can-configure-the-instagram-link-displayed-on-the-queue-and-store-pages",
+      "title": "Add Instagram URL field to the payment configuration section in the admin panel so admins can configure the Instagram link displayed on the queue and store pages",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -145,6 +220,68 @@
       "reqIds": [
         "REQ-4"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Username creation required after Internet Identity authentication with unique usernames, minimum 5 characters, alphanumeric only, and profanity filter",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Queue system for all sign-up/login with random countdown from 20-60, automatic progression to username creation or store access",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Extend the backend user profile data model to include a username field that is unique across all users, alphanumeric only, and minimum 5 characters long",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement profanity filter validation on the backend to reject usernames containing offensive or rude words",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Create backend endpoint for username creation that accepts a username, validates it against all requirements (unique, length, alphanumeric, profanity), and associates it with the authenticated user's principal",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Add backend query endpoint to check if a user has completed username creation, returning username status for the authenticated principal",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Update queue system: random starting countdown from 20 seconds to 5 minutes, each countdown number decrements at random intervals (20 seconds to 5 minutes per step)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add animated gaming background video to login queue screen",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Add social media icons (YouTube and Instagram) at the bottom of both queue screen and store page with configurable URLs",
+      "reqIds": [],
       "status": "pending"
     }
   ],
