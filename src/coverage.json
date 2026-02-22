@@ -1,78 +1,55 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T23:01:47.532Z",
+  "generatedAt": "2026-02-22T23:45:29.903Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 4,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-67",
-        "summary": "Fix the admin authorization logic in the Storefront component so that when a user logged in as 'venomgladiator25' or 'turbohunter64' clicks the Admin button, they are immediately navigated to the admin panel without encountering an 'access denied' error or black screen",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/Storefront.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-68",
-        "summary": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
+        "id": "REQ-86",
+        "summary": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/auth/PhoneNumberSetup.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/auth/PhoneNumberSetup.tsx"
         ]
       },
       {
-        "id": "REQ-69",
-        "summary": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-70",
-        "summary": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
-        ]
-      },
-      {
-        "id": "REQ-71",
-        "summary": "Create or update backend endpoints for queue skip, username change, and custom username submissions to include the submitting user's username (prioritizing custom username over AI-generated username) in the response data for each submission record",
+        "id": "REQ-87",
+        "summary": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-72",
-        "summary": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
+        "id": "REQ-88",
+        "summary": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/layout/Layout.tsx"
+          "frontend/src/components/auth/PhoneNumberSetup.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/auth/PhoneNumberSetup.tsx"
+        ]
+      },
+      {
+        "id": "REQ-89",
+        "summary": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/usePhoneNumber.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/usePhoneNumber.ts"
         ]
       }
     ]
@@ -83,14 +60,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
-    "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
-    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/PhoneNumberSetup.tsx",
+    "frontend/src/hooks/usePhoneNumber.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

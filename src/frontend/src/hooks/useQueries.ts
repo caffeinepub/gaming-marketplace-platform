@@ -37,7 +37,7 @@ export function useSaveCallerUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
+      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
     },
   });
 }
@@ -117,37 +117,59 @@ export function useCreateUsername() {
       queryClient.invalidateQueries({ queryKey: ['hasUsername'] });
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       queryClient.invalidateQueries({ queryKey: ['username'] });
-      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
+      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
     },
   });
 }
 
-export function useIsAdminUsername() {
+export function useIsCallerAdmin() {
   const { actor, isFetching: actorFetching } = useActor();
-  const { data: userProfile, isLoading: profileLoading, isFetched: profileFetched } = useGetCallerUserProfile();
 
   const query = useQuery<boolean>({
-    queryKey: ['isAdminUsername', userProfile?.username],
+    queryKey: ['isCallerAdmin'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      
-      // Get the user's profile to extract their username
-      if (!userProfile || !userProfile.username) {
-        return false;
-      }
-      
-      // Check if the username is in the admin whitelist
-      return actor.isAdminUsername(userProfile.username);
+      return actor.isCallerAdmin();
     },
-    enabled: !!actor && !actorFetching && profileFetched && !!userProfile?.username,
+    enabled: !!actor && !actorFetching,
     retry: false,
   });
 
   return {
     ...query,
-    isLoading: actorFetching || profileLoading || query.isLoading,
-    isFetched: !!actor && profileFetched && query.isFetched,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
   };
+}
+
+export function useAddAdminUsername() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (username: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.addAdminUsername(username);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
+    },
+  });
+}
+
+export function useAddAdminPhoneNumber() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (phoneNumber: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.addAdminPhoneNumber(phoneNumber);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
+    },
+  });
 }
 
 // Product Queries

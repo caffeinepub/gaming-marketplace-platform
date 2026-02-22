@@ -1,5 +1,5 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup, theme provider, and authentication flow orchestration including login queue, terms acceptance modal, AI username generator, and main routes.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, theme provider, and authentication flow orchestration including login queue, terms acceptance, mandatory phone number setup for all users (new and existing), AI username generator, and main routes.",
   "frontend/src/components/layout/Layout.tsx": "Main layout component with header navigation, login button, cart drawer, username display with regeneration button, and footer with attribution.",
   "frontend/src/components/auth/LoginButton.tsx": "Login/logout button component using Internet Identity with loading states and query cache clearing on logout.",
   "frontend/src/components/auth/UserProfileSetup.tsx": "Modal dialog for first-time user profile setup with name and email fields, preventing modal flash by checking isFetched state.",
@@ -11,12 +11,12 @@
   "frontend/src/components/admin/ProductList.tsx": "Admin product list table with edit and delete actions, confirmation dialogs, and empty state handling.",
   "frontend/src/components/admin/CategoryForm.tsx": "Category creation and editing form with name and description fields.",
   "frontend/src/components/admin/CategoryList.tsx": "Admin category list table with edit and delete actions and confirmation dialogs.",
-  "frontend/src/components/admin/PaymentConfigForm.tsx": "Admin form for configuring payment methods and pricing including queue skip, username regeneration, and custom username prices.",
+  "frontend/src/components/admin/PaymentConfigForm.tsx": "Admin form for configuring payment methods, pricing, and admin whitelist management with separate sections for adding admins by username or phone number (11 digits without +).",
   "frontend/src/components/checkout/PaymentMethodCard.tsx": "Payment method card displaying payment details with copy-to-clipboard functionality.",
-  "frontend/src/pages/Storefront.tsx": "Main storefront page with hero banner, category filtering, product grid display, social media links, and admin panel button that uses the user profile's custom username when available for display and admin access verification.",
+  "frontend/src/pages/Storefront.tsx": "Main storefront page with hero banner, category filtering, product grid display, social media links, and admin panel button that uses unified isCallerAdmin backend check for dual whitelist authorization.",
   "frontend/src/pages/AdminPanel.tsx": "Admin panel with tabs for products, categories, payment settings, queue skip, username changes, and custom username submissions management.",
   "frontend/src/pages/Checkout.tsx": "Checkout page displaying order summary, payment method instructions, and order completion functionality.",
-  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including profile, username, product, category, cart, payment, queue skip, and custom username functionality with proper cache invalidation, admin username verification that depends on profile data, and new hooks for fetching queue skip submissions with usernames and individual user profiles.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including profile, username, product, category, cart, payment, queue skip, custom username functionality, and new hooks for admin management by username and phone number with unified isCallerAdmin check.",
   "frontend/src/index.css": "Global styles with OKLCH color system using energetic orange and yellow tones for gaming aesthetic, avoiding blue and purple.",
   "frontend/tailwind.config.js": "Tailwind configuration with custom gaming theme colors and typography settings.",
   "frontend/src/components/auth/LoginQueue.tsx": "Full-screen queue component with animated video background, countdown timer, progress bar, social media links, and a \"Skip Queue\" button that opens the payment submission dialog.",
@@ -31,5 +31,7 @@
   "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx": "Payment proof submission form for username regeneration using the queue skip payment backend system with payment method selection, gift card/transaction ID input, and automatic username generation after successful payment.",
   "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx": "Admin table component displaying username change payment submissions with usernames fetched individually for each submission via getUserProfile, showing current username, user principal, payment details, status badges, and fraud flagging functionality.",
   "frontend/src/components/auth/CustomUsernameDialog.tsx": "Multi-step dialog for custom username creation with payment method selection, payment proof submission (PayPal/crypto/gift cards), and custom username input with validation.",
-  "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx": "Admin table component for reviewing custom username payment submissions with current usernames fetched individually for each submission, displaying both current and requested usernames, approve/reject actions, screenshot viewing, and proper Principal type conversion for backend calls."
+  "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx": "Admin table component for reviewing custom username payment submissions with current usernames fetched individually for each submission, displaying both current and requested usernames, approve/reject actions, screenshot viewing, and proper Principal type conversion for backend calls.",
+  "frontend/src/hooks/usePhoneNumber.ts": "React Query hooks for checking phone number setup status and saving worldwide phone numbers with frontend validation (digits only, no + prefix) and proper cache invalidation.",
+  "frontend/src/components/auth/PhoneNumberSetup.tsx": "Non-dismissible dialog component that collects and validates worldwide phone numbers (numeric digits only, no + prefix, any length) with a two-step flow: initial \"Add Phone Number\" button followed by the input form, with error handling for duplicates and invalid formats."
 }

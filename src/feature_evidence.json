@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-queueskipsubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-queue-skip-payment-submission-instead-of-only-showing-the-principal-id",
-      "featureTitle": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
+      "featureId": "feature-update-the-phonenumbersetup-component-to-accept-any-numeric-input-without-the-prefix-removing-the-11-digit-uk-phone-number-validation-and-replacing-it-with-worldwide-phone-number-format-that-accepts-any-length-numeric-input",
+      "featureTitle": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
       "files": [
-        "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/auth/PhoneNumberSetup.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,16 +17,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-68"
+        "REQ-86"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-usernamechangesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-username-change-payment-submission-instead-of-only-showing-the-principal-id",
-      "featureTitle": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
+      "featureId": "feature-add-haven-t-added-phone-number-button-to-the-phonenumbersetup-dialog-component-that-allows-users-to-proceed-with-adding-their-phone-number-through-the-same-interface-when-clicked",
+      "featureTitle": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
       "files": [
-        "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/auth/PhoneNumberSetup.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -39,15 +37,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-69"
+        "REQ-88"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-customusernamesubmissionslist-component-to-fetch-and-display-the-username-custom-username-if-available-otherwise-ai-generated-username-for-each-custom-username-payment-submission-instead-of-only-showing-the-principal-id",
-      "featureTitle": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
+      "featureId": "feature-update-the-app-tsx-authentication-flow-to-require-all-users-both-new-and-existing-to-provide-a-phone-number-on-login-if-they-haven-t-already-displaying-the-phonenumbersetup-dialog-and-blocking-access-to-all-app-features-until-phone-number-is-saved",
+      "featureTitle": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
       "files": [
-        "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/usePhoneNumber.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -59,27 +58,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-70"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-verify-that-the-useprofile-query-hook-correctly-fetches-and-caches-both-the-ai-generated-username-and-custom-username-fields-ensuring-the-custom-username-takes-precedence-when-displaying-user-identity-throughout-the-application",
-      "featureTitle": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
-      "files": [
-        "frontend/src/hooks/useQueries.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-72"
+        "REQ-89"
       ],
       "confidence": "high"
     }

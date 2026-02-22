@@ -1,137 +1,97 @@
 {
   "kind": "build_request",
-  "title": "Fix admin panel authorization and user data display for whitelisted admins",
+  "title": "Expand phone number support to worldwide format and add phone number update functionality",
   "projectName": "Game Vault",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-67",
-      "text": "Fix the admin authorization logic in the Storefront component so that when a user logged in as 'venomgladiator25' or 'turbohunter64' clicks the Admin button, they are immediately navigated to the admin panel without encountering an 'access denied' error or black screen",
+      "id": "REQ-86",
+      "text": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-final"
+          "msg-user-worldwide-phone"
         ],
         "quotes": [
-          "logged in as 'venomgladiator25' or 'turbohunter64' (whitelisted admins), but when you click the Admin button on the storefront, you're seeing an 'access denied' error message instead of entering the admin panel"
+          "Accept any numeric input without the '+' prefix (no specific validation beyond numbers)"
         ]
       },
       "acceptanceCriteria": [
-        "When logged in as 'venomgladiator25', clicking the Admin button successfully navigates to the admin panel",
-        "When logged in as 'turbohunter64', clicking the Admin button successfully navigates to the admin panel",
-        "No 'access denied' error or black screen appears for whitelisted admin usernames",
-        "The authorization check properly compares the authenticated user's stored username (custom username if available, otherwise AI-generated username) against the whitelist"
+        "Phone number input field accepts any numeric characters without length restrictions",
+        "No country-specific validation is enforced",
+        "Plus sign (+) prefix is not allowed in the input",
+        "Non-numeric characters are rejected"
       ]
     },
     {
-      "id": "REQ-68",
-      "text": "Update the QueueSkipSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each queue skip payment submission instead of only showing the principal ID",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-final"
-        ],
-        "quotes": [
-          "all three admin sections (Queue Skip, Username Change/Regeneration, and Custom Username submissions) should display: User's username (their AI-generated or custom username)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each queue skip submission row displays the submitting user's username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
-      ]
-    },
-    {
-      "id": "REQ-69",
-      "text": "Update the UsernameChangeSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each username change payment submission instead of only showing the principal ID",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-final"
-        ],
-        "quotes": [
-          "all three admin sections (Queue Skip, Username Change/Regeneration, and Custom Username submissions) should display: User's username (their AI-generated or custom username)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each username change submission row displays the submitting user's username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
-      ]
-    },
-    {
-      "id": "REQ-70",
-      "text": "Update the CustomUsernameSubmissionsList component to fetch and display the username (custom username if available, otherwise AI-generated username) for each custom username payment submission instead of only showing the principal ID",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-final"
-        ],
-        "quotes": [
-          "all three admin sections (Queue Skip, Username Change/Regeneration, and Custom Username submissions) should display: User's username (their AI-generated or custom username)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each custom username submission row displays the submitting user's current username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
-      ]
-    },
-    {
-      "id": "REQ-71",
-      "text": "Create or update backend endpoints for queue skip, username change, and custom username submissions to include the submitting user's username (prioritizing custom username over AI-generated username) in the response data for each submission record",
+      "id": "REQ-87",
+      "text": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-final"
+          "msg-user-worldwide-phone"
         ],
         "quotes": [
-          "ensure all three submission sections can load and display the username for each submission"
+          "Accept any numeric input without the '+' prefix (no specific validation beyond numbers)"
         ]
       },
       "acceptanceCriteria": [
-        "Queue skip submissions endpoint returns username field for each submission",
-        "Username change submissions endpoint returns username field for each submission",
-        "Custom username submissions endpoint returns username field for each submission",
-        "Backend properly resolves custom username when available, falls back to AI-generated username",
-        "All three endpoints return empty arrays when no submissions exist (not errors)"
+        "Backend accepts phone numbers of any length",
+        "Only numeric characters are allowed",
+        "Plus sign prefix is rejected",
+        "Phone number uniqueness validation still applies"
       ]
     },
     {
-      "id": "REQ-72",
-      "text": "Verify that the useProfile query hook correctly fetches and caches both the AI-generated username and custom username fields, ensuring the custom username takes precedence when displaying user identity throughout the application",
+      "id": "REQ-88",
+      "text": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-final"
+          "msg-user-button-location"
         ],
         "quotes": [
-          "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown"
+          "When you are prompted for your phone number add the button there and when pressed it will add a new phone number to that users account"
         ]
       },
       "acceptanceCriteria": [
-        "useProfile hook successfully fetches both username fields from backend",
-        "Custom username is prioritized over AI-generated username when both exist",
-        "Profile data is properly cached and invalidated on username changes",
-        "No null or undefined username values cause authorization failures"
+        "Button is visible within the PhoneNumberSetup dialog",
+        "Button labeled 'Haven't Added Phone Number' or similar clear text",
+        "Clicking the button allows users to proceed with phone number entry in the same dialog",
+        "Button provides an explicit action for users to add their phone number"
+      ]
+    },
+    {
+      "id": "REQ-89",
+      "text": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-existing-users"
+        ],
+        "quotes": [
+          "Yes make them add it when they login"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All authenticated users without a phone number are prompted with PhoneNumberSetup dialog",
+        "Both new users and existing users (who created accounts before phone requirement) are required to add phone number on login",
+        "Users cannot access any app features until phone number is provided",
+        "Phone number check occurs after terms acceptance and before other features"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the whitelisted admin usernames ('venomgladiator25' and 'turbohunter64')",
-    "Maintain existing payment submission data structures and validation",
-    "Keep all three payment methods (PayPal, UK gift cards, crypto) functional",
-    "Do not change the single-actor backend architecture"
+    "Maintain single-actor Motoko backend architecture",
+    "Preserve existing phone number uniqueness validation",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts or other immutable paths",
+    "Keep existing phone number storage and admin whitelist functionality intact"
   ],
   "nonGoals": [
-    "Adding new admin users or modifying the whitelist mechanism",
-    "Changing the payment flow or submission process",
-    "Modifying the AI username generation algorithm",
-    "Adding new admin panel sections or features",
-    "Redesigning the admin panel UI layout"
+    "Adding country code selection dropdown",
+    "Implementing phone number formatting or display masks",
+    "Adding phone number verification via SMS",
+    "Changing the existing admin phone number whitelist system"
   ],
   "imageRequirements": {
     "required": [],

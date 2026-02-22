@@ -18,6 +18,7 @@ export interface UserProfile {
     username?: string;
     name: string;
     email: string;
+    phoneNumber?: string;
 }
 export type Time = bigint;
 export interface Category {
@@ -101,6 +102,7 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addAdminPhoneNumber(phoneNumber: string): Promise<void>;
     addAdminUsername(username: string): Promise<void>;
     addToCart(productId: string, quantity: bigint): Promise<void>;
     approveCustomUsername(user: Principal): Promise<void>;
@@ -126,13 +128,17 @@ export interface backendInterface {
     getQueueSkipSubmissionsWithUsernames(): Promise<Array<ExtendedQueueSkipSubmission>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getUsername(_user: Principal): Promise<string | null>;
+    hasPhoneNumber(): Promise<boolean>;
     hasQueueBypass(): Promise<boolean>;
     hasUsername(): Promise<boolean>;
+    isAdminPhoneNumber(phoneNumber: string): Promise<boolean>;
     isAdminUsername(username: string): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     rejectCustomUsername(user: Principal): Promise<void>;
+    removeAdminPhoneNumber(phoneNumber: string): Promise<void>;
     removeAdminUsername(username: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    savePhoneNumber(phoneNumber: string): Promise<void>;
     submitCustomUsername(requestedUsername: string, paymentMethod: PaymentMethod, transactionDetails: string): Promise<void>;
     submitQueueSkipPayment(transactionId: string, giftCardType: GiftCardType, giftCardCode: string | null): Promise<void>;
     updateCartItemQuantity(productId: string, quantity: bigint): Promise<void>;

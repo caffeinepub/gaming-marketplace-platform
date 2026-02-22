@@ -1,105 +1,61 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix admin panel authorization and user data display for whitelisted admins",
+  "title": "Expand phone number support to worldwide format and add phone number update functionality",
   "requirements": [
     {
-      "id": "REQ-67",
-      "summary": "Fix admin authorization logic in Storefront component to allow whitelisted admins ('venomgladiator25' and 'turbohunter64') to access the admin panel without encountering access denied errors",
+      "id": "REQ-86",
+      "summary": "Update PhoneNumberSetup component to accept worldwide numeric phone numbers without length restrictions or '+' prefix",
       "acceptanceCriteria": [
-        "When logged in as 'venomgladiator25', clicking the Admin button successfully navigates to the admin panel",
-        "When logged in as 'turbohunter64', clicking the Admin button successfully navigates to the admin panel",
-        "No 'access denied' error or black screen appears for whitelisted admin usernames",
-        "The authorization check properly compares the authenticated user's stored username (custom username if available, otherwise AI-generated username) against the whitelist"
+        "Phone number input field accepts any numeric characters without length restrictions",
+        "No country-specific validation is enforced",
+        "Plus sign (+) prefix is not allowed in the input",
+        "Non-numeric characters are rejected"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Storefront.tsx",
+          "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
           "operation": "modify",
-          "description": "Update the admin button authorization logic to properly retrieve the current user's username from their profile (prioritizing custom username over AI-generated username) and compare it against the hardcoded whitelist ['venomgladiator25', 'turbohunter64']. Ensure the check happens after the profile has loaded and handles null/undefined cases gracefully. Remove any backend role-based checks that may be causing access denied errors for whitelisted usernames."
+          "description": "Remove the 11-digit UK phone number validation and replace with worldwide numeric validation that accepts any length. Update the input validation to reject '+' prefix and non-numeric characters while allowing any length numeric input. Update error messages to reflect worldwide format requirements. Keep the existing form structure and submission flow intact."
         }
       ]
     },
     {
-      "id": "REQ-68",
-      "summary": "Update QueueSkipSubmissionsList component to fetch and display the username for each queue skip payment submission",
+      "id": "REQ-88",
+      "summary": "Add 'Haven't Added Phone Number' button to PhoneNumberSetup dialog to allow users to proceed with phone number entry",
       "acceptanceCriteria": [
-        "Each queue skip submission row displays the submitting user's username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
+        "Button is visible within the PhoneNumberSetup dialog",
+        "Button labeled 'Haven't Added Phone Number' or similar clear text",
+        "Clicking the button allows users to proceed with phone number entry in the same dialog",
+        "Button provides an explicit action for users to add their phone number"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
           "operation": "modify",
-          "description": "Modify the component to call the backend method getQueueSkipSubmissionsWithUsernames() instead of getQueueSkipSubmissions(). Update the table structure to display a Username column showing the username field from ExtendedQueueSkipSubmission. Ensure the username is displayed prominently alongside or instead of the principal ID. Update the query hook to use the new backend method."
+          "description": "Add a 'Haven't Added Phone Number' button to the dialog that allows users to proceed with entering their phone number. Position the button prominently within the dialog interface, ensuring it's clear that clicking it enables the phone number entry flow. The button should maintain the same dialog context and allow users to input their phone number without dismissing the modal."
+        }
+      ]
+    },
+    {
+      "id": "REQ-89",
+      "summary": "Update App.tsx authentication flow to require phone number from all users on login, blocking app access until provided",
+      "acceptanceCriteria": [
+        "All authenticated users without a phone number are prompted with PhoneNumberSetup dialog",
+        "Both new users and existing users (who created accounts before phone requirement) are required to add phone number on login",
+        "Users cannot access any app features until phone number is provided",
+        "Phone number check occurs after terms acceptance and before other features"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the authentication flow to check if the user has a phone number after terms acceptance. Add a phone number check gate that displays the PhoneNumberSetup dialog for all authenticated users (both new and existing) who haven't provided a phone number. Ensure this check occurs after terms acceptance but before the AI username generator and main routes. Block access to all app features until the phone number is saved. Use the existing usePhoneNumber hook to check hasPhoneNumber status and integrate the PhoneNumberSetup component into the sequential gate flow."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/hooks/usePhoneNumber.ts",
           "operation": "modify",
-          "description": "Add a new query hook useGetQueueSkipSubmissionsWithUsernames that calls actor.getQueueSkipSubmissionsWithUsernames() and returns Array<ExtendedQueueSkipSubmission>. Ensure proper error handling and cache invalidation for admin submission queries."
-        }
-      ]
-    },
-    {
-      "id": "REQ-69",
-      "summary": "Update UsernameChangeSubmissionsList component to fetch and display the username for each username change payment submission",
-      "acceptanceCriteria": [
-        "Each username change submission row displays the submitting user's username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-          "operation": "modify",
-          "description": "Update the component to fetch username data for each submission by calling the backend's getUserProfile method for each submission's user principal. Display the fetched username (custom username if available, otherwise AI-generated username from profile.username field) in a new Username column in the submissions table. Implement efficient batch loading or individual queries with proper loading states. Ensure the username is displayed prominently alongside the principal ID."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add helper query hooks or modify existing hooks to support fetching multiple user profiles efficiently for the UsernameChangeSubmissionsList component. Consider adding a useGetUserProfiles hook that accepts an array of principals and returns a map of principals to profiles, or ensure the existing useGetUserProfile hook can be used multiple times without performance issues."
-        }
-      ]
-    },
-    {
-      "id": "REQ-70",
-      "summary": "Update CustomUsernameSubmissionsList component to fetch and display the username for each custom username payment submission",
-      "acceptanceCriteria": [
-        "Each custom username submission row displays the submitting user's current username",
-        "Custom usernames are displayed when the user has one, otherwise AI-generated username is shown",
-        "Username column is clearly labeled in the submissions table",
-        "Backend endpoint returns username data for each submission"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
-          "operation": "modify",
-          "description": "Update the component to fetch username data for each submission by calling the backend's getUserProfile method for each submission's user principal. Display the fetched username (custom username if available, otherwise AI-generated username from profile.username field) in a new Username column in the submissions table. Show both the current username and the requested username (already available in submission.requestedUsername) so admins can see what the user wants to change to. Implement efficient batch loading or individual queries with proper loading states."
-        }
-      ]
-    },
-    {
-      "id": "REQ-72",
-      "summary": "Verify that the useProfile query hook correctly fetches and caches both username fields and prioritizes custom username for display",
-      "acceptanceCriteria": [
-        "useProfile hook successfully fetches both username fields from backend",
-        "Custom username is prioritized over AI-generated username when both exist",
-        "Profile data is properly cached and invalidated on username changes",
-        "No null or undefined username values cause authorization failures"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Review and verify the useGetCallerUserProfile hook ensures proper fetching of the UserProfile type which includes the username field. Add a utility function or hook that extracts the display username from a UserProfile, prioritizing custom username over AI-generated username. Ensure the profile query is invalidated when username changes occur (after username regeneration or custom username approval). Add null/undefined checks to prevent authorization failures when username data is missing."
-        },
-        {
-          "path": "frontend/src/components/layout/Layout.tsx",
-          "operation": "modify",
-          "description": "Update the username display in the header to use a utility function that properly prioritizes custom username over AI-generated username from the user profile. Ensure the username display handles loading states and null values gracefully. Verify that the regeneration button remains functional and that profile data is properly refreshed after username changes."
+          "description": "Review and ensure the usePhoneNumber hook properly supports the updated phone number validation requirements. Verify that the savePhoneNumber mutation correctly handles worldwide numeric phone numbers without length restrictions. Ensure proper error handling and cache invalidation after successful phone number submission."
         }
       ]
     }

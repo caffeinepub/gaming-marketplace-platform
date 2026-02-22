@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useGetPaymentDetails, useUpdatePaymentDetails } from '../../hooks/useQueries';
+import { useGetPaymentDetails, useUpdatePaymentDetails, useAddAdminUsername, useAddAdminPhoneNumber } from '../../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, UserPlus, Phone } from 'lucide-react';
 
 export default function PaymentConfigForm() {
   const { data: paymentDetails, isLoading } = useGetPaymentDetails();
   const updatePaymentDetails = useUpdatePaymentDetails();
+  const addAdminUsername = useAddAdminUsername();
+  const addAdminPhoneNumber = useAddAdminPhoneNumber();
 
   const [paypalEmail, setPaypalEmail] = useState('');
   const [ukGiftCardInstructions, setUkGiftCardInstructions] = useState('');
@@ -19,6 +21,9 @@ export default function PaymentConfigForm() {
   const [queueSkipPriceGBP, setQueueSkipPriceGBP] = useState('0.05');
   const [usernameRegenerationPriceGBP, setUsernameRegenerationPriceGBP] = useState('0.01');
   const [customUsernamePriceGBP, setCustomUsernamePriceGBP] = useState('0.10');
+  
+  const [newAdminUsername, setNewAdminUsername] = useState('');
+  const [newAdminPhoneNumber, setNewAdminPhoneNumber] = useState('');
 
   useEffect(() => {
     if (paymentDetails) {
@@ -71,6 +76,54 @@ export default function PaymentConfigForm() {
     }
   };
 
+  const handleAddAdminUsername = async () => {
+    if (!newAdminUsername.trim()) {
+      toast.error('Please enter a username');
+      return;
+    }
+
+    try {
+      await addAdminUsername.mutateAsync(newAdminUsername.trim());
+      toast.success('Admin username added successfully!');
+      setNewAdminUsername('');
+    } catch (error: any) {
+      console.error('Failed to add admin username:', error);
+      toast.error(error.message || 'Failed to add admin username');
+    }
+  };
+
+  const handleAddAdminPhoneNumber = async () => {
+    const phoneNumber = newAdminPhoneNumber.trim();
+    
+    if (!phoneNumber) {
+      toast.error('Please enter a phone number');
+      return;
+    }
+
+    // Validate phone number format (11 digits, no +)
+    const digitsOnly = phoneNumber.replace(/\D/g, '');
+    if (digitsOnly.length !== 11) {
+      toast.error('Phone number must be 11 digits (UK format without +)');
+      return;
+    }
+
+    try {
+      await addAdminPhoneNumber.mutateAsync(digitsOnly);
+      toast.success('Admin phone number added successfully!');
+      setNewAdminPhoneNumber('');
+    } catch (error: any) {
+      console.error('Failed to add admin phone number:', error);
+      toast.error(error.message || 'Failed to add admin phone number');
+    }
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow digits
+    const digitsOnly = value.replace(/\D/g, '');
+    setNewAdminPhoneNumber(digitsOnly);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -87,6 +140,73 @@ export default function PaymentConfigForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Admin Management Section */}
+          <div className="space-y-4 pb-6 border-b border-border">
+            <h3 className="text-lg font-semibold">Admin Management</h3>
+            
+            <div className="space-y-3">
+              <Label htmlFor="newAdminUsername">Add Admin by Username</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="newAdminUsername"
+                  type="text"
+                  placeholder="Enter username"
+                  value={newAdminUsername}
+                  onChange={(e) => setNewAdminUsername(e.target.value)}
+                  disabled={addAdminUsername.isPending}
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddAdminUsername}
+                  disabled={addAdminUsername.isPending || !newAdminUsername.trim()}
+                  variant="outline"
+                >
+                  {addAdminUsername.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Add Admin
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="newAdminPhoneNumber">Add Admin by Phone Number</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="newAdminPhoneNumber"
+                  type="tel"
+                  placeholder="07123456789 (11 digits, no +)"
+                  value={newAdminPhoneNumber}
+                  onChange={handlePhoneNumberChange}
+                  maxLength={11}
+                  disabled={addAdminPhoneNumber.isPending}
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddAdminPhoneNumber}
+                  disabled={addAdminPhoneNumber.isPending || newAdminPhoneNumber.length !== 11}
+                  variant="outline"
+                >
+                  {addAdminPhoneNumber.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Phone className="mr-2 h-4 w-4" />
+                      Add Admin
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Enter UK phone number without the + prefix (e.g., 07123456789)
+              </p>
+            </div>
+          </div>
+
           {/* Pricing Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Pricing</h3>

@@ -29,11 +29,13 @@ actor {
     name : Text;
     email : Text;
     username : ?Text;
+    phoneNumber : ?Text;
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
   let usernameMap = Map.empty<Text, Principal>();
   let customUsernames = Map.empty<Principal, Text>();
+  let phoneNumberMap = Map.empty<Text, Principal>();
 
   type Product = {
     id : Text;
@@ -135,8 +137,8 @@ actor {
   let customUsernameSubmissions = Map.empty<Principal, CustomUsernameSubmission>();
 
   let adminUsernameWhitelist = Map.empty<Text, Bool>();
+  let adminPhoneWhitelist = Map.empty<Text, Bool>();
 
-  // Initialize the admin username whitelist
   do {
     adminUsernameWhitelist.add("venomgladiator25", true);
     adminUsernameWhitelist.add("turbohunter64", true);
@@ -163,35 +165,61 @@ actor {
     };
   };
 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+  public shared ({ caller }) func addAdminPhoneNumber(phoneNumber : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add admin phone numbers");
+    };
+    validatePhoneNumber(phoneNumber);
+    adminPhoneWhitelist.add(phoneNumber, true);
+  };
+
+  public shared ({ caller }) func removeAdminPhoneNumber(phoneNumber : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can remove admin phone numbers");
+    };
+    adminPhoneWhitelist.remove(phoneNumber);
+  };
+
+  public query func isAdminPhoneNumber(phoneNumber : Text) : async Bool {
+    switch (adminPhoneWhitelist.get(phoneNumber)) {
+      case (null) { false };
+      case (?exists) { exists };
+    };
+  };
+
+  public query({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view profiles");
     };
     getUserProfileWithCustomUsername(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+  public query({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
     getUserProfileWithCustomUsername(user);
   };
 
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+  public shared({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
     userProfiles.add(caller, profile);
+    switch (profile.phoneNumber) {
+      case (?phone) { phoneNumberMap.add(phone, caller) };
+      case (null) {};
+    };
   };
 
-  public shared ({ caller }) func createUsername(requestedUsername : Text) : async () {
+  public shared({ caller }) func createUsername(requestedUsername : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create usernames");
     };
     createOrValidateUsername(caller, requestedUsername, false);
   };
 
-  public shared ({ caller }) func validateGeneratedUsername(username : Text) : async () {
+  public shared({ caller }) func validateGeneratedUsername(username : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can validate usernames");
     };
@@ -204,9 +232,7 @@ actor {
     };
 
     let isValidAlphanumeric = username.toArray().all(
-      func(char) {
-        char.isDigit() or (char >= 'a' and char <= 'z');
-      }
+      func(char) { char.isDigit() or (char >= 'a' and char <= 'z') }
     );
     if (not isValidAlphanumeric) {
       Runtime.trap("Username must only contain lowercase letters and numbers");
@@ -215,6 +241,15 @@ actor {
     let lowerUsername = username.toLower();
     if (forbiddenWords.any(func(word) { lowerUsername.contains(#text word) })) {
       Runtime.trap("Username contains forbidden words");
+    };
+  };
+
+  func validatePhoneNumber(phoneNumber : Text) {
+    let isValidNumber = phoneNumber.toArray().all(
+      func(char) { char.isDigit() }
+    );
+    if (not isValidNumber) {
+      Runtime.trap("Phone number must only contain digits");
     };
   };
 
@@ -256,7 +291,7 @@ actor {
     };
   };
 
-  public query ({ caller }) func hasUsername() : async Bool {
+  public query({ caller }) func hasUsername() : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can check username status");
     };
@@ -271,17 +306,17 @@ actor {
     };
   };
 
-  public query ({ caller }) func getUsername(_user : Principal) : async ?Text {
+  public query({ caller }) func getUsername(_user : Principal) : async ?Text {
     if (caller != _user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own username");
     };
     switch (userProfiles.get(_user)) {
-      case (null) { Runtime.trap("User does not exist - bombsawayYYYYYY️️️"); };
+      case (null) { Runtime.trap("User does not exist - bombsawayYYYYYY️️️") };
       case (?profile) { profile.username };
     };
   };
 
-  public shared ({ caller }) func submitCustomUsername(
+  public shared({ caller }) func submitCustomUsername(
     requestedUsername : Text,
     paymentMethod : PaymentMethod,
     transactionDetails : Text
@@ -304,7 +339,7 @@ actor {
     customUsernameSubmissions.add(caller, submission);
   };
 
-  public shared ({ caller }) func approveCustomUsername(user : Principal) : async () {
+  public shared({ caller }) func approveCustomUsername(user : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can approve custom usernames");
     };
@@ -321,7 +356,7 @@ actor {
     };
   };
 
-  public shared ({ caller }) func rejectCustomUsername(user : Principal) : async () {
+  public shared({ caller }) func rejectCustomUsername(user : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can reject custom usernames");
     };
@@ -335,14 +370,14 @@ actor {
     };
   };
 
-  public query ({ caller }) func getCustomUsernameSubmissions() : async [CustomUsernameSubmission] {
+  public query({ caller }) func getCustomUsernameSubmissions() : async [CustomUsernameSubmission] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view custom username submissions");
     };
     customUsernameSubmissions.values().toArray();
   };
 
-  public shared ({ caller }) func createProduct(id : Text, product : Product) : async () {
+  public shared({ caller }) func createProduct(id : Text, product : Product) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can create products");
     };
@@ -354,7 +389,7 @@ actor {
     };
   };
 
-  public shared ({ caller }) func updateProduct(id : Text, updatedProduct : Product) : async () {
+  public shared({ caller }) func updateProduct(id : Text, updatedProduct : Product) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update products");
     };
@@ -364,7 +399,7 @@ actor {
     };
   };
 
-  public shared ({ caller }) func deleteProduct(id : Text) : async () {
+  public shared({ caller }) func deleteProduct(id : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can delete products");
     };
@@ -385,7 +420,7 @@ actor {
     products.values().toArray();
   };
 
-  public shared ({ caller }) func createCategory(name : Text, category : Category) : async () {
+  public shared({ caller }) func createCategory(name : Text, category : Category) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can create categories");
     };
@@ -395,7 +430,7 @@ actor {
     categories.add(name, category);
   };
 
-  public shared ({ caller }) func updateCategory(name : Text, updatedCategory : Category) : async () {
+  public shared({ caller }) func updateCategory(name : Text, updatedCategory : Category) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update categories");
     };
@@ -405,7 +440,7 @@ actor {
     };
   };
 
-  public shared ({ caller }) func deleteCategory(name : Text) : async () {
+  public shared({ caller }) func deleteCategory(name : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can delete categories");
     };
@@ -426,7 +461,7 @@ actor {
     categories.values().toArray();
   };
 
-  public shared ({ caller }) func addToCart(productId : Text, quantity : Nat) : async () {
+  public shared({ caller }) func addToCart(productId : Text, quantity : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add items to cart");
     };
@@ -470,7 +505,7 @@ actor {
     carts.add(caller, finalCart);
   };
 
-  public query ({ caller }) func getCart() : async [CartItem] {
+  public query({ caller }) func getCart() : async [CartItem] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view their cart");
     };
@@ -480,7 +515,7 @@ actor {
     };
   };
 
-  public shared ({ caller }) func updateCartItemQuantity(productId : Text, quantity : Nat) : async () {
+  public shared({ caller }) func updateCartItemQuantity(productId : Text, quantity : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can update their cart");
     };
@@ -507,21 +542,21 @@ actor {
     };
   };
 
-  public shared ({ caller }) func clearCart() : async () {
+  public shared({ caller }) func clearCart() : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can clear their cart");
     };
     carts.add(caller, []);
   };
 
-  public shared ({ caller }) func updatePaymentDetails(config : PaymentConfig) : async () {
+  public shared({ caller }) func updatePaymentDetails(config : PaymentConfig) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update payment details");
     };
     paymentConfig := config;
   };
 
-  public query ({ caller }) func getPaymentDetails() : async PaymentConfig {
+  public query({ caller }) func getPaymentDetails() : async PaymentConfig {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view payment details");
     };
@@ -532,7 +567,7 @@ actor {
     paymentConfig.instagramUrl;
   };
 
-  public shared ({ caller }) func submitQueueSkipPayment(
+  public shared({ caller }) func submitQueueSkipPayment(
     transactionId : Text,
     giftCardType : GiftCardType,
     giftCardCode : ?Text
@@ -563,7 +598,7 @@ actor {
     ();
   };
 
-  public query ({ caller }) func hasQueueBypass() : async Bool {
+  public query({ caller }) func hasQueueBypass() : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can check queue bypass status");
     };
@@ -573,14 +608,14 @@ actor {
     };
   };
 
-  public query ({ caller }) func getQueueSkipSubmissions() : async [QueueSkipSubmission] {
+  public query({ caller }) func getQueueSkipSubmissions() : async [QueueSkipSubmission] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view queue skip submissions");
     };
     queueSkipSubmissions.values().toArray();
   };
 
-  public shared ({ caller }) func flagQueueSkipFraud(user : Principal) : async () {
+  public shared({ caller }) func flagQueueSkipFraud(user : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can flag submissions");
     };
@@ -596,14 +631,12 @@ actor {
     };
   };
 
-  // New types for username, queue skip and custom username submissions
   type ExtendedQueueSkipSubmission = {
     submission : QueueSkipSubmission;
     username : ?Text;
   };
 
-  // New Query Functions That Include Username
-  public query ({ caller }) func getQueueSkipSubmissionsWithUsernames() : async [ExtendedQueueSkipSubmission] {
+  public query({ caller }) func getQueueSkipSubmissionsWithUsernames() : async [ExtendedQueueSkipSubmission] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view queue skip submissions");
     };
@@ -620,7 +653,6 @@ actor {
     mappedValues.toArray();
   };
 
-  // Helper to fetch username with custom name fallback
   func getUsernameForUser(user : Principal) : ?Text {
     switch (customUsernames.get(user)) {
       case (?custom) { ?custom };
@@ -631,5 +663,40 @@ actor {
         };
       };
     };
+  };
+
+  public query({ caller }) func hasPhoneNumber() : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check phone number status");
+    };
+    switch (userProfiles.get(caller)) {
+      case (null) { false };
+      case (?profile) {
+        switch (profile.phoneNumber) {
+          case (null) { false };
+          case (?_) { true };
+        };
+      };
+    };
+  };
+
+  public shared({ caller }) func savePhoneNumber(phoneNumber : Text) : async () {
+    validatePhoneNumber(phoneNumber);
+    if (phoneNumberMap.containsKey(phoneNumber)) {
+      Runtime.trap("Phone number already exists");
+    };
+
+    let existingProfile = switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("User profile not found") };
+      case (?p) { p };
+    };
+
+    let updatedProfile = {
+      existingProfile with
+      phoneNumber = ?phoneNumber;
+    };
+
+    userProfiles.add(caller, updatedProfile);
+    phoneNumberMap.add(phoneNumber, caller);
   };
 };

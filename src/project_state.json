@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
-  "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
+  "projectStateVersion": 33,
+  "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation. Users must provide phone number (without +) during account setup; mandatory before accessing any features. Dual admin whitelist system supports both username-based (venomgladiator25, turbohunter64) and phone number-based admin authorization.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
     "React + TypeScript frontend with Tailwind CSS",
@@ -436,6 +436,78 @@
         "REQ-72"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-create-phonenumbersetup-dialog-component-that-appears-after-terms-acceptance-and-before-ai-username-generation-blocking-all-app-access-until-phone-number-is-entered-and-saved",
+      "title": "Create PhoneNumberSetup dialog component that appears after terms acceptance and before AI username generation, blocking all app access until phone number is entered and saved",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-app-tsx-authentication-flow-to-check-phone-number-setup-status-after-terms-acceptance-displaying-phonenumbersetup-dialog-before-ai-username-generation-if-phone-number-is-missing",
+      "title": "Update App.tsx authentication flow to check phone number setup status after terms acceptance, displaying PhoneNumberSetup dialog before AI username generation if phone number is missing",
+      "reqIds": [
+        "REQ-77"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-for-checking-phone-number-setup-status-and-saving-phone-number-using-the-backend-endpoints",
+      "title": "Create React Query hook for checking phone number setup status and saving phone number using the backend endpoints",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-phone-number-input-field-and-add-admin-button-to-the-paymentconfigform-component-in-the-admin-panel-for-whitelisting-phone-numbers",
+      "title": "Add phone number input field and 'Add Admin' button to the PaymentConfigForm component in the admin panel for whitelisting phone numbers",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-for-adding-phone-numbers-to-admin-whitelist-using-the-backend-endpoint",
+      "title": "Create React Query hook for adding phone numbers to admin whitelist using the backend endpoint",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-storefront-component-admin-authorization-check-to-query-both-username-and-phone-number-whitelist-status-when-admin-button-is-clicked",
+      "title": "Update the Storefront component admin authorization check to query both username and phone number whitelist status when admin button is clicked",
+      "reqIds": [
+        "REQ-85"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-phonenumbersetup-component-to-accept-any-numeric-input-without-the-prefix-removing-the-11-digit-uk-phone-number-validation-and-replacing-it-with-worldwide-phone-number-format-that-accepts-any-length-numeric-input",
+      "title": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
+      "reqIds": [
+        "REQ-86"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-haven-t-added-phone-number-button-to-the-phonenumbersetup-dialog-component-that-allows-users-to-proceed-with-adding-their-phone-number-through-the-same-interface-when-clicked",
+      "title": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
+      "reqIds": [
+        "REQ-88"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-app-tsx-authentication-flow-to-require-all-users-both-new-and-existing-to-provide-a-phone-number-on-login-if-they-haven-t-already-displaying-the-phonenumbersetup-dialog-and-blocking-access-to-all-app-features-until-phone-number-is-saved",
+      "title": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
+      "reqIds": [
+        "REQ-89"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -758,6 +830,124 @@
       "summary": "Create or update backend endpoints for queue skip, username change, and custom username submissions to include the submitting user's username (prioritizing custom username over AI-generated username) in the response data for each submission record",
       "reqIds": [
         "REQ-71"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-70",
+      "summary": "Add mandatory phone number field (without +) to user profile that must be completed during account setup before users can access any features",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-71",
+      "summary": "Create phone number input dialog/modal that blocks access to all features until phone number is provided and saved",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-72",
+      "summary": "Add backend storage for admin phone number whitelist that can be updated by admins",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-73",
+      "summary": "Create backend endpoint to add phone numbers to admin whitelist and check if a phone number exists in the whitelist",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-74",
+      "summary": "Add phone number whitelist input field in admin panel payment configuration section to allow admins to add new phone numbers for admin access",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Update admin authorization logic to check BOTH username whitelist AND phone number whitelist, granting access if either check passes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Add phone number field (without + prefix) to the backend user profile data model as a required field that must be unique across all users",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-77",
+      "summary": "Create backend endpoint to check if a user has completed phone number setup, returning phone number status for the authenticated principal",
+      "reqIds": [
+        "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-78",
+      "summary": "Create backend endpoint to save phone number for the authenticated user, with validation for uniqueness and numeric-only format",
+      "reqIds": [
+        "REQ-75"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-82",
+      "summary": "Add backend storage for admin phone number whitelist as a separate list from the username whitelist",
+      "reqIds": [
+        "REQ-79"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-83",
+      "summary": "Create backend endpoint to add phone numbers to the admin whitelist, restricted to existing admin users only",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-84",
+      "summary": "Create backend endpoint to check if a phone number exists in the admin whitelist, returning boolean result",
+      "reqIds": [
+        "REQ-81"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-87",
+      "summary": "Update backend admin authorization logic to check BOTH username whitelist AND phone number whitelist, granting admin access if either check passes",
+      "reqIds": [
+        "REQ-84"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-88",
+      "summary": "Expand phone number support to worldwide format (any numeric input without + prefix, no specific length validation)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-89",
+      "summary": "Add 'Haven't Added Phone Number' button within PhoneNumberSetup dialog to allow users to add phone number through the same interface",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-90",
+      "summary": "Update phone number requirement to mandatory for all users (new and existing) - prompt existing users without phone numbers to add one on next login before accessing app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-92",
+      "summary": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
+      "reqIds": [
+        "REQ-87"
       ],
       "status": "pending"
     }
