@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
-  "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported.",
+  "projectStateVersion": 15,
+  "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
     "React + TypeScript frontend with Tailwind CSS",
@@ -10,13 +10,12 @@
     "Manual payment processing with admin-configured payment instructions",
     "Product types: gaming accounts with ranks, in-game currency, premium clothes",
     "Multi-category product organization by game",
-    "Username system: unique usernames required post-authentication, 5+ chars, alphanumeric only, with profanity filtering",
     "Login queue: random countdown 20-60 for all users, auto-proceeds to username creation (new) or store (returning)",
-    "Social media links: YouTube and Instagram icons at bottom of queue and store pages"
+    "Social media links: YouTube and Instagram icons at bottom of queue and store pages",
+    "AI-generated GamerTag-style usernames replace manual username creation"
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Animated gaming background video showing dynamic gameplay footage with fast-paced action, vibrant colors, and looping seamlessly (gaming-background.mp4)",
   "existing_features": [
     {
       "id": "feature-implement-user-authentication-system-using-internet-identity-for-buyer-accounts",
@@ -161,6 +160,134 @@
         "REQ-24"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-skip-queue-for-0-05-button-to-the-loginqueue-component-that-opens-a-payment-submission-dialog-showing-payment-instructions-for-all-three-existing-payment-methods-paypal-uk-gift-cards-and-crypto-using-the-admin-configured-payment-details",
+      "title": "Add 'Skip Queue for £0.05' button to the LoginQueue component that opens a payment submission dialog showing payment instructions for all three existing payment methods (PayPal, UK gift cards, and crypto) using the admin-configured payment details",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-payment-proof-submission-form-in-the-queue-skip-dialog-that-allows-users-to-submit-a-screenshot-image-file-and-a-transaction-id-text-field-as-proof-of-payment",
+      "title": "Create payment proof submission form in the queue skip dialog that allows users to submit a screenshot/image file and a transaction ID text field as proof of payment",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-upon-successful-submission-of-payment-proof-automatically-grant-the-user-queue-bypass-status-and-immediately-proceed-them-to-username-creation-if-they-haven-t-created-a-username-or-directly-to-the-storefront-if-they-already-have-a-username-without-waiting-for-admin-approval",
+      "title": "Upon successful submission of payment proof, automatically grant the user queue bypass status and immediately proceed them to username creation (if they haven't created a username) or directly to the storefront (if they already have a username) without waiting for admin approval",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-queue-skip-price-configuration-field-to-the-payment-configuration-section-in-the-admin-panel-with-a-default-value-of-0-05-allowing-admins-to-adjust-the-queue-skip-price",
+      "title": "Add 'Queue Skip Price' configuration field to the payment configuration section in the admin panel with a default value of £0.05, allowing admins to adjust the queue skip price",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-admin-panel-section-to-view-all-queue-skip-payment-submissions-with-details-including-user-principal-submission-timestamp-transaction-id-payment-screenshot-and-current-status-pending-review-approved-flagged-as-fraudulent",
+      "title": "Create admin panel section to view all queue skip payment submissions with details including user principal, submission timestamp, transaction ID, payment screenshot, and current status (pending review/approved/flagged as fraudulent)",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-admin-actions-to-flag-queue-skip-submissions-as-fraudulent-which-should-revoke-the-user-s-queue-bypass-status-and-prevent-them-from-using-the-queue-skip-feature-again",
+      "title": "Implement admin actions to flag queue skip submissions as fraudulent, which should revoke the user's queue bypass status and prevent them from using the queue skip feature again",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-uk-gift-card-type-selection-dropdown-to-the-queue-skip-payment-form-with-common-uk-gift-card-options-e-g-amazon-uk-google-play-uk-itunes-uk-steam-uk-playstation-uk-xbox-uk",
+      "title": "Add UK gift card type selection dropdown to the queue skip payment form with common UK gift card options (e.g., Amazon UK, Google Play UK, iTunes UK, Steam UK, PlayStation UK, Xbox UK)",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-screenshot-image-upload-field-with-a-text-input-field-for-gift-card-code-entry-in-the-queue-skip-payment-form-when-uk-gift-cards-payment-method-is-selected",
+      "title": "Replace the screenshot/image upload field with a text input field for gift card code entry in the queue skip payment form when UK gift cards payment method is selected",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-hardcode-the-bitcoin-address-bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722-to-always-display-for-queue-skip-crypto-payments-regardless-of-admin-configured-crypto-payment-details",
+      "title": "Hardcode the Bitcoin address bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722 to always display for queue skip crypto payments, regardless of admin-configured crypto payment details",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-admin-queue-skip-submissions-panel-to-display-gift-card-type-and-gift-card-code-for-gift-card-submissions-instead-of-screenshot-while-continuing-to-show-screenshots-for-paypal-and-crypto-submissions",
+      "title": "Update the admin queue skip submissions panel to display gift card type and gift card code for gift card submissions instead of screenshot, while continuing to show screenshots for PayPal and crypto submissions",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-terms-acceptance-modal-component-that-displays-after-queue-completion-or-queue-skip-payment-showing-the-text-we-at-game-vault-have-no-partition-with-any-hacking-or-scamming-or-3rd-party-selling-with-an-accept-button-that-must-be-clicked-to-proceed",
+      "title": "Create a terms acceptance modal component that displays after queue completion or queue skip payment, showing the text 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' with an Accept button that must be clicked to proceed",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-ai-generated-gamertag-style-username-creation-that-automatically-generates-usernames-format-examples-shadowwarrior42-epicsniper89-immediately-after-terms-acceptance-without-user-input",
+      "title": "Implement AI-generated GamerTag-style username creation that automatically generates usernames (format examples: ShadowWarrior42, EpicSniper89) immediately after terms acceptance without user input",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-username-regeneration-feature-that-allows-users-to-request-a-new-ai-generated-gamertag-for-0-01-per-change",
+      "title": "Add username regeneration feature that allows users to request a new AI-generated GamerTag for £0.01 per change",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-username-regeneration-price-configuration-field-0-01-in-admin-payment-settings-panel-alongside-queue-skip-price",
+      "title": "Add username regeneration price configuration field (£0.01) in admin payment settings panel alongside queue skip price",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-admin-panel-section-to-review-username-change-payment-submissions-with-details-including-user-principal-submission-timestamp-transaction-details-and-current-status",
+      "title": "Create admin panel section to review username change payment submissions with details including user principal, submission timestamp, transaction details, and current status",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-existing-manual-username-creation-modal-usernamesetup-tsx-and-update-app-tsx-authentication-flow-to-use-terms-acceptance-followed-by-ai-username-generation",
+      "title": "Remove the existing manual username creation modal (UsernameSetup.tsx) and update App.tsx authentication flow to use terms acceptance followed by AI username generation",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -223,12 +350,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-12",
-      "summary": "Username creation required after Internet Identity authentication with unique usernames, minimum 5 characters, alphanumeric only, and profanity filter",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-13",
       "summary": "Queue system for all sign-up/login with random countdown from 20-60, automatic progression to username creation or store access",
       "reqIds": [],
@@ -282,6 +403,84 @@
       "id": "AR-23",
       "summary": "Add social media icons (YouTube and Instagram) at the bottom of both queue screen and store page with configurable URLs",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add 'Skip Queue' feature: button on queue screen with £0.05 configurable price, payment via existing methods (PayPal, UK gift cards, crypto), users submit payment proof (screenshot/transaction ID) for automatic queue bypass",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Admin panel section to review queue skip payment submissions and flag fraudulent attempts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Backend endpoint to handle queue skip payment proof submissions and automatically grant queue bypass access",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Add configurable 'Queue Skip Price' field in admin panel (default £0.05)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Implement backend endpoint to receive queue skip payment proof submissions including screenshot image data and transaction ID, storing submission details associated with the user's principal for admin review",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Update queue skip payment flow: keep all 3 payment methods, add UK gift card type selection dropdown and gift card code text input (replacing screenshot upload for gift cards)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Hardcode Bitcoin address bc1q9jqngrwkpay42hvdmcl2lnyh3y4fx7l7ufh722 to always display for queue skip crypto payments",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Update the backend queue skip submission data model to store gift card type and gift card code fields instead of requiring screenshot data for gift card submissions",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Replace manual username creation with terms acceptance screen displaying 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' and Accept button after queue completion/skip",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Implement AI-generated GamerTag-style usernames (e.g., ShadowWarrior42, EpicSniper89) automatically created after terms acceptance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Add username regeneration feature allowing users to request new AI-generated username for £0.01 per change using existing payment methods (PayPal, UK gift cards, crypto)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Add backend endpoint to generate AI-powered GamerTag-style usernames with validation against existing usernames, profanity filter, and uniqueness checks",
+      "reqIds": [
+        "REQ-39"
+      ],
       "status": "pending"
     }
   ],

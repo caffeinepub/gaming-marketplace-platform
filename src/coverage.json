@@ -1,59 +1,106 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T17:24:08.936Z",
+  "generatedAt": "2026-02-22T18:35:06.310Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 7,
+    "implemented": 6,
     "items": [
       {
-        "id": "REQ-21",
-        "summary": "Generate a custom animated video background that resembles dynamic gameplay footage for the login queue screen",
+        "id": "REQ-37",
+        "summary": "Create a terms acceptance modal component that displays after queue completion or queue skip payment, showing the text 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' with an Accept button that must be clicked to proceed",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/LoginQueue.tsx"
+          "frontend/src/components/auth/TermsAcceptanceModal.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/LoginQueue.tsx"
+          "frontend/src/components/auth/TermsAcceptanceModal.tsx",
+          "frontend/src/App.tsx"
         ]
       },
       {
-        "id": "REQ-22",
-        "summary": "Add YouTube and Instagram social media icons at the bottom of the LoginQueue component, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+        "id": "REQ-38",
+        "summary": "Implement AI-generated GamerTag-style username creation that automatically generates usernames (format examples: ShadowWarrior42, EpicSniper89) immediately after terms acceptance without user input",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/LoginQueue.tsx",
+          "frontend/src/components/auth/AIUsernameGenerator.tsx",
+          "frontend/src/utils/gamerTagGenerator.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/AIUsernameGenerator.tsx",
+          "frontend/src/utils/gamerTagGenerator.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-39",
+        "summary": "Add backend endpoint to generate AI-powered GamerTag-style usernames with validation against existing usernames, profanity filter, and uniqueness checks",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-40",
+        "summary": "Add username regeneration feature that allows users to request a new AI-generated GamerTag for £0.01 per change",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
+          "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
+          "frontend/src/components/layout/Layout.tsx",
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/LoginQueue.tsx",
+          "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
+          "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
+          "frontend/src/components/layout/Layout.tsx",
           "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-23",
-        "summary": "Add YouTube and Instagram social media icons at the bottom of the storefront page, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+        "id": "REQ-41",
+        "summary": "Add username regeneration price configuration field (£0.01) in admin payment settings panel alongside queue skip price",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Storefront.tsx"
+          "frontend/src/components/admin/PaymentConfigForm.tsx",
+          "frontend/src/components/profile/UsernameRegenerationDialog.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Storefront.tsx"
+          "frontend/src/components/admin/PaymentConfigForm.tsx",
+          "frontend/src/components/profile/UsernameRegenerationDialog.tsx"
         ]
       },
       {
-        "id": "REQ-24",
-        "summary": "Add Instagram URL field to the payment configuration section in the admin panel so admins can configure the Instagram link displayed on the queue and store pages",
+        "id": "REQ-42",
+        "summary": "Create admin panel section to review username change payment submissions with details including user principal, submission timestamp, transaction details, and current status",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/admin/PaymentConfigForm.tsx"
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+          "frontend/src/pages/AdminPanel.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/admin/PaymentConfigForm.tsx"
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+          "frontend/src/pages/AdminPanel.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-43",
+        "summary": "Remove the existing manual username creation modal (UsernameSetup.tsx) and update App.tsx authentication flow to use terms acceptance followed by AI username generation",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/UsernameSetup.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/UsernameSetup.tsx",
+          "frontend/src/App.tsx"
         ]
       }
     ]
@@ -65,15 +112,22 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/gaming-background.mp4",
+    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/components/admin/PaymentConfigForm.tsx",
-    "frontend/src/components/auth/LoginQueue.tsx",
+    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+    "frontend/src/components/auth/AIUsernameGenerator.tsx",
+    "frontend/src/components/auth/TermsAcceptanceModal.tsx",
+    "frontend/src/components/auth/UsernameSetup.tsx",
+    "frontend/src/components/layout/Layout.tsx",
+    "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
+    "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Storefront.tsx",
+    "frontend/src/pages/AdminPanel.tsx",
+    "frontend/src/utils/gamerTagGenerator.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

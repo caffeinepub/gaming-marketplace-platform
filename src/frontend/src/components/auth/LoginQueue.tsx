@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Loader2, Youtube, Instagram } from 'lucide-react';
-import { useGetInstagramUrl } from '../../hooks/useQueries';
+import { useGetInstagramUrl, useGetPaymentDetails } from '../../hooks/useQueries';
+import { Button } from '@/components/ui/button';
+import QueueSkipDialog from './QueueSkipDialog';
 
 interface LoginQueueProps {
   onQueueComplete: () => void;
@@ -15,6 +17,8 @@ export default function LoginQueue({ onQueueComplete }: LoginQueueProps) {
   const initialPosition = useRef(position);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { data: instagramUrl = '' } = useGetInstagramUrl();
+  const { data: paymentDetails } = useGetPaymentDetails();
+  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
 
   useEffect(() => {
     if (position <= 0) {
@@ -40,6 +44,8 @@ export default function LoginQueue({ onQueueComplete }: LoginQueueProps) {
       }
     };
   }, [position, onQueueComplete]);
+
+  const queueSkipPrice = paymentDetails?.queueSkipPriceGBP ?? 0.05;
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -73,7 +79,7 @@ export default function LoginQueue({ onQueueComplete }: LoginQueueProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div className="h-2 w-64 mx-auto bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 ease-linear"
@@ -83,6 +89,16 @@ export default function LoginQueue({ onQueueComplete }: LoginQueueProps) {
           <p className="text-sm text-muted-foreground">
             Please wait while we prepare your experience...
           </p>
+          
+          {/* Skip Queue Button */}
+          <Button
+            onClick={() => setSkipDialogOpen(true)}
+            variant="outline"
+            size="lg"
+            className="mt-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          >
+            Skip Queue for £{queueSkipPrice.toFixed(2)}
+          </Button>
         </div>
       </div>
 
@@ -109,6 +125,9 @@ export default function LoginQueue({ onQueueComplete }: LoginQueueProps) {
           </a>
         )}
       </div>
+
+      {/* Queue Skip Dialog */}
+      <QueueSkipDialog open={skipDialogOpen} onOpenChange={setSkipDialogOpen} />
     </div>
   );
 }

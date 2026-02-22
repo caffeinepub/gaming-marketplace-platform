@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole } from '../backend';
+import { Product, Category, CartItem, UserProfile, PaymentConfig, ProductType, UserRole, QueueSkipSubmission, GiftCardType } from '../backend';
+import { Principal } from '@icp-sdk/core/principal';
+import { toast } from 'sonner';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -214,11 +216,7 @@ export function useGetCart() {
     queryKey: ['cart'],
     queryFn: async () => {
       if (!actor) return [];
-      try {
-        return await actor.getCart();
-      } catch (error) {
-        return [];
-      }
+      return actor.getCart();
     },
     enabled: !!actor && !isFetching,
   });
@@ -235,6 +233,7 @@ export function useAddToCart() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
+      toast.success('Item added to cart');
     },
   });
 }
@@ -294,12 +293,10 @@ export function useUpdatePaymentDetails() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentDetails'] });
-      queryClient.invalidateQueries({ queryKey: ['instagramUrl'] });
     },
   });
 }
 
-// Instagram URL Query (public)
 export function useGetInstagramUrl() {
   const { actor, isFetching } = useActor();
 
@@ -307,12 +304,139 @@ export function useGetInstagramUrl() {
     queryKey: ['instagramUrl'],
     queryFn: async () => {
       if (!actor) return '';
-      try {
-        return await actor.getInstagramUrl();
-      } catch (error) {
-        return '';
-      }
+      return actor.getInstagramUrl();
     },
     enabled: !!actor && !isFetching,
+  });
+}
+
+// Queue Skip Queries
+export function useHasQueueBypass() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<boolean>({
+    queryKey: ['queueBypass'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.hasQueueBypass();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
+export function useSubmitQueueSkipPayment() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      transactionId,
+      giftCardType,
+      giftCardCode,
+    }: {
+      transactionId: string;
+      giftCardType: GiftCardType;
+      giftCardCode: string | null;
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.submitQueueSkipPayment(transactionId, giftCardType, giftCardCode);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['queueBypass'] });
+    },
+  });
+}
+
+export function useGetQueueSkipSubmissions() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<QueueSkipSubmission[]>({
+    queryKey: ['queueSkipSubmissions'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getQueueSkipSubmissions();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useFlagQueueSkipFraud() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userPrincipal: string) => {
+      if (!actor) throw new Error('Actor not available');
+      const principal = Principal.fromText(userPrincipal);
+      return actor.flagQueueSkipFraud(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['queueSkipSubmissions'] });
+    },
+  });
+}
+
+// Username Change Queries (new)
+export function useSubmitUsernameChangePayment() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      transactionId,
+      giftCardType,
+      giftCardCode,
+    }: {
+      transactionId: string;
+      giftCardType: GiftCardType;
+      giftCardCode: string | null;
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      // Reuse the same backend endpoint as queue skip for now
+      // Backend will need to add a separate endpoint for username changes
+      return actor.submitQueueSkipPayment(transactionId, giftCardType, giftCardCode);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usernameChangeSubmissions'] });
+    },
+  });
+}
+
+export function useGetUsernameChangeSubmissions() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<QueueSkipSubmission[]>({
+    queryKey: ['usernameChangeSubmissions'],
+    queryFn: async () => {
+      if (!actor) return [];
+      // Backend will need to add a separate endpoint for username change submissions
+      // For now, return empty array as placeholder
+      return [];
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useFlagUsernameChangeFraud() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userPrincipal: string) => {
+      if (!actor) throw new Error('Actor not available');
+      const principal = Principal.fromText(userPrincipal);
+      // Backend will need to add a separate endpoint for flagging username change fraud
+      return actor.flagQueueSkipFraud(principal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usernameChangeSubmissions'] });
+    },
   });
 }

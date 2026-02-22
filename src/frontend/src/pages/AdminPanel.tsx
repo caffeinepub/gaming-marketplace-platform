@@ -8,6 +8,8 @@ import ProductForm from '../components/admin/ProductForm';
 import CategoryList from '../components/admin/CategoryList';
 import CategoryForm from '../components/admin/CategoryForm';
 import PaymentConfigForm from '../components/admin/PaymentConfigForm';
+import QueueSkipSubmissionsList from '../components/admin/QueueSkipSubmissionsList';
+import UsernameChangeSubmissionsList from '../components/admin/UsernameChangeSubmissionsList';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 
@@ -49,6 +51,8 @@ export default function AdminPanel() {
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="payments">Payment Settings</TabsTrigger>
+            <TabsTrigger value="queue-skip">Queue Skip Submissions</TabsTrigger>
+            <TabsTrigger value="username-changes">Username Changes</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -77,6 +81,14 @@ export default function AdminPanel() {
 
           <TabsContent value="payments" className="space-y-4">
             <PaymentConfigForm />
+          </TabsContent>
+
+          <TabsContent value="queue-skip" className="space-y-4">
+            <QueueSkipSubmissionsList />
+          </TabsContent>
+
+          <TabsContent value="username-changes" className="space-y-4">
+            <UsernameChangeSubmissionsList />
           </TabsContent>
         </Tabs>
       </div>

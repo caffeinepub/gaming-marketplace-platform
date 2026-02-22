@@ -13,10 +13,17 @@ import type { Principal } from '@icp-sdk/core/principal';
 export interface CartItem { 'productId' : string, 'quantity' : bigint }
 export interface Category { 'name' : string, 'description' : string }
 export type ExternalBlob = Uint8Array;
+export type GiftCardType = { 'cryptocurrency' : null } |
+  { 'tesco' : null } |
+  { 'other' : null } |
+  { 'starbucks' : null } |
+  { 'amazon' : null };
 export interface PaymentConfig {
+  'queueSkipPriceGBP' : number,
   'instagramUrl' : string,
   'cryptoWalletAddress' : string,
   'ukGiftCardInstructions' : string,
+  'usernameRegenerationPriceGBP' : number,
   'paypalEmail' : string,
 }
 export interface Product {
@@ -33,6 +40,18 @@ export interface Product {
 export type ProductType = { 'clothes' : null } |
   { 'currency' : null } |
   { 'account' : null };
+export type QueueSkipStatus = { 'pendingReview' : null } |
+  { 'flaggedFraudulent' : null } |
+  { 'approved' : null };
+export interface QueueSkipSubmission {
+  'status' : QueueSkipStatus,
+  'user' : Principal,
+  'giftCardCode' : [] | [string],
+  'giftCardType' : GiftCardType,
+  'timestamp' : Time,
+  'transactionId' : string,
+}
+export type Time = bigint;
 export interface UserProfile {
   'username' : [] | [string],
   'name' : string,
@@ -77,6 +96,7 @@ export interface _SERVICE {
   'createUsername' : ActorMethod<[string], undefined>,
   'deleteCategory' : ActorMethod<[string], undefined>,
   'deleteProduct' : ActorMethod<[string], undefined>,
+  'flagQueueSkipFraud' : ActorMethod<[Principal], undefined>,
   'getAllCategories' : ActorMethod<[], Array<Category>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
@@ -86,15 +106,22 @@ export interface _SERVICE {
   'getInstagramUrl' : ActorMethod<[], string>,
   'getPaymentDetails' : ActorMethod<[], PaymentConfig>,
   'getProduct' : ActorMethod<[string], Product>,
+  'getQueueSkipSubmissions' : ActorMethod<[], Array<QueueSkipSubmission>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getUsername' : ActorMethod<[Principal], [] | [string]>,
+  'hasQueueBypass' : ActorMethod<[], boolean>,
   'hasUsername' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'submitQueueSkipPayment' : ActorMethod<
+    [string, GiftCardType, [] | [string]],
+    undefined
+  >,
   'updateCartItemQuantity' : ActorMethod<[string, bigint], undefined>,
   'updateCategory' : ActorMethod<[string, Category], undefined>,
   'updatePaymentDetails' : ActorMethod<[PaymentConfig], undefined>,
   'updateProduct' : ActorMethod<[string, Product], undefined>,
+  'validateGeneratedUsername' : ActorMethod<[string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

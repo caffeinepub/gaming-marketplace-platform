@@ -55,10 +55,33 @@ export const CartItem = IDL.Record({
   'quantity' : IDL.Nat,
 });
 export const PaymentConfig = IDL.Record({
+  'queueSkipPriceGBP' : IDL.Float64,
   'instagramUrl' : IDL.Text,
   'cryptoWalletAddress' : IDL.Text,
   'ukGiftCardInstructions' : IDL.Text,
+  'usernameRegenerationPriceGBP' : IDL.Float64,
   'paypalEmail' : IDL.Text,
+});
+export const QueueSkipStatus = IDL.Variant({
+  'pendingReview' : IDL.Null,
+  'flaggedFraudulent' : IDL.Null,
+  'approved' : IDL.Null,
+});
+export const GiftCardType = IDL.Variant({
+  'cryptocurrency' : IDL.Null,
+  'tesco' : IDL.Null,
+  'other' : IDL.Null,
+  'starbucks' : IDL.Null,
+  'amazon' : IDL.Null,
+});
+export const Time = IDL.Int;
+export const QueueSkipSubmission = IDL.Record({
+  'status' : QueueSkipStatus,
+  'user' : IDL.Principal,
+  'giftCardCode' : IDL.Opt(IDL.Text),
+  'giftCardType' : GiftCardType,
+  'timestamp' : Time,
+  'transactionId' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
@@ -97,6 +120,7 @@ export const idlService = IDL.Service({
   'createUsername' : IDL.Func([IDL.Text], [], []),
   'deleteCategory' : IDL.Func([IDL.Text], [], []),
   'deleteProduct' : IDL.Func([IDL.Text], [], []),
+  'flagQueueSkipFraud' : IDL.Func([IDL.Principal], [], []),
   'getAllCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
   'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
@@ -106,19 +130,31 @@ export const idlService = IDL.Service({
   'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
   'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
   'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
+  'getQueueSkipSubmissions' : IDL.Func(
+      [],
+      [IDL.Vec(QueueSkipSubmission)],
+      ['query'],
+    ),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
   'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+  'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
   'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'submitQueueSkipPayment' : IDL.Func(
+      [IDL.Text, GiftCardType, IDL.Opt(IDL.Text)],
+      [],
+      [],
+    ),
   'updateCartItemQuantity' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'updateCategory' : IDL.Func([IDL.Text, Category], [], []),
   'updatePaymentDetails' : IDL.Func([PaymentConfig], [], []),
   'updateProduct' : IDL.Func([IDL.Text, Product], [], []),
+  'validateGeneratedUsername' : IDL.Func([IDL.Text], [], []),
 });
 
 export const idlInitArgs = [];
@@ -165,10 +201,33 @@ export const idlFactory = ({ IDL }) => {
   });
   const CartItem = IDL.Record({ 'productId' : IDL.Text, 'quantity' : IDL.Nat });
   const PaymentConfig = IDL.Record({
+    'queueSkipPriceGBP' : IDL.Float64,
     'instagramUrl' : IDL.Text,
     'cryptoWalletAddress' : IDL.Text,
     'ukGiftCardInstructions' : IDL.Text,
+    'usernameRegenerationPriceGBP' : IDL.Float64,
     'paypalEmail' : IDL.Text,
+  });
+  const QueueSkipStatus = IDL.Variant({
+    'pendingReview' : IDL.Null,
+    'flaggedFraudulent' : IDL.Null,
+    'approved' : IDL.Null,
+  });
+  const GiftCardType = IDL.Variant({
+    'cryptocurrency' : IDL.Null,
+    'tesco' : IDL.Null,
+    'other' : IDL.Null,
+    'starbucks' : IDL.Null,
+    'amazon' : IDL.Null,
+  });
+  const Time = IDL.Int;
+  const QueueSkipSubmission = IDL.Record({
+    'status' : QueueSkipStatus,
+    'user' : IDL.Principal,
+    'giftCardCode' : IDL.Opt(IDL.Text),
+    'giftCardType' : GiftCardType,
+    'timestamp' : Time,
+    'transactionId' : IDL.Text,
   });
   
   return IDL.Service({
@@ -207,6 +266,7 @@ export const idlFactory = ({ IDL }) => {
     'createUsername' : IDL.Func([IDL.Text], [], []),
     'deleteCategory' : IDL.Func([IDL.Text], [], []),
     'deleteProduct' : IDL.Func([IDL.Text], [], []),
+    'flagQueueSkipFraud' : IDL.Func([IDL.Principal], [], []),
     'getAllCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
     'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
@@ -216,19 +276,31 @@ export const idlFactory = ({ IDL }) => {
     'getInstagramUrl' : IDL.Func([], [IDL.Text], ['query']),
     'getPaymentDetails' : IDL.Func([], [PaymentConfig], ['query']),
     'getProduct' : IDL.Func([IDL.Text], [Product], ['query']),
+    'getQueueSkipSubmissions' : IDL.Func(
+        [],
+        [IDL.Vec(QueueSkipSubmission)],
+        ['query'],
+      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
     'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+    'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
     'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'submitQueueSkipPayment' : IDL.Func(
+        [IDL.Text, GiftCardType, IDL.Opt(IDL.Text)],
+        [],
+        [],
+      ),
     'updateCartItemQuantity' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'updateCategory' : IDL.Func([IDL.Text, Category], [], []),
     'updatePaymentDetails' : IDL.Func([PaymentConfig], [], []),
     'updateProduct' : IDL.Func([IDL.Text, Product], [], []),
+    'validateGeneratedUsername' : IDL.Func([IDL.Text], [], []),
   });
 };
 

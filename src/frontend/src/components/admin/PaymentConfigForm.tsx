@@ -16,6 +16,8 @@ export default function PaymentConfigForm() {
   const [ukGiftCardInstructions, setUkGiftCardInstructions] = useState('');
   const [cryptoWalletAddress, setCryptoWalletAddress] = useState('');
   const [instagramUrl, setInstagramUrl] = useState('');
+  const [queueSkipPriceGBP, setQueueSkipPriceGBP] = useState('0.05');
+  const [usernameRegenerationPriceGBP, setUsernameRegenerationPriceGBP] = useState('0.01');
   const [instagramUrlError, setInstagramUrlError] = useState('');
 
   useEffect(() => {
@@ -24,11 +26,13 @@ export default function PaymentConfigForm() {
       setUkGiftCardInstructions(paymentDetails.ukGiftCardInstructions);
       setCryptoWalletAddress(paymentDetails.cryptoWalletAddress);
       setInstagramUrl(paymentDetails.instagramUrl);
+      setQueueSkipPriceGBP(paymentDetails.queueSkipPriceGBP.toString());
+      setUsernameRegenerationPriceGBP(paymentDetails.usernameRegenerationPriceGBP.toString());
     }
   }, [paymentDetails]);
 
   const validateUrl = (url: string): boolean => {
-    if (!url) return true; // Empty is valid
+    if (!url) return true;
     try {
       new URL(url);
       return true;
@@ -49,9 +53,20 @@ export default function PaymentConfigForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate Instagram URL before submitting
     if (instagramUrl && !validateUrl(instagramUrl)) {
       toast.error('Please enter a valid Instagram URL');
+      return;
+    }
+
+    const queueSkipPrice = parseFloat(queueSkipPriceGBP);
+    if (isNaN(queueSkipPrice) || queueSkipPrice <= 0) {
+      toast.error('Queue skip price must be a positive number');
+      return;
+    }
+
+    const usernameChangePrice = parseFloat(usernameRegenerationPriceGBP);
+    if (isNaN(usernameChangePrice) || usernameChangePrice <= 0) {
+      toast.error('Username change price must be a positive number');
       return;
     }
 
@@ -61,9 +76,12 @@ export default function PaymentConfigForm() {
         ukGiftCardInstructions,
         cryptoWalletAddress,
         instagramUrl,
+        queueSkipPriceGBP: queueSkipPrice,
+        usernameRegenerationPriceGBP: usernameChangePrice,
       });
-      toast.success('Payment details updated successfully!');
+      toast.success('Payment details updated successfully');
     } catch (error: any) {
+      console.error('Update payment details error:', error);
       toast.error(error.message || 'Failed to update payment details');
     }
   };
@@ -72,26 +90,26 @@ export default function PaymentConfigForm() {
     <Card>
       <CardHeader>
         <CardTitle>Payment Configuration</CardTitle>
-        <CardDescription>Configure payment methods for buyers to complete their purchases.</CardDescription>
+        <CardDescription>Configure payment methods and pricing for your marketplace</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="paypal">PayPal Email</Label>
+            <Label htmlFor="paypalEmail">PayPal Email</Label>
             <Input
-              id="paypal"
+              id="paypalEmail"
               type="email"
-              placeholder="your-paypal@example.com"
+              placeholder="your-email@example.com"
               value={paypalEmail}
               onChange={(e) => setPaypalEmail(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="giftcard">UK Gift Card Instructions</Label>
+            <Label htmlFor="ukGiftCardInstructions">UK Gift Card Instructions</Label>
             <Textarea
-              id="giftcard"
-              placeholder="Enter instructions for UK gift card payments..."
+              id="ukGiftCardInstructions"
+              placeholder="Enter instructions for UK gift card redemption..."
               value={ukGiftCardInstructions}
               onChange={(e) => setUkGiftCardInstructions(e.target.value)}
               rows={4}
@@ -99,9 +117,10 @@ export default function PaymentConfigForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="crypto">Crypto Wallet Address</Label>
+            <Label htmlFor="cryptoWalletAddress">Cryptocurrency Wallet Address</Label>
             <Input
-              id="crypto"
+              id="cryptoWalletAddress"
+              type="text"
               placeholder="0x..."
               value={cryptoWalletAddress}
               onChange={(e) => setCryptoWalletAddress(e.target.value)}
@@ -109,18 +128,49 @@ export default function PaymentConfigForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="instagram">Instagram URL</Label>
+            <Label htmlFor="instagramUrl">Instagram URL</Label>
             <Input
-              id="instagram"
+              id="instagramUrl"
               type="url"
-              placeholder="https://instagram.com/yourusername"
+              placeholder="https://instagram.com/yourprofile"
               value={instagramUrl}
               onChange={(e) => handleInstagramUrlChange(e.target.value)}
-              className={instagramUrlError ? 'border-destructive' : ''}
             />
             {instagramUrlError && (
               <p className="text-sm text-destructive">{instagramUrlError}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="queueSkipPriceGBP">Queue Skip Price (£)</Label>
+            <Input
+              id="queueSkipPriceGBP"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.05"
+              value={queueSkipPriceGBP}
+              onChange={(e) => setQueueSkipPriceGBP(e.target.value)}
+            />
+            <p className="text-sm text-muted-foreground">
+              Price users pay to skip the login queue
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="usernameRegenerationPriceGBP">Username Change Price (£)</Label>
+            <Input
+              id="usernameRegenerationPriceGBP"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.01"
+              value={usernameRegenerationPriceGBP}
+              onChange={(e) => setUsernameRegenerationPriceGBP(e.target.value)}
+            />
+            <p className="text-sm text-muted-foreground">
+              Price users pay to regenerate their username
+            </p>
           </div>
 
           <Button type="submit" disabled={updatePaymentDetails.isPending || !!instagramUrlError}>

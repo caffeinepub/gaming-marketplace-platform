@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-generate-a-custom-animated-video-background-that-resembles-dynamic-gameplay-footage-for-the-login-queue-screen",
-      "featureTitle": "Generate a custom animated video background that resembles dynamic gameplay footage for the login queue screen",
+      "featureId": "feature-create-a-terms-acceptance-modal-component-that-displays-after-queue-completion-or-queue-skip-payment-showing-the-text-we-at-game-vault-have-no-partition-with-any-hacking-or-scamming-or-3rd-party-selling-with-an-accept-button-that-must-be-clicked-to-proceed",
+      "featureTitle": "Create a terms acceptance modal component that displays after queue completion or queue skip payment, showing the text 'We at Game Vault have no partition with any hacking or scamming or 3rd party selling' with an Accept button that must be clicked to proceed",
       "files": [
-        "frontend/src/components/auth/LoginQueue.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/TermsAcceptanceModal.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,15 +18,39 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-37"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-youtube-and-instagram-social-media-icons-at-the-bottom-of-the-loginqueue-component-with-youtube-linking-to-https-youtube-com-fros7yyt-si-u4-j8lrtknuj7wuo-and-instagram-url-configurable-by-admin",
-      "featureTitle": "Add YouTube and Instagram social media icons at the bottom of the LoginQueue component, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+      "featureId": "feature-implement-ai-generated-gamertag-style-username-creation-that-automatically-generates-usernames-format-examples-shadowwarrior42-epicsniper89-immediately-after-terms-acceptance-without-user-input",
+      "featureTitle": "Implement AI-generated GamerTag-style username creation that automatically generates usernames (format examples: ShadowWarrior42, EpicSniper89) immediately after terms acceptance without user input",
       "files": [
-        "frontend/src/components/auth/LoginQueue.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AIUsernameGenerator.tsx",
+        "frontend/src/utils/gamerTagGenerator.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-38"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-username-regeneration-feature-that-allows-users-to-request-a-new-ai-generated-gamertag-for-0-01-per-change",
+      "featureTitle": "Add username regeneration feature that allows users to request a new AI-generated GamerTag for £0.01 per change",
+      "files": [
+        "frontend/src/components/layout/Layout.tsx",
+        "frontend/src/components/profile/UsernameRegenerationDialog.tsx",
+        "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
         "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
@@ -38,15 +63,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-22"
+        "REQ-40"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-youtube-and-instagram-social-media-icons-at-the-bottom-of-the-storefront-page-with-youtube-linking-to-https-youtube-com-fros7yyt-si-u4-j8lrtknuj7wuo-and-instagram-url-configurable-by-admin",
-      "featureTitle": "Add YouTube and Instagram social media icons at the bottom of the storefront page, with YouTube linking to https://youtube.com/@fros7yyt?si=u4-j8LrTkNuj7wUo and Instagram URL configurable by admin",
+      "featureId": "feature-add-username-regeneration-price-configuration-field-0-01-in-admin-payment-settings-panel-alongside-queue-skip-price",
+      "featureTitle": "Add username regeneration price configuration field (£0.01) in admin payment settings panel alongside queue skip price",
       "files": [
-        "frontend/src/pages/Storefront.tsx"
+        "frontend/src/components/admin/PaymentConfigForm.tsx",
+        "frontend/src/components/profile/UsernameRegenerationDialog.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -58,15 +84,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-23"
+        "REQ-41"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-instagram-url-field-to-the-payment-configuration-section-in-the-admin-panel-so-admins-can-configure-the-instagram-link-displayed-on-the-queue-and-store-pages",
-      "featureTitle": "Add Instagram URL field to the payment configuration section in the admin panel so admins can configure the Instagram link displayed on the queue and store pages",
+      "featureId": "feature-create-admin-panel-section-to-review-username-change-payment-submissions-with-details-including-user-principal-submission-timestamp-transaction-details-and-current-status",
+      "featureTitle": "Create admin panel section to review username change payment submissions with details including user principal, submission timestamp, transaction details, and current status",
       "files": [
-        "frontend/src/components/admin/PaymentConfigForm.tsx"
+        "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/AdminPanel.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -78,7 +106,28 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-24"
+        "REQ-42"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-existing-manual-username-creation-modal-usernamesetup-tsx-and-update-app-tsx-authentication-flow-to-use-terms-acceptance-followed-by-ai-username-generation",
+      "featureTitle": "Remove the existing manual username creation modal (UsernameSetup.tsx) and update App.tsx authentication flow to use terms acceptance followed by AI username generation",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/UsernameSetup.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-43"
       ],
       "confidence": "high"
     }

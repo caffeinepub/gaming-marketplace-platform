@@ -1,11 +1,13 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import LoginButton from '../auth/LoginButton';
 import UserProfileSetup from '../auth/UserProfileSetup';
 import CartDrawer from '../cart/CartDrawer';
+import UsernameRegenerationDialog from '../profile/UsernameRegenerationDialog';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
-import { useGetCallerUserRole } from '../../hooks/useQueries';
-import { Gamepad2 } from 'lucide-react';
+import { useGetCallerUserRole, useGetCallerUserProfile } from '../../hooks/useQueries';
+import { Gamepad2, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,7 +17,12 @@ export default function Layout({ children }: LayoutProps) {
   const { identity } = useInternetIdentity();
   const isAuthenticated = !!identity;
   const { data: userRole } = useGetCallerUserRole();
+  const { data: userProfile } = useGetCallerUserProfile();
   const isAdmin = userRole === 'admin';
+  const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+
+  const currentUsername = userProfile?.username;
+  const hasUsername = !!currentUsername;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -44,6 +51,21 @@ export default function Layout({ children }: LayoutProps) {
               >
                 Admin Panel
               </Link>
+            )}
+            {isAuthenticated && hasUsername && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {currentUsername}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUsernameDialogOpen(true)}
+                  className="h-8 px-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
             )}
             {isAuthenticated && <CartDrawer />}
             <LoginButton />
@@ -77,6 +99,9 @@ export default function Layout({ children }: LayoutProps) {
       </footer>
 
       <UserProfileSetup />
+      {isAuthenticated && hasUsername && (
+        <UsernameRegenerationDialog open={usernameDialogOpen} onOpenChange={setUsernameDialogOpen} />
+      )}
     </div>
   );
 }
