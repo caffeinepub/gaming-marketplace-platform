@@ -1,4 +1,4 @@
-import { useGetUsernameChangeSubmissions, useFlagUsernameChangeFraud } from '../../hooks/useQueries';
+import { useGetQueueSkipSubmissions, useFlagQueueSkipFraud } from '../../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,14 +7,16 @@ import { AlertCircle, Flag, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { QueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
+import { Principal } from '@icp-sdk/core/principal';
 
 export default function UsernameChangeSubmissionsList() {
-  const { data: submissions = [], isLoading } = useGetUsernameChangeSubmissions();
-  const flagFraud = useFlagUsernameChangeFraud();
+  const { data: submissions = [], isLoading } = useGetQueueSkipSubmissions();
+  const flagFraud = useFlagQueueSkipFraud();
 
   const handleFlagFraud = async (userPrincipal: string) => {
     try {
-      await flagFraud.mutateAsync(userPrincipal);
+      const principal = Principal.fromText(userPrincipal);
+      await flagFraud.mutateAsync(principal);
       toast.success('Submission flagged as fraudulent');
     } catch (error: any) {
       console.error('Flag fraud error:', error);

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useSubmitUsernameChangePayment } from '../../hooks/useQueries';
+import { useSubmitQueueSkipPayment } from '../../hooks/useQueries';
 import { toast } from 'sonner';
 import { Loader2, Upload } from 'lucide-react';
 import { GiftCardType } from '../../backend';
@@ -30,7 +30,7 @@ export default function UsernameRegenerationPaymentForm({ onSuccess }: UsernameR
   const [giftCardType, setGiftCardType] = useState<GiftCardType | ''>('');
   const [giftCardCode, setGiftCardCode] = useState('');
   const [showUsernameGenerator, setShowUsernameGenerator] = useState(false);
-  const submitPayment = useSubmitUsernameChangePayment();
+  const submitPayment = useSubmitQueueSkipPayment();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

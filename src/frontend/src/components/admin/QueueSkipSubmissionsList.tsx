@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Eye, Flag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { QueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
+import { Principal } from '@icp-sdk/core/principal';
 
 export default function QueueSkipSubmissionsList() {
   const { data: submissions = [], isLoading } = useGetQueueSkipSubmissions();
@@ -37,7 +38,8 @@ export default function QueueSkipSubmissionsList() {
     if (!selectedUser) return;
 
     try {
-      await flagFraud.mutateAsync(selectedUser);
+      const principal = Principal.fromText(selectedUser);
+      await flagFraud.mutateAsync(principal);
       toast.success('Submission flagged as fraudulent and user blocked');
       setFlagDialogOpen(false);
       setSelectedUser(null);

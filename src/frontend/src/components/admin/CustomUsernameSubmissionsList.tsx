@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Loader2, Check, X, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { CustomUsernameSubmission, CustomUsernameStatus } from '../../backend';
+import { Principal } from '@icp-sdk/core/principal';
 
 export default function CustomUsernameSubmissionsList() {
   const { data: submissions, isLoading } = useGetCustomUsernameSubmissions();
@@ -17,7 +18,8 @@ export default function CustomUsernameSubmissionsList() {
 
   const handleApprove = async (userPrincipal: string) => {
     try {
-      await approveCustomUsername.mutateAsync(userPrincipal);
+      const principal = Principal.fromText(userPrincipal);
+      await approveCustomUsername.mutateAsync(principal);
       toast.success('Custom username approved successfully!');
     } catch (error: any) {
       console.error('Failed to approve custom username:', error);
@@ -27,7 +29,8 @@ export default function CustomUsernameSubmissionsList() {
 
   const handleReject = async (userPrincipal: string) => {
     try {
-      await rejectCustomUsername.mutateAsync(userPrincipal);
+      const principal = Principal.fromText(userPrincipal);
+      await rejectCustomUsername.mutateAsync(principal);
       toast.success('Custom username rejected');
     } catch (error: any) {
       console.error('Failed to reject custom username:', error);

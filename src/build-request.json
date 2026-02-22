@@ -1,39 +1,58 @@
 {
   "kind": "build_request",
-  "title": "Add username 'turbohunter64' to admin whitelist",
-  "priority": "normal",
+  "title": "Fix admin panel authorization for whitelisted usernames",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-60",
-      "text": "Add the username 'turbohunter64' to the backend admin username whitelist alongside the existing 'venomgladiator25' username",
-      "target": "backend",
+      "id": "REQ-61",
+      "text": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames ('venomgladiator25' and 'turbohunter64') against the authenticated user's stored username, ensuring these users are granted immediate access to the admin panel when clicking the admin button instead of seeing the 'no authorised access' error on the black screen",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-final"
+          "msg-last"
         ],
         "quotes": [
-          "Add the user name Saint to the admin list",
-          "This is the username turbohunter64"
+          "They clock the admin button then goes to a black screen saying you don't have authorisation",
+          "Yes they have completed the full on boarding flow",
+          "Hopefully all whitelisted users should be able to access the admin panel without errors"
         ]
       },
       "acceptanceCriteria": [
-        "The backend admin whitelist contains both 'venomgladiator25' and 'turbohunter64'",
-        "When a user with username 'turbohunter64' clicks the admin button on the storefront, they receive admin panel access",
-        "The isAdminUsername backend endpoint returns true for 'turbohunter64'",
-        "The whitelist persists across canister upgrades through the migration.mo module"
+        "Whitelisted users 'venomgladiator25' and 'turbohunter64' can click the admin button on the storefront",
+        "These users are immediately navigated to the admin panel without seeing any authorization error",
+        "Non-whitelisted users continue to see the 'no authorised access' message as expected",
+        "The authorization check properly queries the backend whitelist and matches against the user's stored username"
+      ]
+    },
+    {
+      "id": "REQ-62",
+      "text": "Verify the backend isAdminUsername endpoint correctly checks if 'venomgladiator25' and 'turbohunter64' exist in the admin username whitelist and returns true for these usernames",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "the usernames I've added that can have access say they can't see the admin panel"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend endpoint returns true when queried with 'venomgladiator25'",
+        "Backend endpoint returns true when queried with 'turbohunter64'",
+        "Backend whitelist properly persists these usernames across canister upgrades"
       ]
     }
   ],
   "constraints": [
-    "Do not remove the existing 'venomgladiator25' admin username",
-    "Maintain the existing username-based whitelist system (do not implement ID-based system)",
-    "Ensure the migration.mo module includes both admin usernames for upgrade persistence"
+    "Do not modify the existing Internet Identity authentication flow",
+    "Do not change the admin panel UI components or features",
+    "Preserve the existing username whitelist mechanism"
   ],
   "nonGoals": [
-    "Implementing the 4-digit ID system",
-    "Creating a user profile page",
-    "Replacing username-based whitelist with ID-based whitelist",
-    "Adding UI for admins to manage the whitelist"
+    "Adding new usernames to the whitelist",
+    "Changing the admin panel layout or design",
+    "Modifying the onboarding flow",
+    "Adding new admin features or permissions"
   ],
   "imageRequirements": {
     "required": [],

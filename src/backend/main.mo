@@ -11,9 +11,7 @@ import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -137,6 +135,13 @@ actor {
   let customUsernameSubmissions = Map.empty<Principal, CustomUsernameSubmission>();
 
   let adminUsernameWhitelist = Map.empty<Text, Bool>();
+  
+  // Initialize the admin username whitelist with the required usernames
+  do {
+    adminUsernameWhitelist.add("venomgladiator25", true);
+    adminUsernameWhitelist.add("turbohunter64", true);
+  };
+
   public shared ({ caller }) func addAdminUsername(username : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add admin usernames");
@@ -152,7 +157,10 @@ actor {
   };
 
   public query func isAdminUsername(username : Text) : async Bool {
-    adminUsernameWhitelist.containsKey(username);
+    switch (adminUsernameWhitelist.get(username)) {
+      case (null) { false };
+      case (?exists) { exists };
+    };
   };
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {

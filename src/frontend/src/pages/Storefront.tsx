@@ -18,10 +18,9 @@ export default function Storefront() {
   const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategories();
   const { data: instagramUrl = '' } = useGetInstagramUrl();
   const { data: username, isLoading: usernameLoading } = useGetUsername();
-  const checkAdminUsername = useIsAdminUsername();
+  const { data: isAdmin, isLoading: isAdminLoading, isFetched: isAdminFetched } = useIsAdminUsername();
   
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [checkingAdmin, setCheckingAdmin] = useState(false);
 
   const filteredProducts = useMemo(() => {
     if (!selectedCategory) return products;
@@ -36,28 +35,18 @@ export default function Storefront() {
     return counts;
   }, [products]);
 
-  const handleAdminAccess = async () => {
-    if (!username) {
-      toast.error('Username not found. Please complete your profile setup.');
+  const handleAdminAccess = () => {
+    if (!isAdminFetched) {
+      toast.error('Please wait while we verify your access...');
       return;
     }
 
-    setCheckingAdmin(true);
-    try {
-      const isAdmin = await checkAdminUsername.mutateAsync(username);
-      
-      if (isAdmin) {
-        navigate({ to: '/admin' });
-      } else {
-        toast.error('Access Denied', {
-          description: 'Admin access is restricted to authorized users only.',
-        });
-      }
-    } catch (error) {
-      console.error('Error checking admin access:', error);
-      toast.error('Failed to verify admin access. Please try again.');
-    } finally {
-      setCheckingAdmin(false);
+    if (isAdmin) {
+      navigate({ to: '/admin' });
+    } else {
+      toast.error('Access Denied', {
+        description: 'Admin access is restricted to authorized users only.',
+      });
     }
   };
 
@@ -83,11 +72,11 @@ export default function Storefront() {
               <div className="pt-4">
                 <Button
                   onClick={handleAdminAccess}
-                  disabled={checkingAdmin}
+                  disabled={isAdminLoading || !isAdminFetched}
                   variant="outline"
                   className="bg-background/80 backdrop-blur-sm hover:bg-background/90 border-primary/50 hover:border-primary"
                 >
-                  {checkingAdmin ? (
+                  {isAdminLoading || !isAdminFetched ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Verifying Access...

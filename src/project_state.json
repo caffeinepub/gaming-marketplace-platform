@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 23,
+  "projectStateVersion": 25,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -15,7 +15,7 @@
     "AI-generated GamerTag-style usernames replace manual username creation"
   ],
   "known_issues": [],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-implement-user-authentication-system-using-internet-identity-for-buyer-accounts",
@@ -376,6 +376,14 @@
         "REQ-58"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-admin-authorization-check-in-the-storefront-component-to-properly-verify-whitelisted-usernames-venomgladiator25-and-turbohunter64-against-the-authenticated-user-s-stored-username-ensuring-these-users-are-granted-immediate-access-to-the-admin-panel-when-clicking-the-admin-button-instead-of-seeing-the-no-authorised-access-error-on-the-black-screen",
+      "title": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames ('venomgladiator25' and 'turbohunter64') against the authenticated user's stored username, ensuring these users are granted immediate access to the admin panel when clicking the admin button instead of seeing the 'no authorised access' error on the black screen",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -640,6 +648,14 @@
       "summary": "Add the username 'turbohunter64' to the backend admin username whitelist alongside the existing 'venomgladiator25' username",
       "reqIds": [
         "REQ-60"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-59",
+      "summary": "Verify the backend isAdminUsername endpoint correctly checks if 'venomgladiator25' and 'turbohunter64' exist in the admin username whitelist and returns true for these usernames",
+      "reqIds": [
+        "REQ-62"
       ],
       "status": "pending"
     }
