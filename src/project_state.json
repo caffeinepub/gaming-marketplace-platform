@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 25,
+  "projectStateVersion": 27,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -384,6 +384,22 @@
         "REQ-61"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-useprofile-query-hook-to-properly-fetch-and-cache-the-custom-username-field-from-the-backend",
+      "title": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-storefront-component-username-display-to-show-custom-username-when-available-instead-of-ai-generated-username",
+      "title": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -656,6 +672,22 @@
       "summary": "Verify the backend isAdminUsername endpoint correctly checks if 'venomgladiator25' and 'turbohunter64' exist in the admin username whitelist and returns true for these usernames",
       "reqIds": [
         "REQ-62"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-60",
+      "summary": "Update the backend getUserProfile endpoint to return the custom username field when a user has paid for and created a custom username",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-61",
+      "summary": "Update the Layout component username display in the profile area to show the custom username when available, falling back to the AI-generated username only if no custom username exists",
+      "reqIds": [
+        "REQ-64"
       ],
       "status": "pending"
     }

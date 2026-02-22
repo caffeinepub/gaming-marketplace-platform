@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { useGetAllProducts, useGetAllCategories, useGetInstagramUrl, useGetUsername, useIsAdminUsername } from '../hooks/useQueries';
+import { useGetAllProducts, useGetAllCategories, useGetInstagramUrl, useGetCallerUserProfile, useIsAdminUsername } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import ProductCard from '../components/storefront/ProductCard';
 import CategoryFilter from '../components/storefront/CategoryFilter';
@@ -17,10 +17,12 @@ export default function Storefront() {
   const { data: products = [], isLoading: productsLoading } = useGetAllProducts();
   const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategories();
   const { data: instagramUrl = '' } = useGetInstagramUrl();
-  const { data: username, isLoading: usernameLoading } = useGetUsername();
+  const { data: userProfile, isLoading: profileLoading } = useGetCallerUserProfile();
   const { data: isAdmin, isLoading: isAdminLoading, isFetched: isAdminFetched } = useIsAdminUsername();
   
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const username = userProfile?.username;
 
   const filteredProducts = useMemo(() => {
     if (!selectedCategory) return products;
@@ -68,7 +70,7 @@ export default function Storefront() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Your trusted marketplace for premium gaming accounts, in-game currency, and exclusive items
             </p>
-            {isAuthenticated && username && !usernameLoading && (
+            {isAuthenticated && username && !profileLoading && (
               <div className="pt-4">
                 <Button
                   onClick={handleAdminAccess}

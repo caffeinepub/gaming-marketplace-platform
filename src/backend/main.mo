@@ -1,10 +1,10 @@
 import Principal "mo:core/Principal";
 import Map "mo:core/Map";
 import Array "mo:core/Array";
-import Text "mo:core/Text";
-import Nat "mo:core/Nat";
 import Time "mo:core/Time";
 import Char "mo:core/Char";
+import Nat "mo:core/Nat";
+import Text "mo:core/Text";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
 import Storage "blob-storage/Storage";
@@ -34,6 +34,7 @@ actor {
 
   let userProfiles = Map.empty<Principal, UserProfile>();
   let usernameMap = Map.empty<Text, Principal>();
+  let customUsernames = Map.empty<Principal, Text>();
 
   type Product = {
     id : Text;
@@ -135,8 +136,8 @@ actor {
   let customUsernameSubmissions = Map.empty<Principal, CustomUsernameSubmission>();
 
   let adminUsernameWhitelist = Map.empty<Text, Bool>();
-  
-  // Initialize the admin username whitelist with the required usernames
+
+  // Initialize the admin username whitelist
   do {
     adminUsernameWhitelist.add("venomgladiator25", true);
     adminUsernameWhitelist.add("turbohunter64", true);
@@ -167,14 +168,14 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view profiles");
     };
-    userProfiles.get(caller);
+    getUserProfileWithCustomUsername(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
-    userProfiles.get(user);
+    getUserProfileWithCustomUsername(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
@@ -240,6 +241,22 @@ actor {
     };
   };
 
+  func getUserProfileWithCustomUsername(user : Principal) : ?UserProfile {
+    switch (userProfiles.get(user)) {
+      case (null) { null };
+      case (?profile) {
+        let finalUsername = switch (customUsernames.get(user)) {
+          case (null) { profile.username };
+          case (?_custom) { ?_custom };
+        };
+        ?{
+          profile with
+          username = finalUsername;
+        };
+      };
+    };
+  };
+
   public query ({ caller }) func hasUsername() : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can check username status");
@@ -299,19 +316,8 @@ actor {
         let updatedSubmission = { submission with status = #approved };
         customUsernameSubmissions.add(user, updatedSubmission);
 
-        switch (userProfiles.get(user)) {
-          case (null) {
-            Runtime.trap("Profile must exist in order to update it - bombsawayYYYYYY️️️");
-          };
-          case (?profile) {
-            let updatedProfile : UserProfile = {
-              profile with
-              username = ?submission.requestedUsername;
-            };
-            userProfiles.add(user, updatedProfile);
-            usernameMap.add(submission.requestedUsername, user);
-          };
-        };
+        customUsernames.add(user, submission.requestedUsername);
+        usernameMap.add(submission.requestedUsername, user);
       };
     };
   };

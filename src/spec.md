@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix admin panel authorization so whitelisted users ('venomgladiator25' and 'turbohunter64') can access the admin panel without encountering authorization errors.
+**Goal:** Fix custom username display so users who paid for custom usernames see their chosen name instead of AI-generated names in the profile area and storefront.
 
 **Planned changes:**
-- Update frontend admin authorization check in Storefront component to properly verify whitelisted usernames against authenticated user's stored username
-- Verify backend isAdminUsername endpoint correctly returns true for 'venomgladiator25' and 'turbohunter64'
-- Ensure whitelist persistence across canister upgrades
+- Update backend getUserProfile endpoint to return custom username field when present
+- Update Layout component profile area to display custom username when available, falling back to AI-generated username only if no custom username exists
+- Update useProfile query hook to fetch and cache custom username field
+- Update Storefront component to show custom username instead of AI-generated username for users who paid for custom usernames
 
-**User-visible outcome:** Whitelisted users can click the admin button and immediately access the admin panel instead of seeing a black screen with "no authorised access" error.
+**User-visible outcome:** Users who paid £0.10 for custom usernames will see their chosen custom username displayed in the profile area and storefront page instead of the AI-generated name.

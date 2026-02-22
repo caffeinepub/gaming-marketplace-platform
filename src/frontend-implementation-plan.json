@@ -1,27 +1,56 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix admin panel authorization for whitelisted usernames",
+  "title": "Fix custom username display in profile area",
   "requirements": [
     {
-      "id": "REQ-61",
-      "summary": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames against the authenticated user's stored username, ensuring whitelisted users can access the admin panel",
+      "id": "REQ-64",
+      "summary": "Update Layout component to display custom username when available, falling back to AI-generated username",
       "acceptanceCriteria": [
-        "Whitelisted users 'venomgladiator25' and 'turbohunter64' can click the admin button on the storefront",
-        "These users are immediately navigated to the admin panel without seeing any authorization error",
-        "Non-whitelisted users continue to see the 'no authorised access' message as expected",
-        "The authorization check properly queries the backend whitelist and matches against the user's stored username"
+        "Profile area displays custom username for users who have paid £0.10 for custom usernames",
+        "Profile area displays AI-generated username only when no custom username exists",
+        "Username display updates immediately after custom username creation"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/layout/Layout.tsx",
+          "operation": "modify",
+          "description": "Update the username display logic in the profile area to show userProfile.username (custom username) when it exists, falling back to the username from useGetUsername (AI-generated) only when userProfile.username is not present. Ensure the display updates reactively when the profile changes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-65",
+      "summary": "Update useProfile query hook to fetch and cache custom username field",
+      "acceptanceCriteria": [
+        "Profile query returns custom username when available",
+        "Query cache invalidates after custom username submission approval"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Update useGetCallerUserProfile to ensure it properly fetches the username field from the UserProfile type returned by the backend. Add query invalidation in useSubmitCustomUsername mutation's onSuccess callback to refresh the profile cache after custom username submission."
+        },
+        {
+          "path": "frontend/src/backend.d.ts",
+          "operation": "modify",
+          "description": "Update the UserProfile interface to explicitly document that the username field contains the custom username when present, ensuring TypeScript types match the backend response structure."
+        }
+      ]
+    },
+    {
+      "id": "REQ-66",
+      "summary": "Update Storefront component to show custom username instead of AI-generated username",
+      "acceptanceCriteria": [
+        "Storefront page displays custom username in all username references when user has paid for custom username",
+        "Admin authorization check uses custom username for whitelist verification when available"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/Storefront.tsx",
           "operation": "modify",
-          "description": "Fix the admin button click handler to properly retrieve the current user's username from their UserProfile (via getCallerUserProfile) and pass it to the isAdminUsername backend check. Currently the code is checking admin access incorrectly, causing whitelisted users to see the authorization error. Update the handleAdminClick function to: 1) Fetch the user's profile to get their username field, 2) Call isAdminUsername with that username to verify whitelist membership, 3) Navigate to /admin only if the check returns true, 4) Show appropriate error message if username is not whitelisted or profile is incomplete."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a new React Query hook useIsAdminUsername that accepts a username parameter and calls the backend isAdminUsername method. This hook should be disabled when username is null/undefined. Include proper query key structure ['isAdminUsername', username] for cache management. This hook will be used by the Storefront component to verify admin access for whitelisted usernames."
+          "description": "Update the admin panel access check to use userProfile.username (custom username) when available for isAdminUsername verification, falling back to the AI-generated username only when no custom username exists. Ensure the username displayed in any welcome messages or user references also prioritizes custom username over AI-generated username."
         }
       ]
     }

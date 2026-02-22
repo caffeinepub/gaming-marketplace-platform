@@ -2,10 +2,29 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-admin-authorization-check-in-the-storefront-component-to-properly-verify-whitelisted-usernames-venomgladiator25-and-turbohunter64-against-the-authenticated-user-s-stored-username-ensuring-these-users-are-granted-immediate-access-to-the-admin-panel-when-clicking-the-admin-button-instead-of-seeing-the-no-authorised-access-error-on-the-black-screen",
-      "featureTitle": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames ('venomgladiator25' and 'turbohunter64') against the authenticated user's stored username, ensuring these users are granted immediate access to the admin panel when clicking the admin button instead of seeing the 'no authorised access' error on the black screen",
+      "featureId": "feature-update-the-useprofile-query-hook-to-properly-fetch-and-cache-the-custom-username-field-from-the-backend",
+      "featureTitle": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-65"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-storefront-component-username-display-to-show-custom-username-when-available-instead-of-ai-generated-username",
+      "featureTitle": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
+      "files": [
         "frontend/src/pages/Storefront.tsx"
       ],
       "components": [
@@ -18,7 +37,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-61"
+        "REQ-66"
       ],
       "confidence": "high"
     }

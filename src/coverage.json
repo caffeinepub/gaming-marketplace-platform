@@ -1,34 +1,53 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T22:27:29.332Z",
+  "generatedAt": "2026-02-22T22:45:00.426Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-61",
-        "summary": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames ('venomgladiator25' and 'turbohunter64') against the authenticated user's stored username, ensuring these users are granted immediate access to the admin panel when clicking the admin button instead of seeing the 'no authorised access' error on the black screen",
+        "id": "REQ-63",
+        "summary": "Update the backend getUserProfile endpoint to return the custom username field when a user has paid for and created a custom username",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-64",
+        "summary": "Update the Layout component username display in the profile area to show the custom username when available, falling back to the AI-generated username only if no custom username exists",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/components/layout/Layout.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-65",
+        "summary": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Storefront.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/backend.d.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Storefront.tsx",
           "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-62",
-        "summary": "Verify the backend isAdminUsername endpoint correctly checks if 'venomgladiator25' and 'turbohunter64' exist in the admin username whitelist and returns true for these usernames",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-66",
+        "summary": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Storefront.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Storefront.tsx"
+        ]
       }
     ]
   },
@@ -38,10 +57,6 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
-    "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
-    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
-    "frontend/src/components/profile/UsernameRegenerationPaymentForm.tsx",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/Storefront.tsx",
     "project_state.json",

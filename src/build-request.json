@@ -1,58 +1,88 @@
 {
   "kind": "build_request",
-  "title": "Fix admin panel authorization for whitelisted usernames",
+  "title": "Fix custom username display in profile area",
+  "projectName": "Game Vault",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-61",
-      "text": "Update the admin authorization check in the Storefront component to properly verify whitelisted usernames ('venomgladiator25' and 'turbohunter64') against the authenticated user's stored username, ensuring these users are granted immediate access to the admin panel when clicking the admin button instead of seeing the 'no authorised access' error on the black screen",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "They clock the admin button then goes to a black screen saying you don't have authorisation",
-          "Yes they have completed the full on boarding flow",
-          "Hopefully all whitelisted users should be able to access the admin panel without errors"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Whitelisted users 'venomgladiator25' and 'turbohunter64' can click the admin button on the storefront",
-        "These users are immediately navigated to the admin panel without seeing any authorization error",
-        "Non-whitelisted users continue to see the 'no authorised access' message as expected",
-        "The authorization check properly queries the backend whitelist and matches against the user's stored username"
-      ]
-    },
-    {
-      "id": "REQ-62",
-      "text": "Verify the backend isAdminUsername endpoint correctly checks if 'venomgladiator25' and 'turbohunter64' exist in the admin username whitelist and returns true for these usernames",
+      "id": "REQ-63",
+      "text": "Update the backend getUserProfile endpoint to return the custom username field when a user has paid for and created a custom username",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-user-fix-custom-username"
         ],
         "quotes": [
-          "the usernames I've added that can have access say they can't see the admin panel"
+          "Fix the custom usernames when users go to make there own and come to the store front page it shows a ai name generated instead of the custom one they asked for"
         ]
       },
       "acceptanceCriteria": [
-        "Backend endpoint returns true when queried with 'venomgladiator25'",
-        "Backend endpoint returns true when queried with 'turbohunter64'",
-        "Backend whitelist properly persists these usernames across canister upgrades"
+        "Backend profile query returns custom username field when present",
+        "Custom username takes precedence over AI-generated username in the response"
+      ]
+    },
+    {
+      "id": "REQ-64",
+      "text": "Update the Layout component username display in the profile area to show the custom username when available, falling back to the AI-generated username only if no custom username exists",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-fix-custom-username"
+        ],
+        "quotes": [
+          "Profile area",
+          "Yes all custom usernames",
+          "Yes if the user has paid for a custom username"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Profile area displays custom username for users who have paid £0.10 for custom usernames",
+        "Profile area displays AI-generated username only when no custom username exists",
+        "Username display updates immediately after custom username creation"
+      ]
+    },
+    {
+      "id": "REQ-65",
+      "text": "Update the useProfile query hook to properly fetch and cache the custom username field from the backend",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-fix-custom-username"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Profile query returns custom username when available",
+        "Query cache invalidates after custom username submission approval"
+      ]
+    },
+    {
+      "id": "REQ-66",
+      "text": "Update the Storefront component username display to show custom username when available instead of AI-generated username",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-fix-custom-username"
+        ],
+        "quotes": [
+          "come to the store front page it shows a ai name generated instead of the custom one"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Storefront page displays custom username in all username references when user has paid for custom username",
+        "Admin authorization check uses custom username for whitelist verification when available"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing Internet Identity authentication flow",
-    "Do not change the admin panel UI components or features",
-    "Preserve the existing username whitelist mechanism"
+    "Do not modify the Internet Identity authentication flow",
+    "Maintain backward compatibility with users who only have AI-generated usernames",
+    "Do not change the custom username payment submission and approval workflow"
   ],
   "nonGoals": [
-    "Adding new usernames to the whitelist",
-    "Changing the admin panel layout or design",
-    "Modifying the onboarding flow",
-    "Adding new admin features or permissions"
+    "Changing the custom username price (£0.10)",
+    "Modifying the custom username validation rules",
+    "Updating the admin username whitelist logic",
+    "Changing the username regeneration feature"
   ],
   "imageRequirements": {
     "required": [],

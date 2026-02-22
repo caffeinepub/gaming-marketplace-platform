@@ -443,6 +443,7 @@ export function useSubmitCustomUsername() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
     },
   });
 }
@@ -471,6 +472,8 @@ export function useApproveCustomUsername() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customUsernameSubmissions'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['isAdminUsername'] });
     },
   });
 }
