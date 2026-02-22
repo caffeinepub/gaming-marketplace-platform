@@ -1,0 +1,213 @@
+{
+  "kind": "build_request",
+  "title": "Create digital gaming account marketplace with admin panel",
+  "projectName": "GameVault Marketplace",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement user authentication system using Internet Identity for buyer accounts",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can authenticate using Internet Identity",
+        "Authentication is required before accessing checkout",
+        "User sessions persist across page reloads"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create backend data model for products with fields: game name (text), product type (enum: account/currency/clothes), price in GBP (decimal), image URLs (array), quantity available (number), and game category",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-7",
+          "msg-9"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Products can be stored and retrieved from backend",
+        "Quantity decrements on purchase",
+        "Product type accurately distinguishes between accounts, in-game currency, and premium clothes"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Build admin panel interface accessible only to admin users for creating, editing, and deleting product listings",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3",
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin panel has forms for all product fields",
+        "Only authenticated admin users can access the admin panel",
+        "Product images can be uploaded or linked",
+        "Admin can view all existing products and edit or delete them"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement admin-only access control where only designated admin principals can create and manage product listings",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-3",
+          "msg-9"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend verifies caller is admin before allowing product mutations",
+        "Non-admin users receive permission denied errors when attempting admin operations",
+        "Admin principals can be configured in backend"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Create public storefront interface displaying all products organized by game categories with product cards showing game name, product type, price in GBP, image, and available quantity",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Products are grouped and filterable by game category",
+        "Each product card displays all required fields",
+        "Prices are formatted with GBP currency symbol",
+        "Out of stock products are visually distinguished"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement shopping cart functionality where authenticated buyers can add products to cart, view cart contents, and adjust quantities",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Cart persists items for authenticated users",
+        "Cart displays total price in GBP",
+        "Users can remove items or change quantities",
+        "Cart validates against available product quantities"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Build checkout flow that displays payment instructions for three payment methods: PayPal, UK gift cards, and crypto, using payment details configured by admins",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Checkout page shows all three payment options",
+        "Each payment method displays admin-configured payment information",
+        "Order is created in backend upon checkout completion",
+        "Product quantities are reserved or decremented on order creation"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Create payment configuration section in admin panel where admins can input and update payment details for PayPal, UK gift cards, and crypto",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin panel has editable fields for each payment method's information",
+        "Payment details are stored securely in backend",
+        "Updated payment information immediately reflects in buyer checkout flow"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Implement game category system where admins can create, edit, and delete game categories, and assign products to categories",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-9",
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Categories can be managed through admin panel",
+        "Products can be assigned to one or more categories",
+        "Storefront can filter products by category",
+        "Empty categories are handled gracefully in the UI"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Design a bold, gaming-inspired visual theme with vibrant accent colors (avoiding blue and purple), modern typography suitable for a marketplace, and a layout that emphasizes product imagery and clear calls-to-action throughout the storefront and admin panel",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Visual theme is consistently applied across all pages",
+        "Design emphasizes gaming aesthetic while maintaining professional marketplace credibility",
+        "Color scheme uses energetic colors other than blue and purple",
+        "Typography and spacing support easy product browsing"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Render generated images as static assets in frontend/public/assets/generated including hero banner and category icons",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images are placed in frontend/public/assets/generated directory",
+        "Hero banner displays on storefront homepage",
+        "Category icons display alongside category names in navigation and product filters"
+      ]
+    }
+  ],
+  "constraints": [
+    "Only admins can create, edit, and delete product listings",
+    "Buyers must authenticate with Internet Identity before checkout",
+    "All prices must be displayed in GBP",
+    "Payment processing is manual using admin-configured payment instructions"
+  ],
+  "nonGoals": [
+    "Automated payment processing or integration with payment gateways",
+    "Buyer-to-buyer marketplace or peer-to-peer selling",
+    "Real-time chat or messaging between buyers and admins",
+    "Automated delivery of digital products",
+    "Support for currencies other than GBP"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Gaming-themed hero banner with marketplace concept, vibrant colors excluding blue and purple (hero-banner.dim_1200x400.png)",
+      "Placeholder icon for mobile game accounts category (account-icon.dim_128x128.png)",
+      "Placeholder icon for in-game currency category (currency-icon.dim_128x128.png)",
+      "Placeholder icon for premium clothes category (clothes-icon.dim_128x128.png)"
+    ],
+    "edits": []
+  }
+}

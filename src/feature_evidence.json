@@ -1,0 +1,205 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-user-authentication-system-using-internet-identity-for-buyer-accounts",
+      "featureTitle": "Implement user authentication system using Internet Identity for buyer accounts",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/UserProfileSetup.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-admin-panel-interface-accessible-only-to-admin-users-for-creating-editing-and-deleting-product-listings",
+      "featureTitle": "Build admin panel interface accessible only to admin users for creating, editing, and deleting product listings",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/admin/ProductForm.tsx",
+        "frontend/src/components/admin/ProductList.tsx",
+        "frontend/src/pages/AdminPanel.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-public-storefront-interface-displaying-all-products-organized-by-game-categories-with-product-cards-showing-game-name-product-type-price-in-gbp-image-and-available-quantity",
+      "featureTitle": "Create public storefront interface displaying all products organized by game categories with product cards showing game name, product type, price in GBP, image, and available quantity",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/storefront/CategoryFilter.tsx",
+        "frontend/src/components/storefront/ProductCard.tsx",
+        "frontend/src/pages/Storefront.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-shopping-cart-functionality-where-authenticated-buyers-can-add-products-to-cart-view-cart-contents-and-adjust-quantities",
+      "featureTitle": "Implement shopping cart functionality where authenticated buyers can add products to cart, view cart contents, and adjust quantities",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/cart/CartDrawer.tsx",
+        "frontend/src/components/cart/CartItem.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-checkout-flow-that-displays-payment-instructions-for-three-payment-methods-paypal-uk-gift-cards-and-crypto-using-payment-details-configured-by-admins",
+      "featureTitle": "Build checkout flow that displays payment instructions for three payment methods: PayPal, UK gift cards, and crypto, using payment details configured by admins",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/checkout/PaymentMethodCard.tsx",
+        "frontend/src/pages/Checkout.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-payment-configuration-section-in-admin-panel-where-admins-can-input-and-update-payment-details-for-paypal-uk-gift-cards-and-crypto",
+      "featureTitle": "Create payment configuration section in admin panel where admins can input and update payment details for PayPal, UK gift cards, and crypto",
+      "files": [
+        "frontend/src/components/admin/PaymentConfigForm.tsx",
+        "frontend/src/pages/AdminPanel.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-game-category-system-where-admins-can-create-edit-and-delete-game-categories-and-assign-products-to-categories",
+      "featureTitle": "Implement game category system where admins can create, edit, and delete game categories, and assign products to categories",
+      "files": [
+        "frontend/src/components/admin/CategoryForm.tsx",
+        "frontend/src/components/admin/CategoryList.tsx",
+        "frontend/src/components/admin/ProductForm.tsx",
+        "frontend/src/pages/AdminPanel.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-design-a-bold-gaming-inspired-visual-theme-with-vibrant-accent-colors-avoiding-blue-and-purple-modern-typography-suitable-for-a-marketplace-and-a-layout-that-emphasizes-product-imagery-and-clear-calls-to-action-throughout-the-storefront-and-admin-panel",
+      "featureTitle": "Design a bold, gaming-inspired visual theme with vibrant accent colors (avoiding blue and purple), modern typography suitable for a marketplace, and a layout that emphasizes product imagery and clear calls-to-action throughout the storefront and admin panel",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/Layout.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-render-generated-images-as-static-assets-in-frontend-public-assets-generated-including-hero-banner-and-category-icons",
+      "featureTitle": "Render generated images as static assets in frontend/public/assets/generated including hero banner and category icons",
+      "files": [
+        "frontend/src/components/storefront/CategoryFilter.tsx",
+        "frontend/src/pages/Storefront.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

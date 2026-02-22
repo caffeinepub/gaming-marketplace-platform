@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported.",
+  "architectural_notes": [
+    "Motoko backend on Internet Computer platform",
+    "React + TypeScript frontend with Tailwind CSS",
+    "Internet Identity for secure buyer authentication",
+    "Admin-only product management (no seller registration)",
+    "Manual payment processing with admin-configured payment instructions",
+    "Product types: gaming accounts with ranks, in-game currency, premium clothes",
+    "Multi-category product organization by game"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Gaming-themed hero banner with marketplace concept, vibrant colors excluding blue and purple (hero-banner.dim_1200x400.png)\n- Placeholder icon for mobile game accounts category (account-icon.dim_128x128.png)\n- Placeholder icon for in-game currency category (currency-icon.dim_128x128.png)\n- Placeholder icon for premium clothes category (clothes-icon.dim_128x128.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-user-authentication-system-using-internet-identity-for-buyer-accounts",
+      "title": "Implement user authentication system using Internet Identity for buyer accounts",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-admin-panel-interface-accessible-only-to-admin-users-for-creating-editing-and-deleting-product-listings",
+      "title": "Build admin panel interface accessible only to admin users for creating, editing, and deleting product listings",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-public-storefront-interface-displaying-all-products-organized-by-game-categories-with-product-cards-showing-game-name-product-type-price-in-gbp-image-and-available-quantity",
+      "title": "Create public storefront interface displaying all products organized by game categories with product cards showing game name, product type, price in GBP, image, and available quantity",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-shopping-cart-functionality-where-authenticated-buyers-can-add-products-to-cart-view-cart-contents-and-adjust-quantities",
+      "title": "Implement shopping cart functionality where authenticated buyers can add products to cart, view cart contents, and adjust quantities",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-checkout-flow-that-displays-payment-instructions-for-three-payment-methods-paypal-uk-gift-cards-and-crypto-using-payment-details-configured-by-admins",
+      "title": "Build checkout flow that displays payment instructions for three payment methods: PayPal, UK gift cards, and crypto, using payment details configured by admins",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-payment-configuration-section-in-admin-panel-where-admins-can-input-and-update-payment-details-for-paypal-uk-gift-cards-and-crypto",
+      "title": "Create payment configuration section in admin panel where admins can input and update payment details for PayPal, UK gift cards, and crypto",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-game-category-system-where-admins-can-create-edit-and-delete-game-categories-and-assign-products-to-categories",
+      "title": "Implement game category system where admins can create, edit, and delete game categories, and assign products to categories",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-bold-gaming-inspired-visual-theme-with-vibrant-accent-colors-avoiding-blue-and-purple-modern-typography-suitable-for-a-marketplace-and-a-layout-that-emphasizes-product-imagery-and-clear-calls-to-action-throughout-the-storefront-and-admin-panel",
+      "title": "Design a bold, gaming-inspired visual theme with vibrant accent colors (avoiding blue and purple), modern typography suitable for a marketplace, and a layout that emphasizes product imagery and clear calls-to-action throughout the storefront and admin panel",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-generated-images-as-static-assets-in-frontend-public-assets-generated-including-hero-banner-and-category-icons",
+      "title": "Render generated images as static assets in frontend/public/assets/generated including hero banner and category icons",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Public storefront for browsing mobile gaming products by category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "User authentication with Internet Identity for buyers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Admin panel for product listing management (create/edit/delete)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Product listings with game name, price (GBP), images, quantity, and product type",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Shopping cart and checkout system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Payment configuration in admin panel for PayPal, UK gift cards, and crypto",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Game category organization system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Create backend data model for products with fields: game name (text), product type (enum: account/currency/clothes), price in GBP (decimal), image URLs (array), quantity available (number), and game category",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Implement admin-only access control where only designated admin principals can create and manage product listings",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Digital Gaming Account Marketplace",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
