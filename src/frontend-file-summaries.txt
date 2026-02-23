@@ -11,7 +11,7 @@
   "frontend/src/components/admin/ProductList.tsx": "Admin product list table with edit and delete actions, confirmation dialogs, and empty state handling.",
   "frontend/src/components/admin/CategoryForm.tsx": "Category creation and editing form with name and description fields.",
   "frontend/src/components/admin/CategoryList.tsx": "Admin category list table with edit and delete actions and confirmation dialogs.",
-  "frontend/src/components/admin/PaymentConfigForm.tsx": "Admin form for configuring payment methods, pricing, and admin whitelist management with separate sections for adding admins by username or phone number (11 digits without +).",
+  "frontend/src/components/admin/PaymentConfigForm.tsx": "Admin form for configuring payment methods, pricing, and admin whitelist management with enhanced error handling for phone number addition that displays specific error messages when phone numbers are already registered to users or have validation issues.",
   "frontend/src/components/checkout/PaymentMethodCard.tsx": "Payment method card displaying payment details with copy-to-clipboard functionality.",
   "frontend/src/pages/Storefront.tsx": "Main storefront page with hero banner, category filtering, product grid display, social media links, and admin panel button that uses unified isCallerAdmin backend check for dual whitelist authorization.",
   "frontend/src/pages/AdminPanel.tsx": "Admin panel with tabs for products, categories, payment settings, queue skip, username changes, and custom username submissions management.",
@@ -33,5 +33,5 @@
   "frontend/src/components/auth/CustomUsernameDialog.tsx": "Multi-step dialog for custom username creation with payment method selection, payment proof submission (PayPal/crypto/gift cards), and custom username input with validation.",
   "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx": "Admin table component for reviewing custom username payment submissions with current usernames fetched individually for each submission, displaying both current and requested usernames, approve/reject actions, screenshot viewing, and proper Principal type conversion for backend calls.",
   "frontend/src/hooks/usePhoneNumber.ts": "React Query hooks for checking phone number setup status and saving worldwide phone numbers with frontend validation (digits only, no + prefix) and proper cache invalidation.",
-  "frontend/src/components/auth/PhoneNumberSetup.tsx": "Non-dismissible dialog component that collects and validates worldwide phone numbers (numeric digits only, no + prefix, any length) with a two-step flow: initial \"Add Phone Number\" button followed by the input form, with error handling for duplicates and invalid formats."
+  "frontend/src/components/auth/PhoneNumberSetup.tsx": "Non-dismissible dialog component that collects and validates worldwide phone numbers with enhanced error handling displaying specific messages for \"user not found\", \"phone number already exists\", and validation errors using Alert component."
 }

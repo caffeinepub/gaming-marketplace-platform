@@ -100,20 +100,29 @@ export default function PaymentConfigForm() {
       return;
     }
 
-    // Validate phone number format (11 digits, no +)
+    // Validate phone number format (digits only, no +)
     const digitsOnly = phoneNumber.replace(/\D/g, '');
-    if (digitsOnly.length !== 11) {
-      toast.error('Phone number must be 11 digits (UK format without +)');
+    if (digitsOnly !== phoneNumber) {
+      toast.error('Phone number must only contain digits (no spaces, dashes, or + prefix)');
       return;
     }
 
     try {
       await addAdminPhoneNumber.mutateAsync(digitsOnly);
-      toast.success('Admin phone number added successfully!');
+      toast.success('Admin phone number added to whitelist successfully!');
       setNewAdminPhoneNumber('');
     } catch (error: any) {
       console.error('Failed to add admin phone number:', error);
-      toast.error(error.message || 'Failed to add admin phone number');
+      const errorMessage = error.message || 'Failed to add admin phone number';
+      
+      // Parse specific error messages from backend
+      if (errorMessage.includes('Phone number already exists for another user')) {
+        toast.error('This phone number is already registered to a user account and cannot be added to the admin whitelist');
+      } else if (errorMessage.includes('Phone number must only contain digits')) {
+        toast.error('Phone number must only contain digits (no spaces, dashes, or + prefix)');
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -179,16 +188,15 @@ export default function PaymentConfigForm() {
                 <Input
                   id="newAdminPhoneNumber"
                   type="tel"
-                  placeholder="07123456789 (11 digits, no +)"
+                  placeholder="1234567890 (digits only, no +)"
                   value={newAdminPhoneNumber}
                   onChange={handlePhoneNumberChange}
-                  maxLength={11}
                   disabled={addAdminPhoneNumber.isPending}
                 />
                 <Button
                   type="button"
                   onClick={handleAddAdminPhoneNumber}
-                  disabled={addAdminPhoneNumber.isPending || newAdminPhoneNumber.length !== 11}
+                  disabled={addAdminPhoneNumber.isPending || newAdminPhoneNumber.length === 0}
                   variant="outline"
                 >
                   {addAdminPhoneNumber.isPending ? (
@@ -202,7 +210,7 @@ export default function PaymentConfigForm() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Enter UK phone number without the + prefix (e.g., 07123456789)
+                Enter phone number without the + prefix (e.g., 1234567890, 447123456789)
               </p>
             </div>
           </div>

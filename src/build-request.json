@@ -1,97 +1,96 @@
 {
   "kind": "build_request",
-  "title": "Expand phone number support to worldwide format and add phone number update functionality",
+  "title": "Fix user not found error when adding phone numbers to existing accounts",
   "projectName": "Game Vault",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-86",
-      "text": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-worldwide-phone"
-        ],
-        "quotes": [
-          "Accept any numeric input without the '+' prefix (no specific validation beyond numbers)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Phone number input field accepts any numeric characters without length restrictions",
-        "No country-specific validation is enforced",
-        "Plus sign (+) prefix is not allowed in the input",
-        "Non-numeric characters are rejected"
-      ]
-    },
-    {
-      "id": "REQ-87",
-      "text": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
+      "id": "REQ-90",
+      "text": "Update the backend savePhoneNumber endpoint to check if a user profile already exists for the authenticated principal before attempting to create a new user record",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-worldwide-phone"
+          "msg-last"
         ],
         "quotes": [
-          "Accept any numeric input without the '+' prefix (no specific validation beyond numbers)"
+          "Fix the phone number adding it says user not found when it's ment to add a phone number to the existing account"
         ]
       },
       "acceptanceCriteria": [
-        "Backend accepts phone numbers of any length",
-        "Only numeric characters are allowed",
-        "Plus sign prefix is rejected",
-        "Phone number uniqueness validation still applies"
+        "The savePhoneNumber endpoint queries for an existing user profile using the caller's principal",
+        "If a profile exists, the endpoint updates the phoneNumber field instead of creating a new user",
+        "If no profile exists, the endpoint creates a new user with the phone number",
+        "The endpoint returns success status after updating or creating the user record"
       ]
     },
     {
-      "id": "REQ-88",
-      "text": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
-      "target": "frontend",
+      "id": "REQ-91",
+      "text": "Add validation in the backend savePhoneNumber endpoint to ensure phone numbers are unique across all users when updating existing accounts",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-button-location"
+          "msg-last"
         ],
         "quotes": [
-          "When you are prompted for your phone number add the button there and when pressed it will add a new phone number to that users account"
+          "All users should be able to add phone numbers to their existing accounts"
         ]
       },
       "acceptanceCriteria": [
-        "Button is visible within the PhoneNumberSetup dialog",
-        "Button labeled 'Haven't Added Phone Number' or similar clear text",
-        "Clicking the button allows users to proceed with phone number entry in the same dialog",
-        "Button provides an explicit action for users to add their phone number"
+        "Before updating a user's phone number, check if another user already has that phone number",
+        "Return a descriptive error if the phone number is already in use by a different user",
+        "Allow users to update their own phone number to the same value without error"
       ]
     },
     {
-      "id": "REQ-89",
-      "text": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
+      "id": "REQ-92",
+      "text": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-existing-users"
+          "msg-last"
         ],
         "quotes": [
-          "Yes make them add it when they login"
+          "I'll add clear error messages to help them understand what went wrong"
         ]
       },
       "acceptanceCriteria": [
-        "All authenticated users without a phone number are prompted with PhoneNumberSetup dialog",
-        "Both new users and existing users (who created accounts before phone requirement) are required to add phone number on login",
-        "Users cannot access any app features until phone number is provided",
-        "Phone number check occurs after terms acceptance and before other features"
+        "Display specific error messages for 'user not found' errors",
+        "Display specific error messages for 'phone number already in use' errors",
+        "Show a generic error message for unexpected errors",
+        "Error messages are displayed prominently in the PhoneNumberSetup dialog",
+        "Users can retry phone number submission after seeing error messages"
+      ]
+    },
+    {
+      "id": "REQ-93",
+      "text": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Admin phone number addition in the admin panel could also have this same issue"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When admins add phone numbers to the whitelist through PaymentConfigForm, the backend properly validates the phone number exists in user records",
+        "If the phone number doesn't belong to any existing user, display a clear error message",
+        "The admin panel shows success confirmation when phone numbers are successfully added to the whitelist"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor Motoko backend architecture",
-    "Preserve existing phone number uniqueness validation",
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts or other immutable paths",
-    "Keep existing phone number storage and admin whitelist functionality intact"
+    "Maintain the existing single-actor backend architecture",
+    "Preserve phone number validation rules: numeric only, no + prefix, worldwide format support",
+    "Do not modify the PhoneNumberSetup component structure or required field enforcement",
+    "Keep the dual whitelist system (username and phone number) unchanged"
   ],
   "nonGoals": [
-    "Adding country code selection dropdown",
-    "Implementing phone number formatting or display masks",
-    "Adding phone number verification via SMS",
-    "Changing the existing admin phone number whitelist system"
+    "Adding phone number verification via SMS or email",
+    "Implementing phone number formatting or country code detection",
+    "Creating a separate admin interface for managing user phone numbers",
+    "Adding bulk phone number import functionality"
   ],
   "imageRequirements": {
     "required": [],

@@ -170,6 +170,15 @@ actor {
       Runtime.trap("Unauthorized: Only admins can add admin phone numbers");
     };
     validatePhoneNumber(phoneNumber);
+    
+    // Check if phone number is already used by a regular user
+    switch (phoneNumberMap.get(phoneNumber)) {
+      case (?existingUser) {
+        Runtime.trap("Phone number already exists for another user");
+      };
+      case (null) {};
+    };
+    
     adminPhoneWhitelist.add(phoneNumber, true);
   };
 
@@ -681,14 +690,34 @@ actor {
   };
 
   public shared({ caller }) func savePhoneNumber(phoneNumber : Text) : async () {
-    validatePhoneNumber(phoneNumber);
-    if (phoneNumberMap.containsKey(phoneNumber)) {
-      Runtime.trap("Phone number already exists");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save phone numbers");
     };
-
+    
+    validatePhoneNumber(phoneNumber);
+    
+    // Check if user profile exists
     let existingProfile = switch (userProfiles.get(caller)) {
       case (null) { Runtime.trap("User profile not found") };
       case (?p) { p };
+    };
+    
+    // Remove old phone number mapping if user is updating their phone number
+    switch (existingProfile.phoneNumber) {
+      case (?oldPhone) {
+        phoneNumberMap.remove(oldPhone);
+      };
+      case (null) {};
+    };
+    
+    // Check if the new phone number is already used by another user
+    switch (phoneNumberMap.get(phoneNumber)) {
+      case (?existingUser) {
+        if (existingUser != caller) {
+          Runtime.trap("Phone number already exists");
+        };
+      };
+      case (null) {};
     };
 
     let updatedProfile = {

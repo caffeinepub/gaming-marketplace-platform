@@ -1,61 +1,39 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Expand phone number support to worldwide format and add phone number update functionality",
+  "title": "Fix user not found error when adding phone numbers to existing accounts",
   "requirements": [
     {
-      "id": "REQ-86",
-      "summary": "Update PhoneNumberSetup component to accept worldwide numeric phone numbers without length restrictions or '+' prefix",
+      "id": "REQ-92",
+      "summary": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
       "acceptanceCriteria": [
-        "Phone number input field accepts any numeric characters without length restrictions",
-        "No country-specific validation is enforced",
-        "Plus sign (+) prefix is not allowed in the input",
-        "Non-numeric characters are rejected"
+        "Display specific error messages for 'user not found' errors",
+        "Display specific error messages for 'phone number already in use' errors",
+        "Show a generic error message for unexpected errors",
+        "Error messages are displayed prominently in the PhoneNumberSetup dialog",
+        "Users can retry phone number submission after seeing error messages"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
           "operation": "modify",
-          "description": "Remove the 11-digit UK phone number validation and replace with worldwide numeric validation that accepts any length. Update the input validation to reject '+' prefix and non-numeric characters while allowing any length numeric input. Update error messages to reflect worldwide format requirements. Keep the existing form structure and submission flow intact."
+          "description": "Add error state and error message display above the phone number input field. Parse backend error responses from useSavePhoneNumber mutation to detect 'user not found' errors and 'phone number already in use' errors, displaying specific user-friendly messages for each case. Show a generic error message for unexpected errors. Ensure the dialog remains open after errors so users can retry submission. Use Alert component from shadcn/ui to display error messages prominently."
         }
       ]
     },
     {
-      "id": "REQ-88",
-      "summary": "Add 'Haven't Added Phone Number' button to PhoneNumberSetup dialog to allow users to proceed with phone number entry",
+      "id": "REQ-93",
+      "summary": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
       "acceptanceCriteria": [
-        "Button is visible within the PhoneNumberSetup dialog",
-        "Button labeled 'Haven't Added Phone Number' or similar clear text",
-        "Clicking the button allows users to proceed with phone number entry in the same dialog",
-        "Button provides an explicit action for users to add their phone number"
+        "When admins add phone numbers to the whitelist through PaymentConfigForm, the backend properly validates the phone number exists in user records",
+        "If the phone number doesn't belong to any existing user, display a clear error message",
+        "The admin panel shows success confirmation when phone numbers are successfully added to the whitelist"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
+          "path": "frontend/src/components/admin/PaymentConfigForm.tsx",
           "operation": "modify",
-          "description": "Add a 'Haven't Added Phone Number' button to the dialog that allows users to proceed with entering their phone number. Position the button prominently within the dialog interface, ensuring it's clear that clicking it enables the phone number entry flow. The button should maintain the same dialog context and allow users to input their phone number without dismissing the modal."
-        }
-      ]
-    },
-    {
-      "id": "REQ-89",
-      "summary": "Update App.tsx authentication flow to require phone number from all users on login, blocking app access until provided",
-      "acceptanceCriteria": [
-        "All authenticated users without a phone number are prompted with PhoneNumberSetup dialog",
-        "Both new users and existing users (who created accounts before phone requirement) are required to add phone number on login",
-        "Users cannot access any app features until phone number is provided",
-        "Phone number check occurs after terms acceptance and before other features"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update the authentication flow to check if the user has a phone number after terms acceptance. Add a phone number check gate that displays the PhoneNumberSetup dialog for all authenticated users (both new and existing) who haven't provided a phone number. Ensure this check occurs after terms acceptance but before the AI username generator and main routes. Block access to all app features until the phone number is saved. Use the existing usePhoneNumber hook to check hasPhoneNumber status and integrate the PhoneNumberSetup component into the sequential gate flow."
-        },
-        {
-          "path": "frontend/src/hooks/usePhoneNumber.ts",
-          "operation": "modify",
-          "description": "Review and ensure the usePhoneNumber hook properly supports the updated phone number validation requirements. Verify that the savePhoneNumber mutation correctly handles worldwide numeric phone numbers without length restrictions. Ensure proper error handling and cache invalidation after successful phone number submission."
+          "description": "Add error handling to the addAdminPhoneNumber mutation in the handleAddAdminPhoneNumber function. Parse backend error responses to detect validation failures when the phone number doesn't belong to any existing user. Display specific error messages using toast notifications when phone number validation fails. Maintain the existing success toast when phone numbers are successfully added to the whitelist."
         }
       ]
     }

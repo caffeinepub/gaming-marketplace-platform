@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-phonenumbersetup-component-to-accept-any-numeric-input-without-the-prefix-removing-the-11-digit-uk-phone-number-validation-and-replacing-it-with-worldwide-phone-number-format-that-accepts-any-length-numeric-input",
-      "featureTitle": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
+      "featureId": "feature-add-user-facing-error-messages-in-the-phonenumbersetup-component-to-clearly-display-backend-errors-when-phone-number-saving-fails",
+      "featureTitle": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
       "files": [
         "frontend/src/components/auth/PhoneNumberSetup.tsx"
       ],
@@ -17,15 +17,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-86"
+        "REQ-92"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-haven-t-added-phone-number-button-to-the-phonenumbersetup-dialog-component-that-allows-users-to-proceed-with-adding-their-phone-number-through-the-same-interface-when-clicked",
-      "featureTitle": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
+      "featureId": "feature-verify-the-admin-panel-phone-number-addition-functionality-properly-handles-existing-users-and-displays-appropriate-errors",
+      "featureTitle": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
       "files": [
-        "frontend/src/components/auth/PhoneNumberSetup.tsx"
+        "frontend/src/components/admin/PaymentConfigForm.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -37,28 +37,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-88"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-app-tsx-authentication-flow-to-require-all-users-both-new-and-existing-to-provide-a-phone-number-on-login-if-they-haven-t-already-displaying-the-phonenumbersetup-dialog-and-blocking-access-to-all-app-features-until-phone-number-is-saved",
-      "featureTitle": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/usePhoneNumber.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-89"
+        "REQ-93"
       ],
       "confidence": "high"
     }

@@ -1,36 +1,32 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T23:45:29.903Z",
+  "generatedAt": "2026-02-23T00:08:38.694Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 4,
-    "implemented": 3,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-86",
-        "summary": "Update the PhoneNumberSetup component to accept any numeric input without the '+' prefix, removing the 11-digit UK phone number validation and replacing it with worldwide phone number format that accepts any length numeric input",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/auth/PhoneNumberSetup.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/PhoneNumberSetup.tsx"
-        ]
-      },
-      {
-        "id": "REQ-87",
-        "summary": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
+        "id": "REQ-90",
+        "summary": "Update the backend savePhoneNumber endpoint to check if a user profile already exists for the authenticated principal before attempting to create a new user record",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-88",
-        "summary": "Add 'Haven't Added Phone Number' button to the PhoneNumberSetup dialog component that allows users to proceed with adding their phone number through the same interface when clicked",
+        "id": "REQ-91",
+        "summary": "Add validation in the backend savePhoneNumber endpoint to ensure phone numbers are unique across all users when updating existing accounts",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-92",
+        "summary": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/auth/PhoneNumberSetup.tsx"
@@ -40,16 +36,14 @@
         ]
       },
       {
-        "id": "REQ-89",
-        "summary": "Update the App.tsx authentication flow to require all users (both new and existing) to provide a phone number on login if they haven't already, displaying the PhoneNumberSetup dialog and blocking access to all app features until phone number is saved",
+        "id": "REQ-93",
+        "summary": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/hooks/usePhoneNumber.ts"
+          "frontend/src/components/admin/PaymentConfigForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/hooks/usePhoneNumber.ts"
+          "frontend/src/components/admin/PaymentConfigForm.tsx"
         ]
       }
     ]
@@ -60,9 +54,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
+    "frontend/src/components/admin/PaymentConfigForm.tsx",
     "frontend/src/components/auth/PhoneNumberSetup.tsx",
-    "frontend/src/hooks/usePhoneNumber.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

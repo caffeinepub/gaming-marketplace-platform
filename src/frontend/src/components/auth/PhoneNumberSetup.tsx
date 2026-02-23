@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Loader2, Phone } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Phone, AlertCircle } from 'lucide-react';
 import { useSavePhoneNumber } from '../../hooks/usePhoneNumber';
 import { toast } from 'sonner';
 
@@ -63,12 +64,19 @@ export default function PhoneNumberSetup({ open, onComplete }: PhoneNumberSetupP
       console.error('Failed to save phone number:', error);
       const errorMessage = error.message || 'Failed to save phone number';
       
-      if (errorMessage.includes('already exists')) {
-        setError('This phone number is already registered');
+      // Parse specific error messages from backend
+      if (errorMessage.includes('User profile not found')) {
+        setError('Your account profile was not found. Please try logging out and logging back in.');
+        toast.error('Account profile not found');
+      } else if (errorMessage.includes('Phone number already exists')) {
+        setError('This phone number is already registered to another account. Please use a different number.');
         toast.error('Phone number already registered');
+      } else if (errorMessage.includes('Phone number must only contain digits')) {
+        setError('Phone number must only contain digits (no spaces, dashes, or + prefix)');
+        toast.error('Invalid phone number format');
       } else {
-        setError(errorMessage);
-        toast.error(errorMessage);
+        setError(`Failed to save phone number: ${errorMessage}`);
+        toast.error('Failed to save phone number');
       }
     }
   };
@@ -104,6 +112,13 @@ export default function PhoneNumberSetup({ open, onComplete }: PhoneNumberSetupP
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
             <div className="space-y-2">
               <Label htmlFor="phoneNumber">
                 Phone Number (digits only, no + prefix)
@@ -118,9 +133,6 @@ export default function PhoneNumberSetup({ open, onComplete }: PhoneNumberSetupP
                 className={error ? 'border-destructive' : ''}
                 autoFocus
               />
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
               <p className="text-xs text-muted-foreground">
                 Enter your phone number with digits only (e.g., 1234567890, 447123456789)
               </p>

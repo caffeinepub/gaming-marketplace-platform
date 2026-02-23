@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 33,
+  "projectStateVersion": 35,
   "summary": "Digital gaming account marketplace where admins manage product listings (mobile gaming accounts, in-game currency, premium clothes) through an admin panel. Buyers must create accounts via Internet Identity to purchase. Payment methods: PayPal, UK gift cards, and crypto with admin-configured payment info. Products include game name, price in GBP, images, and quantity. Multiple game categories supported. AI-generated GamerTag-style usernames replace manual creation. Users must provide phone number (without +) during account setup; mandatory before accessing any features. Dual admin whitelist system supports both username-based (venomgladiator25, turbohunter64) and phone number-based admin authorization.",
   "architectural_notes": [
     "Motoko backend on Internet Computer platform",
@@ -17,7 +17,8 @@
   "known_issues": [
     "Admin panel access denied error when whitelisted users click Admin button on storefront",
     "Admin panel submission sections not displaying user information (usernames)",
-    "Admin panel data loading issues causing empty submission lists"
+    "Admin panel data loading issues causing empty submission lists",
+    "User not found error when existing users try to add phone numbers to their accounts through PhoneNumberSetup dialog"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -508,6 +509,22 @@
         "REQ-89"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-user-facing-error-messages-in-the-phonenumbersetup-component-to-clearly-display-backend-errors-when-phone-number-saving-fails",
+      "title": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
+      "reqIds": [
+        "REQ-92"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-the-admin-panel-phone-number-addition-functionality-properly-handles-existing-users-and-displays-appropriate-errors",
+      "title": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+      "reqIds": [
+        "REQ-93"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -948,6 +965,22 @@
       "summary": "Update the backend savePhoneNumber endpoint validation to accept worldwide phone numbers by removing the 11-digit length requirement and accepting any numeric input without the '+' prefix",
       "reqIds": [
         "REQ-87"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-93",
+      "summary": "Update the backend savePhoneNumber endpoint to check if a user profile already exists for the authenticated principal before attempting to create a new user record",
+      "reqIds": [
+        "REQ-90"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-94",
+      "summary": "Add validation in the backend savePhoneNumber endpoint to ensure phone numbers are unique across all users when updating existing accounts",
+      "reqIds": [
+        "REQ-91"
       ],
       "status": "pending"
     }
