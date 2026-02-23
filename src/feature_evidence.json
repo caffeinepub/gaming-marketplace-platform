@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-user-facing-error-messages-in-the-phonenumbersetup-component-to-clearly-display-backend-errors-when-phone-number-saving-fails",
-      "featureTitle": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
+      "featureId": "feature-remove-all-phone-number-collection-and-validation-logic-from-the-authentication-flow-including-phonenumbersetup-component-and-phone-number-storage-in-user-profiles",
+      "featureTitle": "Remove all phone number collection and validation logic from the authentication flow, including PhoneNumberSetup component and phone number storage in user profiles",
       "files": [
-        "frontend/src/components/auth/PhoneNumberSetup.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/PhoneNumberSetup.tsx",
+        "frontend/src/hooks/usePhoneNumber.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,13 +19,57 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-92"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-verify-the-admin-panel-phone-number-addition-functionality-properly-handles-existing-users-and-displays-appropriate-errors",
-      "featureTitle": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+      "featureId": "feature-create-id-claim-creation-dialog-that-appears-for-new-users-on-first-login-allowing-them-to-either-accept-their-auto-generated-6-character-id-or-create-a-custom-6-character-id-for-free",
+      "featureTitle": "Create ID claim/creation dialog that appears for new users on first login, allowing them to either accept their auto-generated 6-character ID or create a custom 6-character ID for free",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/IdClaimDialog.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-all-frontend-displays-that-show-user-ids-to-use-the-new-6-character-format-including-profile-display-layout-header-and-any-admin-panels",
+      "featureTitle": "Update all frontend displays that show user IDs to use the new 6-character format, including profile display, layout header, and any admin panels",
+      "files": [
+        "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
+        "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+        "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-phone-number-admin-whitelist-functionality-and-any-phone-number-related-admin-controls-from-the-admin-panel",
+      "featureTitle": "Remove phone number admin whitelist functionality and any phone number-related admin controls from the admin panel",
       "files": [
         "frontend/src/components/admin/PaymentConfigForm.tsx"
       ],
@@ -37,7 +83,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-93"
+        "REQ-6"
       ],
       "confidence": "high"
     }

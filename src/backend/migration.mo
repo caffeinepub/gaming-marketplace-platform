@@ -1,24 +1,52 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
+import Principal "mo:core/Principal";
 
 module {
+  type OldUserProfile = {
+    userId : Text;
+    name : Text;
+    email : Text;
+    username : ?Text;
+    phoneNumber : ?Text;
+  };
+
   type OldActor = {
-    adminUsernameWhitelist : Map.Map<Text, Bool>;
+    userProfiles : Map.Map<Principal, OldUserProfile>;
+    userIdSet : Map.Map<Text, Bool>;
+    usernameMap : Map.Map<Text, Principal>;
+    customUsernames : Map.Map<Principal, Text>;
+    phoneNumberMap : Map.Map<Text, Principal>;
+    adminPhoneWhitelist : Map.Map<Text, Bool>;
+  };
+
+  type NewUserProfile = {
+    userId : Text;
+    name : Text;
+    email : Text;
+    username : ?Text;
   };
 
   type NewActor = {
-    adminUsernameWhitelist : Map.Map<Text, Bool>;
+    userProfiles : Map.Map<Principal, NewUserProfile>;
+    userIdSet : Map.Map<Text, Bool>;
+    usernameMap : Map.Map<Text, Principal>;
+    customUsernames : Map.Map<Principal, Text>;
   };
 
   public func run(old : OldActor) : NewActor {
-    let newWhitelist = old.adminUsernameWhitelist.clone();
-
-    newWhitelist.add("venomgladiator25", true);
-    newWhitelist.add("turbohunter64", true);
-
+    let newUserProfiles = old.userProfiles.map<Principal, OldUserProfile, NewUserProfile>(
+      func(_principal, oldProfile) {
+        {
+          userId = oldProfile.userId;
+          name = oldProfile.name;
+          email = oldProfile.email;
+          username = oldProfile.username;
+        };
+      }
+    );
     {
-      adminUsernameWhitelist = newWhitelist;
-      // All other state stays the same
+      old with
+      userProfiles = newUserProfiles;
     };
   };
 };

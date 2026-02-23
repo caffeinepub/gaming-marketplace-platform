@@ -73,9 +73,9 @@ export interface QueueSkipSubmission {
 export type Time = bigint;
 export interface UserProfile {
   'username' : [] | [string],
+  'userId' : string,
   'name' : string,
   'email' : string,
-  'phoneNumber' : [] | [string],
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -108,7 +108,6 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addAdminPhoneNumber' : ActorMethod<[string], undefined>,
   'addAdminUsername' : ActorMethod<[string], undefined>,
   'addToCart' : ActorMethod<[string, bigint], undefined>,
   'approveCustomUsername' : ActorMethod<[Principal], undefined>,
@@ -140,17 +139,13 @@ export interface _SERVICE {
   >,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getUsername' : ActorMethod<[Principal], [] | [string]>,
-  'hasPhoneNumber' : ActorMethod<[], boolean>,
   'hasQueueBypass' : ActorMethod<[], boolean>,
   'hasUsername' : ActorMethod<[], boolean>,
-  'isAdminPhoneNumber' : ActorMethod<[string], boolean>,
   'isAdminUsername' : ActorMethod<[string], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'rejectCustomUsername' : ActorMethod<[Principal], undefined>,
-  'removeAdminPhoneNumber' : ActorMethod<[string], undefined>,
   'removeAdminUsername' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'savePhoneNumber' : ActorMethod<[string], undefined>,
   'submitCustomUsername' : ActorMethod<
     [string, PaymentMethod, string],
     undefined

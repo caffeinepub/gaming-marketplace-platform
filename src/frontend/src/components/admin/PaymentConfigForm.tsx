@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useGetPaymentDetails, useUpdatePaymentDetails, useAddAdminUsername, useAddAdminPhoneNumber } from '../../hooks/useQueries';
+import { useGetPaymentDetails, useUpdatePaymentDetails, useAddAdminUsername } from '../../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Save, UserPlus, Phone } from 'lucide-react';
+import { Loader2, Save, UserPlus } from 'lucide-react';
 
 export default function PaymentConfigForm() {
   const { data: paymentDetails, isLoading } = useGetPaymentDetails();
   const updatePaymentDetails = useUpdatePaymentDetails();
   const addAdminUsername = useAddAdminUsername();
-  const addAdminPhoneNumber = useAddAdminPhoneNumber();
 
   const [paypalEmail, setPaypalEmail] = useState('');
   const [ukGiftCardInstructions, setUkGiftCardInstructions] = useState('');
@@ -23,7 +22,6 @@ export default function PaymentConfigForm() {
   const [customUsernamePriceGBP, setCustomUsernamePriceGBP] = useState('0.10');
   
   const [newAdminUsername, setNewAdminUsername] = useState('');
-  const [newAdminPhoneNumber, setNewAdminPhoneNumber] = useState('');
 
   useEffect(() => {
     if (paymentDetails) {
@@ -92,47 +90,6 @@ export default function PaymentConfigForm() {
     }
   };
 
-  const handleAddAdminPhoneNumber = async () => {
-    const phoneNumber = newAdminPhoneNumber.trim();
-    
-    if (!phoneNumber) {
-      toast.error('Please enter a phone number');
-      return;
-    }
-
-    // Validate phone number format (digits only, no +)
-    const digitsOnly = phoneNumber.replace(/\D/g, '');
-    if (digitsOnly !== phoneNumber) {
-      toast.error('Phone number must only contain digits (no spaces, dashes, or + prefix)');
-      return;
-    }
-
-    try {
-      await addAdminPhoneNumber.mutateAsync(digitsOnly);
-      toast.success('Admin phone number added to whitelist successfully!');
-      setNewAdminPhoneNumber('');
-    } catch (error: any) {
-      console.error('Failed to add admin phone number:', error);
-      const errorMessage = error.message || 'Failed to add admin phone number';
-      
-      // Parse specific error messages from backend
-      if (errorMessage.includes('Phone number already exists for another user')) {
-        toast.error('This phone number is already registered to a user account and cannot be added to the admin whitelist');
-      } else if (errorMessage.includes('Phone number must only contain digits')) {
-        toast.error('Phone number must only contain digits (no spaces, dashes, or + prefix)');
-      } else {
-        toast.error(errorMessage);
-      }
-    }
-  };
-
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Only allow digits
-    const digitsOnly = value.replace(/\D/g, '');
-    setNewAdminPhoneNumber(digitsOnly);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -180,38 +137,6 @@ export default function PaymentConfigForm() {
                   )}
                 </Button>
               </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="newAdminPhoneNumber">Add Admin by Phone Number</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="newAdminPhoneNumber"
-                  type="tel"
-                  placeholder="1234567890 (digits only, no +)"
-                  value={newAdminPhoneNumber}
-                  onChange={handlePhoneNumberChange}
-                  disabled={addAdminPhoneNumber.isPending}
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddAdminPhoneNumber}
-                  disabled={addAdminPhoneNumber.isPending || newAdminPhoneNumber.length === 0}
-                  variant="outline"
-                >
-                  {addAdminPhoneNumber.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Phone className="mr-2 h-4 w-4" />
-                      Add Admin
-                    </>
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Enter phone number without the + prefix (e.g., 1234567890, 447123456789)
-              </p>
             </div>
           </div>
 

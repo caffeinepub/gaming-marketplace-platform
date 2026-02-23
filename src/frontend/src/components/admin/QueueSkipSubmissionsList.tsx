@@ -1,236 +1,139 @@
-import { useState } from 'react';
 import { useGetQueueSkipSubmissionsWithUsernames, useFlagQueueSkipFraud } from '../../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Eye, Flag, Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import { ExtendedQueueSkipSubmission, QueueSkipStatus, GiftCardType } from '../../backend';
+import { QueueSkipStatus, GiftCardType } from '../../backend';
 import { Principal } from '@icp-sdk/core/principal';
 
 export default function QueueSkipSubmissionsList() {
-  const { data: submissions = [], isLoading } = useGetQueueSkipSubmissionsWithUsernames();
+  const { data: submissions, isLoading } = useGetQueueSkipSubmissionsWithUsernames();
   const flagFraud = useFlagQueueSkipFraud();
-  const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(null);
-  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-  const handleViewScreenshot = (submission: ExtendedQueueSkipSubmission) => {
-    // Only show screenshot viewer if it's not a gift card submission
-    if (submission.submission.giftCardCode) {
-      toast.info('Gift card submissions do not have screenshots');
-      return;
-    }
-    // Note: The backend no longer stores screenshots, so this won't work
-    // We'll keep the UI for backwards compatibility but it won't display anything
-    toast.info('Screenshot viewing is not available for this submission');
-  };
-
-  const handleFlagFraud = (userPrincipal: string) => {
-    setSelectedUser(userPrincipal);
-    setFlagDialogOpen(true);
-  };
-
-  const confirmFlagFraud = async () => {
-    if (!selectedUser) return;
-
+  const handleFlagFraud = async (userPrincipal: string) => {
     try {
-      const principal = Principal.fromText(selectedUser);
+      const principal = Principal.fromText(userPrincipal);
       await flagFraud.mutateAsync(principal);
-      toast.success('Submission flagged as fraudulent and user blocked');
-      setFlagDialogOpen(false);
-      setSelectedUser(null);
+      toast.success('Submission flagged as fraudulent');
     } catch (error: any) {
-      console.error('Flag fraud error:', error);
+      console.error('Failed to flag fraud:', error);
       toast.error(error.message || 'Failed to flag submission');
     }
   };
 
   const getStatusBadge = (status: QueueSkipStatus) => {
     switch (status) {
-      case 'pendingReview':
+      case QueueSkipStatus.pendingReview:
         return <Badge variant="outline">Pending Review</Badge>;
-      case 'approved':
-        return <Badge variant="default">Approved</Badge>;
-      case 'flaggedFraudulent':
-        return <Badge variant="destructive">Flagged Fraudulent</Badge>;
+      case QueueSkipStatus.approved:
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case QueueSkipStatus.flaggedFraudulent:
+        return <Badge variant="destructive">Fraudulent</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline">Unknown</Badge>;
     }
   };
 
-  const getGiftCardTypeLabel = (type: GiftCardType) => {
-    switch (type) {
-      case GiftCardType.amazon:
-        return 'Amazon UK';
-      case GiftCardType.tesco:
-        return 'Tesco UK';
-      case GiftCardType.starbucks:
-        return 'Starbucks UK';
-      case GiftCardType.cryptocurrency:
-        return 'Cryptocurrency';
-      case GiftCardType.other:
-        return 'Other';
-      default:
-        return type;
-    }
+  const getGiftCardTypeBadge = (type: GiftCardType) => {
+    const typeMap = {
+      [GiftCardType.amazon]: 'Amazon',
+      [GiftCardType.starbucks]: 'Starbucks',
+      [GiftCardType.tesco]: 'Tesco',
+      [GiftCardType.cryptocurrency]: 'Cryptocurrency',
+      [GiftCardType.other]: 'Other',
+    };
+    return <Badge variant="secondary">{typeMap[type] || 'Unknown'}</Badge>;
   };
-
-  const getPaymentMethodLabel = (submission: ExtendedQueueSkipSubmission) => {
-    if (submission.submission.giftCardCode) {
-      return 'Gift Card';
-    }
-    if (submission.submission.giftCardType === GiftCardType.cryptocurrency) {
-      return 'Cryptocurrency';
-    }
-    return 'PayPal';
-  };
-
-  const formatTimestamp = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) / 1000000); // Convert nanoseconds to milliseconds
-    return date.toLocaleString();
-  };
-
-  // Sort submissions by timestamp descending (most recent first)
-  const sortedSubmissions = [...submissions].sort((a, b) => {
-    return Number(b.submission.timestamp - a.submission.timestamp);
-  });
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="py-12">
-          <div className="flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
-  if (submissions.length === 0) {
+  if (!submissions || submissions.length === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Queue Skip Submissions</CardTitle>
-          <CardDescription>Review and manage queue skip payment submissions</CardDescription>
+          <CardDescription>No queue skip submissions yet</CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground py-8">No submissions yet</p>
-        </CardContent>
       </Card>
     );
   }
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Queue Skip Submissions</CardTitle>
-          <CardDescription>Review and manage queue skip payment submissions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Username</TableHead>
-                  <TableHead>User Principal</TableHead>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead>Transaction ID</TableHead>
-                  <TableHead>Gift Card Type</TableHead>
-                  <TableHead>Gift Card Code</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedSubmissions.map((extSubmission) => (
-                  <TableRow key={extSubmission.submission.user.toString()}>
-                    <TableCell className="font-medium">
-                      {extSubmission.username || <span className="text-muted-foreground italic">No username</span>}
+    <Card>
+      <CardHeader>
+        <CardTitle>Queue Skip Submissions</CardTitle>
+        <CardDescription>Review and manage queue skip payment submissions</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Username</TableHead>
+                <TableHead>Timestamp</TableHead>
+                <TableHead>Gift Card Type</TableHead>
+                <TableHead>Transaction ID</TableHead>
+                <TableHead>Gift Card Code</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {submissions.map((item) => {
+                const submission = item.submission;
+                const userPrincipalStr = submission.user.toString();
+                const timestamp = new Date(Number(submission.timestamp) / 1000000);
+
+                return (
+                  <TableRow key={userPrincipalStr}>
+                    <TableCell className="font-mono text-xs">
+                      {userPrincipalStr.slice(0, 8)}...
                     </TableCell>
-                    <TableCell className="font-mono text-xs max-w-[150px] truncate">
-                      {extSubmission.submission.user.toString()}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">{formatTimestamp(extSubmission.submission.timestamp)}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{getPaymentMethodLabel(extSubmission)}</Badge>
+                      {item.username || 'N/A'}
                     </TableCell>
-                    <TableCell className="font-mono text-sm">{extSubmission.submission.transactionId}</TableCell>
+                    <TableCell>{timestamp.toLocaleString()}</TableCell>
+                    <TableCell>{getGiftCardTypeBadge(submission.giftCardType)}</TableCell>
+                    <TableCell className="font-mono text-xs">{submission.transactionId}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {submission.giftCardCode || 'N/A'}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(submission.status)}</TableCell>
                     <TableCell>
-                      {extSubmission.submission.giftCardCode ? getGiftCardTypeLabel(extSubmission.submission.giftCardType) : '-'}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm max-w-[150px] truncate">
-                      {extSubmission.submission.giftCardCode || '-'}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(extSubmission.submission.status)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      {submission.status !== QueueSkipStatus.flaggedFraudulent && (
                         <Button
-                          variant="destructive"
                           size="sm"
-                          onClick={() => handleFlagFraud(extSubmission.submission.user.toString())}
-                          disabled={extSubmission.submission.status === 'flaggedFraudulent' || flagFraud.isPending}
+                          variant="destructive"
+                          onClick={() => handleFlagFraud(userPrincipalStr)}
+                          disabled={flagFraud.isPending}
                         >
                           {flagFraud.isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <>
-                              <Flag className="h-4 w-4 mr-1" />
-                              Flag
+                              <AlertTriangle className="mr-2 h-4 w-4" />
+                              Flag Fraud
                             </>
                           )}
                         </Button>
-                      </div>
+                      )}
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Screenshot Viewer Dialog (kept for backwards compatibility but won't be used) */}
-      <Dialog open={!!selectedScreenshot} onOpenChange={() => setSelectedScreenshot(null)}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Payment Screenshot</DialogTitle>
-          </DialogHeader>
-          {selectedScreenshot && (
-            <div className="mt-4">
-              <img
-                src={selectedScreenshot}
-                alt="Payment screenshot"
-                className="w-full h-auto rounded-lg border"
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Flag Fraud Confirmation Dialog */}
-      <AlertDialog open={flagDialogOpen} onOpenChange={setFlagDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Flag as Fraudulent?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will revoke the user's queue bypass status and block them from submitting future queue skip requests. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmFlagFraud} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Flag as Fraudulent
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

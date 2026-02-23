@@ -157,21 +157,6 @@ export function useAddAdminUsername() {
   });
 }
 
-export function useAddAdminPhoneNumber() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (phoneNumber: string) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.addAdminPhoneNumber(phoneNumber);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
-    },
-  });
-}
-
 // Product Queries
 export function useGetAllProducts() {
   const { actor, isFetching } = useActor();

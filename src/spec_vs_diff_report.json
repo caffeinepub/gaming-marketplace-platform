@@ -1,16 +1,32 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T00:08:38.690Z",
-  "summary": "The diff implements all four core requirements for fixing user-not-found errors when adding phone numbers. The backend now checks for existing users before creating new records (REQ-90), validates phone number uniqueness (REQ-91), and the frontend displays specific error messages (REQ-92). The admin panel phone number addition functionality includes error handling (REQ-93). All acceptance criteria appear to be addressed in the implementation.",
+  "generatedAt": "2026-02-23T11:41:31.268Z",
+  "summary": "The implementation successfully removes phone number authentication and implements the 6-character ID system with backend ID generation, ID claim dialog, frontend displays, admin panel updates, and profile storage changes. All seven requirements have evidence of implementation.",
   "missing_requirements": [],
-  "hallucinated_features": [],
+  "hallucinated_features": [
+    {
+      "description": "Migration module (backend/migration.mo) that removes phoneNumber and phoneNumberMap fields from old actor state",
+      "reason": "BuildRequest does not explicitly require a migration module to handle conversion from old phone number system to new ID system, though it does mention 'migration handles conversion from old PUR-XXXXXX format' in REQ-4 AC. The migration.mo file appears to be an implementation detail beyond the stated requirements.",
+      "evidence": [
+        "backend/migration.mo"
+      ]
+    }
+  ],
   "confidence": 0.92,
   "changed_files": [
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
     "frontend/src/components/admin/PaymentConfigForm.tsx",
+    "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+    "frontend/src/components/auth/IdClaimDialog.tsx",
     "frontend/src/components/auth/PhoneNumberSetup.tsx",
+    "frontend/src/hooks/usePhoneNumber.ts",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }

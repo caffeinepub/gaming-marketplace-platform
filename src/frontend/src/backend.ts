@@ -91,9 +91,9 @@ export class ExternalBlob {
 }
 export interface UserProfile {
     username?: string;
+    userId: string;
     name: string;
     email: string;
-    phoneNumber?: string;
 }
 export interface _CaffeineStorageRefillResult {
     success?: boolean;
@@ -195,7 +195,6 @@ export interface backendInterface {
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addAdminPhoneNumber(phoneNumber: string): Promise<void>;
     addAdminUsername(username: string): Promise<void>;
     addToCart(productId: string, quantity: bigint): Promise<void>;
     approveCustomUsername(user: Principal): Promise<void>;
@@ -221,17 +220,13 @@ export interface backendInterface {
     getQueueSkipSubmissionsWithUsernames(): Promise<Array<ExtendedQueueSkipSubmission>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getUsername(_user: Principal): Promise<string | null>;
-    hasPhoneNumber(): Promise<boolean>;
     hasQueueBypass(): Promise<boolean>;
     hasUsername(): Promise<boolean>;
-    isAdminPhoneNumber(phoneNumber: string): Promise<boolean>;
     isAdminUsername(username: string): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     rejectCustomUsername(user: Principal): Promise<void>;
-    removeAdminPhoneNumber(phoneNumber: string): Promise<void>;
     removeAdminUsername(username: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    savePhoneNumber(phoneNumber: string): Promise<void>;
     submitCustomUsername(requestedUsername: string, paymentMethod: PaymentMethod, transactionDetails: string): Promise<void>;
     submitQueueSkipPayment(transactionId: string, giftCardType: GiftCardType, giftCardCode: string | null): Promise<void>;
     updateCartItemQuantity(productId: string, quantity: bigint): Promise<void>;
@@ -338,20 +333,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor._initializeAccessControlWithSecret(arg0);
-            return result;
-        }
-    }
-    async addAdminPhoneNumber(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.addAdminPhoneNumber(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.addAdminPhoneNumber(arg0);
             return result;
         }
     }
@@ -705,20 +686,6 @@ export class Backend implements backendInterface {
             return from_candid_opt_n24(this._uploadFile, this._downloadFile, result);
         }
     }
-    async hasPhoneNumber(): Promise<boolean> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.hasPhoneNumber();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.hasPhoneNumber();
-            return result;
-        }
-    }
     async hasQueueBypass(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -744,20 +711,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.hasUsername();
-            return result;
-        }
-    }
-    async isAdminPhoneNumber(arg0: string): Promise<boolean> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.isAdminPhoneNumber(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.isAdminPhoneNumber(arg0);
             return result;
         }
     }
@@ -803,20 +756,6 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async removeAdminPhoneNumber(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.removeAdminPhoneNumber(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.removeAdminPhoneNumber(arg0);
-            return result;
-        }
-    }
     async removeAdminUsername(arg0: string): Promise<void> {
         if (this.processError) {
             try {
@@ -842,20 +781,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n44(this._uploadFile, this._downloadFile, arg0));
-            return result;
-        }
-    }
-    async savePhoneNumber(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.savePhoneNumber(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.savePhoneNumber(arg0);
             return result;
         }
     }
@@ -1044,20 +969,20 @@ async function from_candid_record_n17(_uploadFile: (file: ExternalBlob) => Promi
 }
 function from_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     username: [] | [string];
+    userId: string;
     name: string;
     email: string;
-    phoneNumber: [] | [string];
 }): {
     username?: string;
+    userId: string;
     name: string;
     email: string;
-    phoneNumber?: string;
 } {
     return {
         username: record_opt_to_undefined(from_candid_opt_n24(_uploadFile, _downloadFile, value.username)),
+        userId: value.userId,
         name: value.name,
-        email: value.email,
-        phoneNumber: record_opt_to_undefined(from_candid_opt_n24(_uploadFile, _downloadFile, value.phoneNumber))
+        email: value.email
     };
 }
 function from_candid_record_n29(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -1276,20 +1201,20 @@ function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
 }
 function to_candid_record_n45(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     username?: string;
+    userId: string;
     name: string;
     email: string;
-    phoneNumber?: string;
 }): {
     username: [] | [string];
+    userId: string;
     name: string;
     email: string;
-    phoneNumber: [] | [string];
 } {
     return {
         username: value.username ? candid_some(value.username) : candid_none(),
+        userId: value.userId,
         name: value.name,
-        email: value.email,
-        phoneNumber: value.phoneNumber ? candid_some(value.phoneNumber) : candid_none()
+        email: value.email
     };
 }
 function to_candid_variant_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ProductType): {

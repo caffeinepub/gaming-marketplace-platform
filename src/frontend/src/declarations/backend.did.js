@@ -47,9 +47,9 @@ export const Product = IDL.Record({
 });
 export const UserProfile = IDL.Record({
   'username' : IDL.Opt(IDL.Text),
+  'userId' : IDL.Text,
   'name' : IDL.Text,
   'email' : IDL.Text,
-  'phoneNumber' : IDL.Opt(IDL.Text),
 });
 export const CartItem = IDL.Record({
   'productId' : IDL.Text,
@@ -136,7 +136,6 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addAdminPhoneNumber' : IDL.Func([IDL.Text], [], []),
   'addAdminUsername' : IDL.Func([IDL.Text], [], []),
   'addToCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'approveCustomUsername' : IDL.Func([IDL.Principal], [], []),
@@ -178,17 +177,13 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
-  'hasPhoneNumber' : IDL.Func([], [IDL.Bool], ['query']),
   'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
   'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
-  'isAdminPhoneNumber' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
   'isAdminUsername' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'rejectCustomUsername' : IDL.Func([IDL.Principal], [], []),
-  'removeAdminPhoneNumber' : IDL.Func([IDL.Text], [], []),
   'removeAdminUsername' : IDL.Func([IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'savePhoneNumber' : IDL.Func([IDL.Text], [], []),
   'submitCustomUsername' : IDL.Func(
       [IDL.Text, PaymentMethod, IDL.Text],
       [],
@@ -245,9 +240,9 @@ export const idlFactory = ({ IDL }) => {
   });
   const UserProfile = IDL.Record({
     'username' : IDL.Opt(IDL.Text),
+    'userId' : IDL.Text,
     'name' : IDL.Text,
     'email' : IDL.Text,
-    'phoneNumber' : IDL.Opt(IDL.Text),
   });
   const CartItem = IDL.Record({ 'productId' : IDL.Text, 'quantity' : IDL.Nat });
   const CustomUsernameStatus = IDL.Variant({
@@ -331,7 +326,6 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addAdminPhoneNumber' : IDL.Func([IDL.Text], [], []),
     'addAdminUsername' : IDL.Func([IDL.Text], [], []),
     'addToCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'approveCustomUsername' : IDL.Func([IDL.Principal], [], []),
@@ -373,17 +367,13 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getUsername' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
-    'hasPhoneNumber' : IDL.Func([], [IDL.Bool], ['query']),
     'hasQueueBypass' : IDL.Func([], [IDL.Bool], ['query']),
     'hasUsername' : IDL.Func([], [IDL.Bool], ['query']),
-    'isAdminPhoneNumber' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'isAdminUsername' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'rejectCustomUsername' : IDL.Func([IDL.Principal], [], []),
-    'removeAdminPhoneNumber' : IDL.Func([IDL.Text], [], []),
     'removeAdminUsername' : IDL.Func([IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'savePhoneNumber' : IDL.Func([IDL.Text], [], []),
     'submitCustomUsername' : IDL.Func(
         [IDL.Text, PaymentMethod, IDL.Text],
         [],

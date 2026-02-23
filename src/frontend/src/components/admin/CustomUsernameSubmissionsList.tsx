@@ -16,33 +16,33 @@ export default function CustomUsernameSubmissionsList() {
   const rejectCustomUsername = useRejectCustomUsername();
   const getUserProfile = useGetUserProfile();
   const [viewingScreenshot, setViewingScreenshot] = useState<string | null>(null);
-  const [usernames, setUsernames] = useState<Record<string, string>>({});
+  const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>({});
   const [loadingUsernames, setLoadingUsernames] = useState(false);
 
-  // Fetch usernames for all submissions
+  // Fetch user profiles for all submissions
   useEffect(() => {
-    const fetchUsernames = async () => {
+    const fetchUserProfiles = async () => {
       if (!submissions || submissions.length === 0) return;
       
       setLoadingUsernames(true);
-      const usernameMap: Record<string, string> = {};
+      const profileMap: Record<string, UserProfile> = {};
       
       for (const submission of submissions) {
         try {
           const profile = await getUserProfile.mutateAsync(submission.user);
-          if (profile?.username) {
-            usernameMap[submission.user.toString()] = profile.username;
+          if (profile) {
+            profileMap[submission.user.toString()] = profile;
           }
         } catch (error) {
-          console.error('Failed to fetch username for user:', submission.user.toString(), error);
+          console.error('Failed to fetch profile for user:', submission.user.toString(), error);
         }
       }
       
-      setUsernames(usernameMap);
+      setUserProfiles(profileMap);
       setLoadingUsernames(false);
     };
 
-    fetchUsernames();
+    fetchUserProfiles();
   }, [submissions]);
 
   const handleApprove = async (userPrincipal: string) => {
@@ -128,10 +128,9 @@ export default function CustomUsernameSubmissionsList() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>User</TableHead>
                   <TableHead>Current Username</TableHead>
                   <TableHead>Requested Username</TableHead>
-                  <TableHead>User Principal</TableHead>
-                  <TableHead>Date</TableHead>
                   <TableHead>Payment Method</TableHead>
                   <TableHead>Transaction Details</TableHead>
                   <TableHead>Status</TableHead>
@@ -140,29 +139,32 @@ export default function CustomUsernameSubmissionsList() {
               </TableHeader>
               <TableBody>
                 {submissions.map((submission) => {
+                  const userPrincipalStr = submission.user.toString();
+                  const profile = userProfiles[userPrincipalStr];
                   const screenshotUrl = extractScreenshotUrl(submission.transactionDetails);
+
                   return (
-                    <TableRow key={submission.user.toString()}>
-                      <TableCell className="font-medium">
+                    <TableRow key={userPrincipalStr}>
+                      <TableCell className="font-mono text-xs">
+                        {userPrincipalStr.slice(0, 8)}...
+                      </TableCell>
+                      <TableCell>
                         {loadingUsernames ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : profile ? (
+                          <div className="flex flex-col">
+                            <span className="font-medium">{profile.username || 'N/A'}</span>
+                            <span className="text-xs text-muted-foreground">{profile.userId}</span>
+                          </div>
                         ) : (
-                          usernames[submission.user.toString()] || <span className="text-muted-foreground italic">No username</span>
+                          'N/A'
                         )}
                       </TableCell>
-                      <TableCell className="font-semibold text-primary">
-                        {submission.requestedUsername}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs max-w-[120px] truncate">
-                        {submission.user.toString()}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {new Date(Number(submission.timestamp) / 1000000).toLocaleString()}
-                      </TableCell>
+                      <TableCell className="font-medium">{submission.requestedUsername}</TableCell>
                       <TableCell>{getPaymentMethodBadge(submission)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono max-w-[150px] truncate">
+                          <span className="text-sm truncate max-w-[200px]">
                             {submission.transactionDetails}
                           </span>
                           {screenshotUrl && (
@@ -181,33 +183,27 @@ export default function CustomUsernameSubmissionsList() {
                         {submission.status === CustomUsernameStatus.pendingReview && (
                           <div className="flex gap-2">
                             <Button
-                              variant="default"
                               size="sm"
-                              onClick={() => handleApprove(submission.user.toString())}
+                              variant="default"
+                              onClick={() => handleApprove(userPrincipalStr)}
                               disabled={approveCustomUsername.isPending}
                             >
                               {approveCustomUsername.isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                <>
-                                  <Check className="h-4 w-4 mr-1" />
-                                  Approve
-                                </>
+                                <Check className="h-4 w-4" />
                               )}
                             </Button>
                             <Button
-                              variant="destructive"
                               size="sm"
-                              onClick={() => handleReject(submission.user.toString())}
+                              variant="destructive"
+                              onClick={() => handleReject(userPrincipalStr)}
                               disabled={rejectCustomUsername.isPending}
                             >
                               {rejectCustomUsername.isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                <>
-                                  <X className="h-4 w-4 mr-1" />
-                                  Reject
-                                </>
+                                <X className="h-4 w-4" />
                               )}
                             </Button>
                           </div>
@@ -222,20 +218,17 @@ export default function CustomUsernameSubmissionsList() {
         </CardContent>
       </Card>
 
-      {/* Screenshot Viewer Dialog */}
       <Dialog open={!!viewingScreenshot} onOpenChange={() => setViewingScreenshot(null)}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>Payment Screenshot</DialogTitle>
           </DialogHeader>
           {viewingScreenshot && (
-            <div className="mt-4">
-              <img
-                src={viewingScreenshot}
-                alt="Payment screenshot"
-                className="w-full h-auto rounded-lg border"
-              />
-            </div>
+            <img
+              src={viewingScreenshot}
+              alt="Payment screenshot"
+              className="w-full h-auto rounded-lg"
+            />
           )}
         </DialogContent>
       </Dialog>

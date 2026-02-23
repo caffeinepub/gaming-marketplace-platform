@@ -1,43 +1,78 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T00:08:38.694Z",
+  "generatedAt": "2026-02-23T11:41:31.271Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 2,
+    "total": 7,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-90",
-        "summary": "Update the backend savePhoneNumber endpoint to check if a user profile already exists for the authenticated principal before attempting to create a new user record",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-91",
-        "summary": "Add validation in the backend savePhoneNumber endpoint to ensure phone numbers are unique across all users when updating existing accounts",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-92",
-        "summary": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
+        "id": "REQ-1",
+        "summary": "Remove all phone number collection and validation logic from the authentication flow, including PhoneNumberSetup component and phone number storage in user profiles",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/PhoneNumberSetup.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/PhoneNumberSetup.tsx",
+          "frontend/src/hooks/usePhoneNumber.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/PhoneNumberSetup.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/PhoneNumberSetup.tsx",
+          "frontend/src/hooks/usePhoneNumber.ts"
         ]
       },
       {
-        "id": "REQ-93",
-        "summary": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+        "id": "REQ-2",
+        "summary": "Implement 6-character alphanumeric ID system where new users are automatically assigned a unique 6-character ID (letters and numbers) upon first login if they don't have one",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Create ID claim/creation dialog that appears for new users on first login, allowing them to either accept their auto-generated 6-character ID or create a custom 6-character ID for free",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/IdClaimDialog.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/IdClaimDialog.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Update user profile storage to use 6-character IDs as the primary identifier, replacing the current PUR-XXXXXX format userId with the new 6-character format",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Update all frontend displays that show user IDs to use the new 6-character format, including profile display, layout header, and any admin panels",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/layout/Layout.tsx",
+          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
+          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
+          "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Remove phone number admin whitelist functionality and any phone number-related admin controls from the admin panel",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/admin/PaymentConfigForm.tsx"
@@ -45,17 +80,38 @@
         "matchedFiles": [
           "frontend/src/components/admin/PaymentConfigForm.tsx"
         ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Keep Internet Identity authentication system unchanged as the primary login method, with users authenticating via passkeys, Google, Apple, or Microsoft",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/components/auth/LoginButton.tsx"
+        ],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
     "frontend/src/components/admin/PaymentConfigForm.tsx",
+    "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+    "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+    "frontend/src/components/auth/IdClaimDialog.tsx",
     "frontend/src/components/auth/PhoneNumberSetup.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/usePhoneNumber.ts",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

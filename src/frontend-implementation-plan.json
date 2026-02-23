@@ -1,39 +1,124 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix user not found error when adding phone numbers to existing accounts",
+  "title": "Replace phone number authentication with 6-character ID system",
   "requirements": [
     {
-      "id": "REQ-92",
-      "summary": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
+      "id": "REQ-1",
+      "summary": "Remove all phone number collection and validation logic from the authentication flow, including PhoneNumberSetup component and phone number storage in user profiles",
       "acceptanceCriteria": [
-        "Display specific error messages for 'user not found' errors",
-        "Display specific error messages for 'phone number already in use' errors",
-        "Show a generic error message for unexpected errors",
-        "Error messages are displayed prominently in the PhoneNumberSetup dialog",
-        "Users can retry phone number submission after seeing error messages"
+        "PhoneNumberSetup component is no longer called during authentication",
+        "Backend user profile no longer stores or requires phoneNumber field",
+        "Users can complete authentication without providing a phone number"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add error state and error message display above the phone number input field. Parse backend error responses from useSavePhoneNumber mutation to detect 'user not found' errors and 'phone number already in use' errors, displaying specific user-friendly messages for each case. Show a generic error message for unexpected errors. Ensure the dialog remains open after errors so users can retry submission. Use Alert component from shadcn/ui to display error messages prominently."
+          "description": "Remove PhoneNumberSetup component import and remove the phone number setup step from the authentication flow. Ensure the authentication flow proceeds directly from terms acceptance to username generation without phone number collection."
+        },
+        {
+          "path": "frontend/src/components/auth/PhoneNumberSetup.tsx",
+          "operation": "delete",
+          "description": "Delete the PhoneNumberSetup component as it is no longer needed in the authentication flow."
+        },
+        {
+          "path": "frontend/src/hooks/usePhoneNumber.ts",
+          "operation": "delete",
+          "description": "Delete the phone number hooks file as phone number functionality is being removed."
         }
       ]
     },
     {
-      "id": "REQ-93",
-      "summary": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+      "id": "REQ-3",
+      "summary": "Create ID claim/creation dialog that appears for new users on first login, allowing them to either accept their auto-generated 6-character ID or create a custom 6-character ID for free",
       "acceptanceCriteria": [
-        "When admins add phone numbers to the whitelist through PaymentConfigForm, the backend properly validates the phone number exists in user records",
-        "If the phone number doesn't belong to any existing user, display a clear error message",
-        "The admin panel shows success confirmation when phone numbers are successfully added to the whitelist"
+        "Dialog appears automatically for users without an ID after Internet Identity login",
+        "Users can see their auto-generated 6-character ID",
+        "Users can choose to create a custom 6-character alphanumeric ID",
+        "Custom ID input validates for exactly 6 characters (letters and numbers only)",
+        "Custom ID creation checks for uniqueness before acceptance",
+        "Dialog cannot be dismissed until an ID is claimed or created"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/IdClaimDialog.tsx",
+          "operation": "create",
+          "description": "Create a non-dismissible dialog component that displays the user's auto-generated 6-character ID and provides an option to create a custom 6-character ID instead. Include input validation for exactly 6 alphanumeric characters, uniqueness checking via backend before acceptance, and visual feedback for the claim/create process. The dialog should show the auto-generated ID prominently with an 'Accept ID' button, plus a section for custom ID entry with validation and a 'Create Custom ID' button."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add React Query hooks for ID management: useHasUserId to check if the current user has a 6-character ID, useValidateCustomId for checking custom ID uniqueness, and useClaimId mutation for accepting an auto-generated or custom ID. These hooks should use the backend interface methods for ID operations."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Integrate IdClaimDialog into the authentication flow. After Internet Identity login and terms acceptance, check if the user has a 6-character ID using the useHasUserId hook. If not, display the IdClaimDialog before proceeding to username generation. Ensure the dialog blocks progress until an ID is claimed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update all frontend displays that show user IDs to use the new 6-character format, including profile display, layout header, and any admin panels",
+      "acceptanceCriteria": [
+        "User IDs display in 6-character format throughout the application",
+        "Layout header shows 6-character ID in parentheses next to username",
+        "Profile pages display 6-character IDs correctly",
+        "Admin panels show 6-character IDs for user identification"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/layout/Layout.tsx",
+          "operation": "modify",
+          "description": "Update the header to display the user's 6-character ID in parentheses next to their username. Fetch the ID from the user profile (userProfile.userId) and display it in the format 'Username (ABC123)'. Ensure the display updates when the user profile changes."
+        },
+        {
+          "path": "frontend/src/components/admin/CustomUsernameSubmissionsList.tsx",
+          "operation": "modify",
+          "description": "Update the submissions display to show 6-character user IDs instead of the old PUR-XXXXXX format. Display the userId from fetched user profiles in the format 'ABC123' when showing submission details."
+        },
+        {
+          "path": "frontend/src/components/admin/QueueSkipSubmissionsList.tsx",
+          "operation": "modify",
+          "description": "Update the queue skip submissions display to show 6-character user IDs. When fetching and displaying user information for submissions, use the userId field from user profiles in 6-character format."
+        },
+        {
+          "path": "frontend/src/components/admin/UsernameChangeSubmissionsList.tsx",
+          "operation": "modify",
+          "description": "Update username change submissions to display 6-character user IDs when showing submission details. Replace any PUR-XXXXXX format references with the new userId format from user profiles."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Remove phone number admin whitelist functionality and any phone number-related admin controls from the admin panel",
+      "acceptanceCriteria": [
+        "Admin panel no longer includes phone number whitelist management",
+        "Backend removes phone number whitelist storage and validation",
+        "Payment configuration form removes phone number admin fields"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/admin/PaymentConfigForm.tsx",
           "operation": "modify",
-          "description": "Add error handling to the addAdminPhoneNumber mutation in the handleAddAdminPhoneNumber function. Parse backend error responses to detect validation failures when the phone number doesn't belong to any existing user. Display specific error messages using toast notifications when phone number validation fails. Maintain the existing success toast when phone numbers are successfully added to the whitelist."
+          "description": "Remove phone number admin whitelist fields from the payment configuration form. Delete any input fields, state management, and submission logic related to adding or managing admin phone numbers. Keep only the admin username functionality."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Keep Internet Identity authentication system unchanged as the primary login method, with users authenticating via passkeys, Google, Apple, or Microsoft",
+      "acceptanceCriteria": [
+        "Internet Identity login flow remains functional",
+        "Users can still authenticate with passkeys and federated identity providers",
+        "Authentication state management continues to work with existing hooks"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "modify",
+          "description": "Verify that the Internet Identity login flow remains unchanged and functional. Ensure the component continues to use useInternetIdentity hook for login/logout operations and that no phone number-related logic is present. This is a verification-only change to ensure existing functionality is preserved."
         }
       ]
     }

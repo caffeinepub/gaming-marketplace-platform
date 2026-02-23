@@ -10,7 +10,12 @@ import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Random "mo:core/Random";
+import Nat8 "mo:core/Nat8";
+import Nat "mo:core/Nat";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -26,16 +31,16 @@ actor {
   ];
 
   public type UserProfile = {
+    userId : Text;
     name : Text;
     email : Text;
     username : ?Text;
-    phoneNumber : ?Text;
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
+  let userIdSet = Map.empty<Text, Bool>();
   let usernameMap = Map.empty<Text, Principal>();
   let customUsernames = Map.empty<Principal, Text>();
-  let phoneNumberMap = Map.empty<Text, Principal>();
 
   type Product = {
     id : Text;
@@ -137,11 +142,44 @@ actor {
   let customUsernameSubmissions = Map.empty<Principal, CustomUsernameSubmission>();
 
   let adminUsernameWhitelist = Map.empty<Text, Bool>();
-  let adminPhoneWhitelist = Map.empty<Text, Bool>();
 
   do {
     adminUsernameWhitelist.add("venomgladiator25", true);
     adminUsernameWhitelist.add("turbohunter64", true);
+  };
+
+  func generateUniqueShortID() : async Text {
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let charsArray = chars.toArray();
+    var userId = "";
+    var attempts = 0;
+    let maxAttempts = 100;
+
+    label generation loop {
+      if (attempts >= maxAttempts) {
+        Runtime.trap("Failed to generate unique short ID after maximum attempts");
+      };
+
+      userId := "";
+      let randomBytes = await Random.blob();
+      let byteArray = randomBytes.toArray();
+
+      var i = 0;
+      while (i < 6) {
+        let index = byteArray[i % byteArray.size()].toNat() % charsArray.size();
+        userId := userId # charsArray[index].toText();
+        i += 1;
+      };
+
+      if (not userIdSet.containsKey(userId)) {
+        break generation;
+      };
+
+      attempts += 1;
+    };
+
+    userIdSet.add(userId, true);
+    userId;
   };
 
   public shared ({ caller }) func addAdminUsername(username : Text) : async () {
@@ -165,37 +203,6 @@ actor {
     };
   };
 
-  public shared ({ caller }) func addAdminPhoneNumber(phoneNumber : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can add admin phone numbers");
-    };
-    validatePhoneNumber(phoneNumber);
-    
-    // Check if phone number is already used by a regular user
-    switch (phoneNumberMap.get(phoneNumber)) {
-      case (?existingUser) {
-        Runtime.trap("Phone number already exists for another user");
-      };
-      case (null) {};
-    };
-    
-    adminPhoneWhitelist.add(phoneNumber, true);
-  };
-
-  public shared ({ caller }) func removeAdminPhoneNumber(phoneNumber : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can remove admin phone numbers");
-    };
-    adminPhoneWhitelist.remove(phoneNumber);
-  };
-
-  public query func isAdminPhoneNumber(phoneNumber : Text) : async Bool {
-    switch (adminPhoneWhitelist.get(phoneNumber)) {
-      case (null) { false };
-      case (?exists) { exists };
-    };
-  };
-
   public query({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view profiles");
@@ -214,17 +221,41 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    userProfiles.add(caller, profile);
-    switch (profile.phoneNumber) {
-      case (?phone) { phoneNumberMap.add(phone, caller) };
-      case (null) {};
+
+    let finalProfile = switch (userProfiles.get(caller)) {
+      case (null) {
+        let newShortId = await generateUniqueShortID();
+        {
+          profile with
+          userId = newShortId;
+        };
+      };
+      case (?existingProfile) {
+        {
+          profile with
+          userId = existingProfile.userId;
+        };
+      };
     };
+
+    userProfiles.add(caller, finalProfile);
   };
 
   public shared({ caller }) func createUsername(requestedUsername : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create usernames");
     };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("Profile must exist before creating username") };
+      case (?profile) {
+        switch (profile.username) {
+          case (?_) { Runtime.trap("Username already exists for this user") };
+          case (null) {};
+        };
+      };
+    };
+
     createOrValidateUsername(caller, requestedUsername, false);
   };
 
@@ -250,15 +281,6 @@ actor {
     let lowerUsername = username.toLower();
     if (forbiddenWords.any(func(word) { lowerUsername.contains(#text word) })) {
       Runtime.trap("Username contains forbidden words");
-    };
-  };
-
-  func validatePhoneNumber(phoneNumber : Text) {
-    let isValidNumber = phoneNumber.toArray().all(
-      func(char) { char.isDigit() }
-    );
-    if (not isValidNumber) {
-      Runtime.trap("Phone number must only contain digits");
     };
   };
 
@@ -673,59 +695,5 @@ actor {
       };
     };
   };
-
-  public query({ caller }) func hasPhoneNumber() : async Bool {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can check phone number status");
-    };
-    switch (userProfiles.get(caller)) {
-      case (null) { false };
-      case (?profile) {
-        switch (profile.phoneNumber) {
-          case (null) { false };
-          case (?_) { true };
-        };
-      };
-    };
-  };
-
-  public shared({ caller }) func savePhoneNumber(phoneNumber : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save phone numbers");
-    };
-    
-    validatePhoneNumber(phoneNumber);
-    
-    // Check if user profile exists
-    let existingProfile = switch (userProfiles.get(caller)) {
-      case (null) { Runtime.trap("User profile not found") };
-      case (?p) { p };
-    };
-    
-    // Remove old phone number mapping if user is updating their phone number
-    switch (existingProfile.phoneNumber) {
-      case (?oldPhone) {
-        phoneNumberMap.remove(oldPhone);
-      };
-      case (null) {};
-    };
-    
-    // Check if the new phone number is already used by another user
-    switch (phoneNumberMap.get(phoneNumber)) {
-      case (?existingUser) {
-        if (existingUser != caller) {
-          Runtime.trap("Phone number already exists");
-        };
-      };
-      case (null) {};
-    };
-
-    let updatedProfile = {
-      existingProfile with
-      phoneNumber = ?phoneNumber;
-    };
-
-    userProfiles.add(caller, updatedProfile);
-    phoneNumberMap.add(phoneNumber, caller);
-  };
 };
+

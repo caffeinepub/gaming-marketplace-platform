@@ -1,96 +1,164 @@
 {
   "kind": "build_request",
-  "title": "Fix user not found error when adding phone numbers to existing accounts",
-  "projectName": "Game Vault",
+  "title": "Replace phone number authentication with 6-character ID system",
+  "projectName": "Digital Gaming Marketplace",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-90",
-      "text": "Update the backend savePhoneNumber endpoint to check if a user profile already exists for the authenticated principal before attempting to create a new user record",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Fix the phone number adding it says user not found when it's ment to add a phone number to the existing account"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The savePhoneNumber endpoint queries for an existing user profile using the caller's principal",
-        "If a profile exists, the endpoint updates the phoneNumber field instead of creating a new user",
-        "If no profile exists, the endpoint creates a new user with the phone number",
-        "The endpoint returns success status after updating or creating the user record"
-      ]
-    },
-    {
-      "id": "REQ-91",
-      "text": "Add validation in the backend savePhoneNumber endpoint to ensure phone numbers are unique across all users when updating existing accounts",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "All users should be able to add phone numbers to their existing accounts"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Before updating a user's phone number, check if another user already has that phone number",
-        "Return a descriptive error if the phone number is already in use by a different user",
-        "Allow users to update their own phone number to the same value without error"
-      ]
-    },
-    {
-      "id": "REQ-92",
-      "text": "Add user-facing error messages in the PhoneNumberSetup component to clearly display backend errors when phone number saving fails",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "I'll add clear error messages to help them understand what went wrong"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Display specific error messages for 'user not found' errors",
-        "Display specific error messages for 'phone number already in use' errors",
-        "Show a generic error message for unexpected errors",
-        "Error messages are displayed prominently in the PhoneNumberSetup dialog",
-        "Users can retry phone number submission after seeing error messages"
-      ]
-    },
-    {
-      "id": "REQ-93",
-      "text": "Verify the admin panel phone number addition functionality properly handles existing users and displays appropriate errors",
+      "id": "REQ-1",
+      "text": "Remove all phone number collection and validation logic from the authentication flow, including PhoneNumberSetup component and phone number storage in user profiles",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "Admin phone number addition in the admin panel could also have this same issue"
+          "Login and authentication switch it with ids",
+          "Remove phone number requirement"
         ]
       },
       "acceptanceCriteria": [
-        "When admins add phone numbers to the whitelist through PaymentConfigForm, the backend properly validates the phone number exists in user records",
-        "If the phone number doesn't belong to any existing user, display a clear error message",
-        "The admin panel shows success confirmation when phone numbers are successfully added to the whitelist"
+        "PhoneNumberSetup component is no longer called during authentication",
+        "Backend user profile no longer stores or requires phoneNumber field",
+        "Users can complete authentication without providing a phone number"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement 6-character alphanumeric ID system where new users are automatically assigned a unique 6-character ID (letters and numbers) upon first login if they don't have one",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "on top make them get and id if they don't have one",
+          "Get an auto-generated 6-character ID if they don't have one"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend generates unique 6-character alphanumeric IDs (e.g., A3B2C1, X7Y9Z4)",
+        "IDs are collision-resistant and guaranteed unique",
+        "New users automatically receive an ID on profile creation",
+        "Existing users without IDs are migrated to have 6-character IDs"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Create ID claim/creation dialog that appears for new users on first login, allowing them to either accept their auto-generated 6-character ID or create a custom 6-character ID for free",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "make a custom one for free that's 6 letters long",
+          "Prompt new users to claim/create their ID on first login"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dialog appears automatically for users without an ID after Internet Identity login",
+        "Users can see their auto-generated 6-character ID",
+        "Users can choose to create a custom 6-character alphanumeric ID",
+        "Custom ID input validates for exactly 6 characters (letters and numbers only)",
+        "Custom ID creation checks for uniqueness before acceptance",
+        "Dialog cannot be dismissed until an ID is claimed or created"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Update user profile storage to use 6-character IDs as the primary identifier, replacing the current PUR-XXXXXX format userId with the new 6-character format",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "that's 6 letters long",
+          "unique 6-character ID"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User profiles store IDs in 6-character format (no prefix)",
+        "Backend validates ID format is exactly 6 alphanumeric characters",
+        "Migration handles conversion from old PUR-XXXXXX format to new format"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Update all frontend displays that show user IDs to use the new 6-character format, including profile display, layout header, and any admin panels",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "switch it with ids"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User IDs display in 6-character format throughout the application",
+        "Layout header shows 6-character ID in parentheses next to username",
+        "Profile pages display 6-character IDs correctly",
+        "Admin panels show 6-character IDs for user identification"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Remove phone number admin whitelist functionality and any phone number-related admin controls from the admin panel",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2"
+        ],
+        "quotes": [
+          "Remove phone number requirement"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin panel no longer includes phone number whitelist management",
+        "Backend removes phone number whitelist storage and validation",
+        "Payment configuration form removes phone number admin fields"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Keep Internet Identity authentication system unchanged as the primary login method, with users authenticating via passkeys, Google, Apple, or Microsoft",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "Do you want to keep Internet Identity authentication?\" - \"Yes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Internet Identity login flow remains functional",
+        "Users can still authenticate with passkeys and federated identity providers",
+        "Authentication state management continues to work with existing hooks"
       ]
     }
   ],
   "constraints": [
-    "Maintain the existing single-actor backend architecture",
-    "Preserve phone number validation rules: numeric only, no + prefix, worldwide format support",
-    "Do not modify the PhoneNumberSetup component structure or required field enforcement",
-    "Keep the dual whitelist system (username and phone number) unchanged"
+    "Maintain single-actor backend architecture with all logic in backend/main.mo",
+    "Do not modify immutable frontend paths: useInternetIdentity hooks, useActor.ts, main.tsx, and components/ui",
+    "Keep Internet Identity as the sole authentication provider",
+    "Preserve existing shopping cart, product, and payment functionality"
   ],
   "nonGoals": [
-    "Adding phone number verification via SMS or email",
-    "Implementing phone number formatting or country code detection",
-    "Creating a separate admin interface for managing user phone numbers",
-    "Adding bulk phone number import functionality"
+    "Adding new authentication providers beyond Internet Identity",
+    "Implementing phone number verification or SMS features",
+    "Creating username regeneration with payment (already exists)",
+    "Modifying the queue skip or custom username purchase flows",
+    "Adding backend support for Rust, databases, or external services"
   ],
   "imageRequirements": {
     "required": [],

@@ -23,7 +23,11 @@ export default function UserProfileSetup() {
     if (!name.trim() || !email.trim()) return;
 
     try {
-      await saveProfile.mutateAsync({ name: name.trim(), email: email.trim() });
+      await saveProfile.mutateAsync({ 
+        userId: '', // Backend will generate this
+        name: name.trim(), 
+        email: email.trim() 
+      });
     } catch (error) {
       console.error('Failed to save profile:', error);
     }

@@ -22,6 +22,7 @@ export default function Layout({ children }: LayoutProps) {
   const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
 
   const currentUsername = userProfile?.username;
+  const userId = userProfile?.userId;
   const hasUsername = !!currentUsername;
 
   return (
@@ -56,6 +57,11 @@ export default function Layout({ children }: LayoutProps) {
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">
                   {currentUsername}
+                  {userId && (
+                    <span className="ml-1 text-xs opacity-70">
+                      ({userId})
+                    </span>
+                  )}
                 </span>
                 <Button
                   variant="ghost"

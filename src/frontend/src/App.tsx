@@ -7,23 +7,22 @@ import AdminPanel from './pages/AdminPanel';
 import Checkout from './pages/Checkout';
 import LoginQueue from './components/auth/LoginQueue';
 import TermsAcceptanceModal from './components/auth/TermsAcceptanceModal';
-import PhoneNumberSetup from './components/auth/PhoneNumberSetup';
+import IdClaimDialog from './components/auth/IdClaimDialog';
 import AIUsernameGenerator from './components/auth/AIUsernameGenerator';
 import { Toaster } from '@/components/ui/sonner';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useHasUsername, useHasQueueBypass } from './hooks/useQueries';
-import { useHasPhoneNumber } from './hooks/usePhoneNumber';
+import { useHasUsername, useHasQueueBypass, useGetCallerUserProfile } from './hooks/useQueries';
 
 function AppContent() {
   const { identity } = useInternetIdentity();
   const isAuthenticated = !!identity;
   const { data: hasUsername, isLoading: usernameLoading, isFetched: usernameFetched } = useHasUsername();
   const { data: hasQueueBypass, isLoading: bypassLoading, isFetched: bypassFetched } = useHasQueueBypass();
-  const { data: hasPhoneNumber, isLoading: phoneLoading, isFetched: phoneFetched } = useHasPhoneNumber();
+  const { data: userProfile, isLoading: profileLoading, isFetched: profileFetched } = useGetCallerUserProfile();
 
   const [queueComplete, setQueueComplete] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [phoneNumberComplete, setPhoneNumberComplete] = useState(false);
+  const [idClaimed, setIdClaimed] = useState(false);
   const [showUsernameGenerator, setShowUsernameGenerator] = useState(false);
 
   // Reset state when user logs out
@@ -31,7 +30,7 @@ function AppContent() {
     if (!isAuthenticated) {
       setQueueComplete(false);
       setTermsAccepted(false);
-      setPhoneNumberComplete(false);
+      setIdClaimed(false);
       setShowUsernameGenerator(false);
     }
   }, [isAuthenticated]);
@@ -48,23 +47,26 @@ function AppContent() {
     }
   }, [isAuthenticated, bypassFetched, hasQueueBypass]);
 
-  // Handle phone number completion
-  const handlePhoneNumberComplete = () => {
-    setPhoneNumberComplete(true);
+  // Handle ID claim completion
+  const handleIdClaimComplete = () => {
+    setIdClaimed(true);
   };
+
+  // Check if user has a 6-character ID
+  const hasUserId = userProfile?.userId && userProfile.userId.length === 6;
 
   // Determine what to show after queue completes
   useEffect(() => {
-    if (queueComplete && usernameFetched && !usernameLoading && phoneFetched && !phoneLoading) {
+    if (queueComplete && usernameFetched && !usernameLoading && profileFetched && !profileLoading) {
       if (!termsAccepted) {
         // Show terms acceptance first
-      } else if (termsAccepted && hasPhoneNumber === false && !phoneNumberComplete) {
-        // Show phone number setup after terms (for both new and existing users)
-      } else if (hasUsername === false && termsAccepted && (hasPhoneNumber === true || phoneNumberComplete)) {
+      } else if (termsAccepted && !hasUserId && !idClaimed) {
+        // Show ID claim dialog after terms
+      } else if (hasUsername === false && termsAccepted && (hasUserId || idClaimed)) {
         setShowUsernameGenerator(true);
       }
     }
-  }, [queueComplete, hasUsername, usernameLoading, usernameFetched, termsAccepted, hasPhoneNumber, phoneLoading, phoneFetched, phoneNumberComplete]);
+  }, [queueComplete, hasUsername, usernameLoading, usernameFetched, termsAccepted, hasUserId, profileLoading, profileFetched, idClaimed]);
 
   // Show queue if authenticated and queue not complete (and no bypass)
   if (isAuthenticated && !queueComplete && !bypassLoading) {
@@ -76,13 +78,13 @@ function AppContent() {
     return <TermsAcceptanceModal onAccept={() => setTermsAccepted(true)} />;
   }
 
-  // Show phone number setup if terms accepted but no phone number (for both new and existing users)
-  if (isAuthenticated && queueComplete && termsAccepted && hasPhoneNumber === false && phoneFetched && !phoneNumberComplete) {
-    return <PhoneNumberSetup open={true} onComplete={handlePhoneNumberComplete} />;
+  // Show ID claim dialog if terms accepted but no 6-character ID
+  if (isAuthenticated && queueComplete && termsAccepted && !hasUserId && profileFetched && !idClaimed) {
+    return <IdClaimDialog open={true} onComplete={handleIdClaimComplete} />;
   }
 
-  // Show AI username generator if terms accepted, phone number complete, but no username
-  if (isAuthenticated && queueComplete && termsAccepted && (hasPhoneNumber === true || phoneNumberComplete) && showUsernameGenerator && hasUsername === false) {
+  // Show AI username generator if terms accepted, ID claimed, but no username
+  if (isAuthenticated && queueComplete && termsAccepted && (hasUserId || idClaimed) && showUsernameGenerator && hasUsername === false) {
     return <AIUsernameGenerator onComplete={() => setShowUsernameGenerator(false)} />;
   }
 
